@@ -1,0 +1,9 @@
+{
+    "_comment": "General",
+    "itemGroup.integratedmekanismics": "Integrated Mekanismics",
+    "general.integratedmekanismics.description": "Compability mod between Mekanism and the Integrated Dynamics mods.",
+
+    "_comment": "------ On the Dynamics of Integration contents ------",
+
+    "info_book.integratedmekanismics.section.main": "Terminals"
+}

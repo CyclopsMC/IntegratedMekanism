@@ -1,0 +1,425 @@
+plugins {
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'com.matthewprenger.cursegradle' version '1.4.0'
+	id 'com.github.kt3k.coveralls' version '2.12.0'
+    id 'com.diffplug.spotless' version '5.14.3'
+	id 'com.modrinth.minotaur' version '2.+'
+}
+
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'idea'
+apply plugin: 'maven-publish'
+apply plugin: 'jacoco'
+
+// All jar files from this folder will be added automatically as runtime mod dependencies (inspired by AE2's build.gradle)
+def extraModsDir = "extra-mods"
+
+import net.minecraftforge.gradle.common.tasks.SignJar
+
+// Determine build number
+String build_number = "DEV" // this will be referenced as simply build_number from now on.
+if (System.getenv().BUILD_NUMBER)
+    build_number = System.getenv().BUILD_NUMBER
+if (System.getenv().TRAVIS_BUILD_NUMBER)
+    build_number = System.getenv().TRAVIS_BUILD_NUMBER
+if (System.getenv().GITHUB_RUN_ID)
+    build_number = System.getenv().GITHUB_RUN_NUMBER
+if (System.getenv().RELEASE || System.getenv().TRAVIS_TAG)
+    build_number = "RELEASE"
+logger.lifecycle "BUILDING VERSION: " + build_number
+
+// Set mod details
+version = project.mod_version
+group = "org.cyclops.integratedmekanismics"
+archivesBaseName = "IntegratedMekanismics"
+
+// Set Java details
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+compileJava.options.compilerArgs << "-Xmaxerrs" << "9999"
+println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
+
+// Load secrets
+def getSecrets() {
+    Properties props = new Properties()
+    if (file('./secrets.properties').exists()) {
+        props.load(new FileInputStream(file('./secrets.properties')))
+    }
+    return props
+}
+Properties secrets = getSecrets();
+
+sourceSets {
+    main
+    test
+}
+
+configurations {
+    shadow.setTransitive(true);
+
+    modLib
+    implementation.extendsFrom modLib
+}
+
+test {
+    testLogging {
+        exceptionFormat = 'full'
+    }
+}
+
+repositories {
+    mavenCentral()
+	mavenLocal()
+    maven {
+        name "Cyclops Repo"
+        url "https://maven.pkg.github.com/CyclopsMC/packages"
+        credentials {
+            username = project.findProperty("gpr.user") ?: System.getenv("MAVEN_USERNAME")
+            password = project.findProperty("gpr.key") ?: System.getenv("MAVEN_KEY")
+        }
+    }
+    maven {
+        name = "Modmaven for Mekanism"
+        url = uri("https://modmaven.dev/")
+        content {
+            includeGroup("mekanism")
+        }
+    }
+    flatDir {
+        name "extra-mods"
+        dir file(extraModsDir)
+    }
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
+
+    // Add something like 'cyclopscore_version_local=0.1.0-DEV' to your gradle.properties if you want to use a custom local CyclopsCore version.
+    if(secrets.cyclopscore_version_local) {
+        implementation "org.cyclops.cyclopscore:cyclopscore:${project.minecraft_version}-${secrets.cyclopscore_version_local}:deobf"
+    } else {
+        implementation "org.cyclops.cyclopscore:cyclopscore:${project.minecraft_version}-${project.cyclopscore_version}:deobf"
+    }
+	
+    // Add something like 'integrateddynamics_version_local=0.1.0-DEV' to your gradle.properties if you want to use a custom local Integrated Tunnels Compat version.
+    if(secrets.integrateddynamics_version_local) {
+        implementation("org.cyclops.integrateddynamics:integrateddynamics:${secrets.integrateddynamics_version_local}:deobf") {
+            transitive = false
+        }
+    } else {
+        implementation("org.cyclops.integrateddynamics:integrateddynamics:${project.integrateddynamics_version}:deobf") {
+            transitive = false
+        }
+    }
+    if(secrets.integratedtunnels_version_local) {
+        implementation "org.cyclops.integratedtunnels:integratedtunnels:${secrets.integratedtunnels_version_local}:deobf"
+    } else {
+        implementation ("org.cyclops.integratedtunnels:integratedtunnels:${project.integratedtunnels_version}:deobf") {
+            transitive = false
+        }
+    }
+    if(secrets.integratedterminals_version_local) {
+        implementation "org.cyclops.integratedterminals:integratedterminals:${secrets.integratedterminals_version_local}:deobf"
+    } else {
+        implementation ("org.cyclops.integratedterminals:integratedterminals:${project.integratedterminals_version}:deobf") {
+            transitive = false
+        }
+    }
+    if(secrets.integratedcrafting_version_local) {
+        implementation "org.cyclops.integratedcrafting:integratedcrafting:${secrets.integratedcrafting_version_local}:deobf"
+    } else {
+        implementation ("org.cyclops.integratedcrafting:integratedcrafting:${project.integratedcrafting_version}:deobf") {
+            transitive = false
+        }
+    }
+
+    if(secrets.commoncapabilities_version_local) {
+        implementation "org.cyclops.commoncapabilities:commoncapabilities:${secrets.commoncapabilities_version_local}:deobf"
+    } else {
+        implementation fg.deobf("org.cyclops.commoncapabilities:commoncapabilities:${project.commoncapabilities_version}") { // https://dl.bintray.com/cyclopsmc/dev/org/cyclops/commoncapabilities/CommonCapabilities/
+            transitive = false
+        }
+    }
+
+    implementation fg.deobf("mekanism:Mekanism:${mekanism_version}:all")
+
+    modLib "com.google.re2j:re2j:1.1"
+
+    // Project lombok
+	compileOnly 'org.projectlombok:lombok:1.18.22'
+	annotationProcessor 'org.projectlombok:lombok:1.18.22'
+	testCompileOnly 'org.projectlombok:lombok:1.18.22'
+	testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
+	
+	testImplementation "junit:junit:4.12"
+
+    // Locally sourced extra mods for runtime (i.e. testing)
+    for (extraModJar in fileTree(dir: extraModsDir, include: '*.jar')) {
+        def basename = extraModJar.name.substring(0, extraModJar.name.length() - ".jar".length())
+        def versionSep = basename.lastIndexOf('-')
+        assert versionSep != -1
+        def artifactId = basename.substring(0, versionSep)
+        def version = basename.substring(versionSep + 1)
+        runtimeOnly fg.deobf("extra-mods:$artifactId:$version")
+    }
+}
+
+minecraft {
+    mappings channel: "official", version: "${project.minecraft_version}"
+
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+
+    runs {
+        client {
+            workingDirectory project.file('run')
+            //property 'forge.logging.markers', 'REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.console.level', 'debug'
+            mods {
+                integratedtunnels {
+                    source sourceSets.main
+                }
+            }
+
+            // Required for extra mods
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+
+            lazyToken('minecraft_classpath') {
+                configurations.modLib.copyRecursive().resolve().collect { it.absolutePath }.join(File.pathSeparator)
+            }
+        }
+
+        server {
+            workingDirectory project.file('run')
+            property 'forge.logging.console.level', 'debug'
+            mods {
+                integratedtunnels {
+                    source sourceSets.main
+                }
+            }
+
+            // Required for extra mods
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+
+            lazyToken('minecraft_classpath') {
+                configurations.modLib.copyRecursive().resolve().collect { it.absolutePath }.join(File.pathSeparator)
+            }
+        }
+
+        data {
+            workingDirectory project.file('run')
+            property 'forge.logging.console.level', 'debug'
+            args '--mod', 'integratedtunnels', '--all', '--output', file('src/generated/resources/')
+            mods {
+                integratedtunnels {
+                    source sourceSets.main
+                }
+            }
+
+            lazyToken('minecraft_classpath') {
+                configurations.modLib.copyRecursive().resolve().collect { it.absolutePath }.join(File.pathSeparator)
+            }
+        }
+    }
+}
+
+if (build_number.equals("RELEASE"))
+    version = "${project.minecraft_version}-${project.mod_version}"
+else
+    version = "${project.minecraft_version}-${project.mod_version}-${build_number}"
+
+jar {
+    archiveClassifier.set('slim')
+    manifest {
+        attributes([
+                "FMLAT": "accesstransformer.cfg",
+                "Specification-Title": "${secrets.name}",
+                "Specification-Vendor": "rubensworks",
+                "Specification-Version": "${project.mod_version}",
+                "Implementation-Title": "${secrets.name}",
+                "Implementation-Version": "${project.mod_version}",
+                "Implementation-Vendor" :"rubensworks",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+}
+
+javadoc {
+    source = [sourceSets.main.allJava]
+    // prevent java 8's strict doclint for javadocs from failing builds
+    options.addStringOption('Xdoclint:accessibility,html,reference,syntax', '-quiet')
+}
+
+task signJar(type: SignJar, dependsOn: jar) {
+    onlyIf {
+        System.getenv().SIGN_KEYSTORE
+    }
+
+    keyStore = System.getenv().SIGN_KEYSTORE
+    alias = System.getenv().SIGN_ALIAS
+    storePass = System.getenv().SIGN_STOREPASS
+    keyPass = System.getenv().SIGN_KEYPASS
+    inputFile = jar.archivePath
+    outputFile = jar.archivePath
+}
+build.dependsOn signJar
+
+task deobfJar(type: Jar) {
+    from sourceSets.main.output
+    archiveClassifier.set('deobf')
+    manifest {
+        attributes([
+                "FMLAT": "accesstransformer.cfg",
+                "Specification-Title": "${secrets.name}",
+                "Specification-Vendor": "rubensworks",
+                "Specification-Version": "${project.mod_version}",
+                "Implementation-Title": "${secrets.name}",
+                "Implementation-Version": "${project.mod_version}",
+                "Implementation-Vendor" :"rubensworks",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+}
+
+task sourcesJar(type: Jar) {
+    duplicatesStrategy(DuplicatesStrategy.FAIL)
+    archiveClassifier.set('sources')
+    from sourceSets.main.allJava
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    duplicatesStrategy(DuplicatesStrategy.FAIL)
+    archiveClassifier.set('javadoc')
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives deobfJar
+    archives sourcesJar
+    archives javadocJar
+}
+
+curseforge {
+    if(secrets.curseforge_key) {
+        apiKey = secrets.curseforge_key
+    } else if(System.getenv().GITHUB_ACTIONS && System.getenv().CURSEFORGE_KEY_SECRET) {
+        apiKey = System.getenv().CURSEFORGE_KEY_SECRET
+    }
+
+    project {
+        id = "1332544" // my project url is http://minecraft.curseforge.com/mc-mods/1332544/
+        releaseType = project.project.release_type
+        addGameVersion project.minecraft_version
+        mainArtifact(jar) {
+            relations {
+                requiredDependency 'cyclops-core'
+                requiredDependency 'integrated-dynamics'
+                optionalDependency 'integrated-tunnels'
+                optionalDependency 'integrated-crafting'
+                optionalDependency 'integrated-terminals'
+            }
+        }
+
+        changelog = ""
+        if (new File("resources/changelog/${secrets.version}.txt").exists()) {
+            changelog = new File("resources/changelog/${secrets.version}.txt").text
+        }
+
+        addArtifact deobfJar
+        addArtifact sourcesJar
+        addArtifact javadocJar
+    }
+}
+
+modrinth {
+    if(secrets.modrinth_key) {
+        token = secrets.modrinth_key
+    } else if(System.getenv().GITHUB_ACTIONS && System.getenv().MODRINTH_KEY_SECRET) {
+        token = System.getenv().MODRINTH_KEY_SECRET
+    } else {
+        token = "DUMMY"
+    }
+    projectId = "NknNmkiU"
+    versionNumber = project.minecraft_version + '-' + project.mod_version
+    versionType = project.release_type
+    uploadFile = jar
+    gameVersions = [ project.minecraft_version ]
+    changelog = ""
+    if (new File("resources/changelog/${project.version}.txt").exists()) {
+        changelog = new File("resources/changelog/${project.version}.txt").text
+    }
+    dependencies { // A special DSL for creating dependencies
+      required.project "Z9DM0LJ4" // Cyclops Core
+      required.project "oFXrCkDI" // Common Capabilities
+      required.project "yYzdQHJI" // Integrated Dynamics
+      optional.project "Etqy1Omb" // Integrated Tunnels
+      optional.project "qwpACdla" // Integrated Crafting
+      optional.project "HmLJoQ1K" // Integrated Terminals
+    }
+}
+
+publishing {
+    repositories {
+        if (project.hasProperty("filesmaven_url")) {
+            logger.info('Publishing to files server')
+            maven {
+                url project.filesmaven_url
+                credentials {
+                    username = project.filesmaven_username
+                    password = project.filesmaven_key
+                }
+            }
+        } else if (System.getenv("MAVEN_URL")) {
+            logger.info('Publishing to files server')
+            maven {
+                url System.getenv("MAVEN_URL")
+                credentials {
+                    username = System.getenv("MAVEN_USERNAME")
+                    password = System.getenv("MAVEN_KEY")
+                }
+            }
+        } else {
+            logger.error('No maven repo was set!')
+        }
+    }
+
+    publications { PublicationContainer publicationContainer ->
+        publicationContainer.register("maven", MavenPublication) { MavenPublication publication ->
+            publication.artifacts = [jar, javadocJar, deobfJar, sourcesJar]
+            publication.artifactId = project.archivesBaseName.toLowerCase() // GH can't handle uppercase...
+        }
+    }
+}
+
+idea {
+    module {
+        for (String excludeDirName in ["run", "out", "logs", "gradle"]) {
+            File excludeDir = new File(projectDir, excludeDirName)
+            excludeDirs.add(excludeDir)
+        }
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+spotless {
+    java {
+        target 'src/*/java/org/cyclops/**/*.java'
+
+        endWithNewline()
+        trimTrailingWhitespace()
+        removeUnusedImports()
+        indentWithSpaces()
+    }
+}
+
+tasks.register('updateGitHooks', Copy) {
+    from './scripts/pre-commit'
+    into './.git/hooks'
+}
+compileJava.dependsOn updateGitHooks
