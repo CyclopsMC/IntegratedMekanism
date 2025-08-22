@@ -143,12 +143,6 @@ dependencies {
     implementation fg.deobf("mekanism:Mekanism:${mekanism_version}:all")
 
     modLib "com.google.re2j:re2j:1.1"
-
-    // Project lombok
-	compileOnly 'org.projectlombok:lombok:1.18.22'
-	annotationProcessor 'org.projectlombok:lombok:1.18.22'
-	testCompileOnly 'org.projectlombok:lombok:1.18.22'
-	testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
 	
 	testImplementation "junit:junit:4.12"
 
