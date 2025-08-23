@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "integratedmekanismics:part_interface_chemical"
+    },
+    {
+      "item": "integrateddynamics:variable_transformer_output"
+    }
+  ],
+  "result": {
+    "item": "integratedmekanismics:part_exporter_chemical"
+  }
+}

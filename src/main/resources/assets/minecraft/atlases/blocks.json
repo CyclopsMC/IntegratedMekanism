@@ -1,3 +1,18 @@
 { "sources": [
-  { "type": "minecraft:single", "resource": "integratedmekanismics:part/interface_chemical" }
+  { "type": "minecraft:single", "resource": "integratedmekanismics:part/interface_filter_chemical_error" },
+  { "type": "minecraft:single", "resource": "integratedmekanismics:part/importer_chemical_error" },
+  { "type": "minecraft:single", "resource": "integratedmekanismics:part/importer_chemical_inactive" },
+  { "type": "minecraft:single", "resource": "integratedmekanismics:part/interface_chemical" },
+  { "type": "minecraft:single", "resource": "integratedmekanismics:part/exporter_chemical_inactive" },
+  { "type": "minecraft:single", "resource": "integratedmekanismics:part/importer_world_chemical_inactive" },
+  { "type": "minecraft:single", "resource": "integratedmekanismics:part/exporter_chemical_active" },
+  { "type": "minecraft:single", "resource": "integratedmekanismics:part/importer_chemical_active" },
+  { "type": "minecraft:single", "resource": "integratedmekanismics:part/interface_filter_chemical_inactive" },
+  { "type": "minecraft:single", "resource": "integratedmekanismics:part/exporter_world_chemical_inactive" },
+  { "type": "minecraft:single", "resource": "integratedmekanismics:part/exporter_world_chemical_error" },
+  { "type": "minecraft:single", "resource": "integratedmekanismics:part/importer_world_chemical_error" },
+  { "type": "minecraft:single", "resource": "integratedmekanismics:part/importer_world_chemical_active" },
+  { "type": "minecraft:single", "resource": "integratedmekanismics:part/exporter_world_chemical_active" },
+  { "type": "minecraft:single", "resource": "integratedmekanismics:part/interface_filter_chemical_active" },
+  { "type": "minecraft:single", "resource": "integratedmekanismics:part/exporter_chemical_error" }
 ]}
