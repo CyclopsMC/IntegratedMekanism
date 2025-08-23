@@ -24,7 +24,7 @@ import org.cyclops.integrateddynamics.core.logicprogrammer.ValueTypeLPElementBas
 import org.cyclops.integratedmekanismics.Reference;
 import org.cyclops.integratedmekanismics.core.CapabilityHelpers;
 import org.cyclops.integratedmekanismics.core.ChemicalHelpers;
-import org.cyclops.integratedmekanismics.ingredient.IngredientComponentsMekanism;
+import org.cyclops.integratedmekanismics.ingredient.MekanismIngredientComponents;
 
 import java.util.Objects;
 
@@ -59,13 +59,13 @@ public class ValueObjectTypeChemicalStack extends ValueObjectTypeBase<ValueObjec
 
     @Override
     public Tag serialize(ValueChemicalStack value) {
-        return IngredientComponentsMekanism.INGREDIENT_CHEMICALSTACK.getSerializer().serializeInstance(value.chemicalStack);
+        return MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK.getSerializer().serializeInstance(value.chemicalStack);
     }
 
     @Override
     public ValueChemicalStack deserialize(ValueDeseralizationContext valueDeseralizationContext, Tag value) {
         if (value instanceof CompoundTag) {
-            return ValueChemicalStack.of(IngredientComponentsMekanism.INGREDIENT_CHEMICALSTACK.getSerializer().deserializeInstance(value));
+            return ValueChemicalStack.of(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK.getSerializer().deserializeInstance(value));
         } else {
             return null;
         }
@@ -137,7 +137,7 @@ public class ValueObjectTypeChemicalStack extends ValueObjectTypeBase<ValueObjec
         private final ChemicalStack<?> chemicalStack;
 
         private ValueChemicalStack(ChemicalStack<?> itemStack) {
-            super(ValueTypesMekanism.OBJECT_CHEMICALSTACK);
+            super(MekanismValueTypes.OBJECT_CHEMICALSTACK);
             this.chemicalStack = Objects.requireNonNull(itemStack, "Attempted to create a ValueChemicalStack for a null ChemicalStack.");
         }
 

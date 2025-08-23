@@ -12,7 +12,7 @@ import org.cyclops.cyclopscore.config.extendedconfig.DummyConfig;
 public class GeneralConfig extends DummyConfig {
 
     @ConfigurableProperty(category = "core", comment = "The maximum network chemical transfer rate.", isCommandable = true, minimalValue = 0, configLocation = ModConfig.Type.SERVER)
-    public static int chemicalRateLimit = Integer.MAX_VALUE;
+    public static long chemicalRateLimit = Long.MAX_VALUE;
     @ConfigurableProperty(category = "general", comment = "The base energy usage for the chemical interface.", minimalValue = 0, configLocation = ModConfig.Type.SERVER)
     public static int interfaceChemicalBaseConsumption = 0;
     @ConfigurableProperty(category = "general", comment = "The base energy usage for the chemical exporter.", minimalValue = 0, configLocation = ModConfig.Type.SERVER)

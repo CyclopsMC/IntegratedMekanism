@@ -10,7 +10,7 @@ import org.cyclops.cyclopscore.modcompat.capabilities.DefaultCapabilityProvider;
 import org.cyclops.integrateddynamics.api.network.AttachCapabilitiesEventNetwork;
 import org.cyclops.integrateddynamics.api.network.IPositionedAddonsNetworkIngredients;
 import org.cyclops.integratedmekanismics.Reference;
-import org.cyclops.integratedmekanismics.ingredient.IngredientComponentsMekanism;
+import org.cyclops.integratedmekanismics.ingredient.MekanismIngredientComponents;
 
 /**
  * @author rubensworks
@@ -18,7 +18,7 @@ import org.cyclops.integratedmekanismics.ingredient.IngredientComponentsMekanism
 public class NetworkCapabilityConstructorsMekanism {
 
     public void onNetworkLoad(AttachCapabilitiesEventNetwork event) {
-        ChemicalNetwork chemicalNetwork = new ChemicalNetwork(IngredientComponentsMekanism.INGREDIENT_CHEMICALSTACK);
+        ChemicalNetwork chemicalNetwork = new ChemicalNetwork(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK);
         event.addCapability(new ResourceLocation(Reference.MOD_ID, "chemical_network"),
                 new DefaultCapabilityProvider<>(() -> ChemicalNetworkConfig.CAPABILITY, chemicalNetwork));
 

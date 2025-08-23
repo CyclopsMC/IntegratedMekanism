@@ -7,6 +7,7 @@ import org.cyclops.integrateddynamics.core.part.aspect.AspectRegistry;
 import org.cyclops.integrateddynamics.part.aspect.Aspects;
 import org.cyclops.integratedmekanismics.GeneralConfig;
 import org.cyclops.integratedmekanismics.IntegratedMekanismics;
+import org.cyclops.integratedmekanismics.part.aspect.MekanismAspects;
 import org.cyclops.integratedtunnels.core.part.PartTypeTunnelAspects;
 
 /**
@@ -17,13 +18,11 @@ public class PartTypeImporterChemical extends PartTypeTunnelAspects<PartTypeImpo
     public PartTypeImporterChemical(String name) {
         super(name);
         AspectRegistry.getInstance().register(this, Lists.<IAspect>newArrayList(
-                // TODO
-//                TunnelAspects.Write.Chemical.BOOLEAN_IMPORT,
-//                TunnelAspects.Write.Chemical.INTEGER_IMPORT,
-//                TunnelAspects.Write.Chemical.FLUIDSTACK_IMPORT,
-//                TunnelAspects.Write.Chemical.LIST_IMPORT,
-//                TunnelAspects.Write.Chemical.PREDICATE_IMPORT,
-//                TunnelAspects.Write.Chemical.NBT_IMPORT
+                MekanismAspects.Write.Chemical.BOOLEAN_IMPORT,
+                MekanismAspects.Write.Chemical.LONG_IMPORT,
+                MekanismAspects.Write.Chemical.CHEMICALSTACK_IMPORT,
+                MekanismAspects.Write.Chemical.LIST_IMPORT,
+                MekanismAspects.Write.Chemical.PREDICATE_IMPORT
         ));
     }
 

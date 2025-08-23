@@ -7,7 +7,6 @@ import mekanism.api.chemical.IChemicalHandler;
 import mekanism.api.chemical.gas.GasStack;
 import mekanism.common.capabilities.Capabilities;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import org.cyclops.integrateddynamics.api.network.INetwork;
 import org.cyclops.integrateddynamics.api.network.IPartNetwork;
@@ -31,19 +30,17 @@ public class PartStateChemical<P extends IPartTypeWriter> extends PartStatePosit
 
     @Override
     public <T2> LazyOptional<T2> getCapability(Capability<T2> capability, INetwork network, IPartNetwork partNetwork, PartTarget target) {
-        if (capability == ForgeCapabilities.FLUID_HANDLER) {
-            if (capability == Capabilities.GAS_HANDLER) {
-                return LazyOptional.of(() -> new Handler<>(this, Capabilities.GAS_HANDLER)).cast();
-            }
-            if (capability == Capabilities.INFUSION_HANDLER) {
-                return LazyOptional.of(() -> new Handler<>(this, Capabilities.INFUSION_HANDLER)).cast();
-            }
-            if (capability == Capabilities.PIGMENT_HANDLER) {
-                return LazyOptional.of(() -> new Handler<>(this, Capabilities.PIGMENT_HANDLER)).cast();
-            }
-            if (capability == Capabilities.SLURRY_HANDLER) {
-                return LazyOptional.of(() -> new Handler<>(this, Capabilities.SLURRY_HANDLER)).cast();
-            }
+        if (capability == Capabilities.GAS_HANDLER) {
+            return LazyOptional.of(() -> new Handler<>(this, Capabilities.GAS_HANDLER)).cast();
+        }
+        if (capability == Capabilities.INFUSION_HANDLER) {
+            return LazyOptional.of(() -> new Handler<>(this, Capabilities.INFUSION_HANDLER)).cast();
+        }
+        if (capability == Capabilities.PIGMENT_HANDLER) {
+            return LazyOptional.of(() -> new Handler<>(this, Capabilities.PIGMENT_HANDLER)).cast();
+        }
+        if (capability == Capabilities.SLURRY_HANDLER) {
+            return LazyOptional.of(() -> new Handler<>(this, Capabilities.SLURRY_HANDLER)).cast();
         }
         return super.getCapability(capability, network, partNetwork, target);
     }

@@ -14,5 +14,8 @@
   { "type": "minecraft:single", "resource": "integratedmekanismics:part/importer_world_chemical_active" },
   { "type": "minecraft:single", "resource": "integratedmekanismics:part/exporter_world_chemical_active" },
   { "type": "minecraft:single", "resource": "integratedmekanismics:part/interface_filter_chemical_active" },
-  { "type": "minecraft:single", "resource": "integratedmekanismics:part/exporter_chemical_error" }
+  { "type": "minecraft:single", "resource": "integratedmekanismics:part/exporter_chemical_error" },
+  { "type": "minecraft:single", "resource": "integratedmekanismics:aspects/write/chemical/import" },
+  { "type": "minecraft:single", "resource": "integratedmekanismics:aspects/write/chemical/export" },
+  { "type": "minecraft:single", "resource": "integratedmekanismics:aspects/write/chemical/filter" }
 ]}

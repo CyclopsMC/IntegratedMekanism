@@ -17,7 +17,7 @@ import org.cyclops.commoncapabilities.api.ingredient.storage.IIngredientComponen
 /**
  * @author rubensworks
  */
-public class IngredientComponentsMekanism {
+public class MekanismIngredientComponents {
 
     public static IngredientComponent<ChemicalStack<?>, Integer> INGREDIENT_CHEMICALSTACK = new IngredientComponent<>(
             "mekanism:chemicalstack",

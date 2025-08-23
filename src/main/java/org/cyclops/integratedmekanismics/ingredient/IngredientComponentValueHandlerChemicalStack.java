@@ -4,7 +4,7 @@ import mekanism.api.chemical.ChemicalStack;
 import org.cyclops.commoncapabilities.api.ingredient.IngredientComponent;
 import org.cyclops.integrateddynamics.api.ingredient.capability.IIngredientComponentValueHandler;
 import org.cyclops.integratedmekanismics.value.ValueObjectTypeChemicalStack;
-import org.cyclops.integratedmekanismics.value.ValueTypesMekanism;
+import org.cyclops.integratedmekanismics.value.MekanismValueTypes;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -21,7 +21,7 @@ public class IngredientComponentValueHandlerChemicalStack implements IIngredient
 
     @Override
     public ValueObjectTypeChemicalStack getValueType() {
-        return ValueTypesMekanism.OBJECT_CHEMICALSTACK;
+        return MekanismValueTypes.OBJECT_CHEMICALSTACK;
     }
 
     @Override

@@ -27,14 +27,14 @@ import org.cyclops.integrateddynamics.core.event.IntegratedDynamicsSetupEvent;
 import org.cyclops.integrateddynamics.infobook.OnTheDynamicsOfIntegrationBook;
 import org.cyclops.integratedmekanismics.client.render.value.ValueTypeWorldRenderersMekanism;
 import org.cyclops.integratedmekanismics.ingredient.IngredientComponentCapabilitiesMekanism;
-import org.cyclops.integratedmekanismics.ingredient.IngredientComponentsMekanism;
+import org.cyclops.integratedmekanismics.ingredient.MekanismIngredientComponents;
 import org.cyclops.integratedmekanismics.modcompat.integratedterminals.ModCompatIntegratedTerminals;
 import org.cyclops.integratedmekanismics.modcompat.integratedtunnels.ModCompatIntegratedTunnels;
 import org.cyclops.integratedmekanismics.network.ChemicalNetworkConfig;
 import org.cyclops.integratedmekanismics.network.NetworkCapabilityConstructorsMekanism;
 import org.cyclops.integratedmekanismics.proxy.ClientProxy;
 import org.cyclops.integratedmekanismics.proxy.CommonProxy;
-import org.cyclops.integratedmekanismics.value.ValueTypesMekanism;
+import org.cyclops.integratedmekanismics.value.MekanismValueTypes;
 
 /**
  * The main mod class of this mod.
@@ -70,16 +70,16 @@ public class IntegratedMekanismics extends ModBaseVersionable<IntegratedMekanism
 
     protected void onRegistriesLoad(RegisterEvent event) {
         if (event.getRegistryKey().equals(ForgeRegistries.BLOCKS.getRegistryKey())) {
-            IngredientComponent.REGISTRY.register(IngredientComponentsMekanism.INGREDIENT_CHEMICALSTACK.getName(), IngredientComponentsMekanism.INGREDIENT_CHEMICALSTACK);
+            IngredientComponent.REGISTRY.register(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK.getName(), MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK);
         }
     }
 
     protected void afterCapabilitiesLoaded(InterModEnqueueEvent event) {
-        IngredientComponentsMekanism.registerStorageWrapperHandlers();
+        MekanismIngredientComponents.registerStorageWrapperHandlers();
     }
 
     protected void onSetup(IntegratedDynamicsSetupEvent event) {
-        ValueTypesMekanism.load();
+        MekanismValueTypes.load();
 
         if (MinecraftHelpers.isClientSide()) {
             ValueTypeWorldRenderersMekanism.load();

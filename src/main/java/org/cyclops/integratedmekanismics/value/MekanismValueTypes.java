@@ -8,7 +8,7 @@ import org.cyclops.integrateddynamics.core.evaluate.variable.ValueTypeRegistry;
 /**
  * @author rubensworks
  */
-public class ValueTypesMekanism {
+public class MekanismValueTypes {
 
     public static final IValueTypeRegistry REGISTRY = constructRegistry();
 

@@ -5,7 +5,7 @@ import mekanism.api.chemical.Chemical;
 import mekanism.api.chemical.ChemicalStack;
 import mekanism.api.chemical.IChemicalHandler;
 import net.minecraftforge.common.capabilities.Capability;
-import org.cyclops.integratedmekanismics.ingredient.IngredientComponentsMekanism;
+import org.cyclops.integratedmekanismics.ingredient.MekanismIngredientComponents;
 import org.cyclops.integratedmekanismics.network.IChemicalNetwork;
 import org.cyclops.integratedtunnels.core.part.IPartTypeInterfacePositionedAddon;
 import org.jetbrains.annotations.NotNull;
@@ -137,6 +137,6 @@ public class ChemicalHandlerPartState<CHEMICAL extends Chemical<CHEMICAL>, STACK
 
     @Override
     public @NotNull STACK getEmptyStack() {
-        return (STACK) IngredientComponentsMekanism.INGREDIENT_CHEMICALSTACK.getMatcher().getEmptyInstance();
+        return (STACK) MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK.getMatcher().getEmptyInstance();
     }
 }
