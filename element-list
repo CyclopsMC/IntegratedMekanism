@@ -1,11 +1,13 @@
 org.cyclops.integratedmekanismics
 org.cyclops.integratedmekanismics.client.render.value
 org.cyclops.integratedmekanismics.core
+org.cyclops.integratedmekanismics.core.predicate
 org.cyclops.integratedmekanismics.ingredient
 org.cyclops.integratedmekanismics.modcompat.integratedterminals
 org.cyclops.integratedmekanismics.modcompat.integratedterminals.sorter
 org.cyclops.integratedmekanismics.modcompat.integratedtunnels
 org.cyclops.integratedmekanismics.network
 org.cyclops.integratedmekanismics.part
+org.cyclops.integratedmekanismics.part.aspect
 org.cyclops.integratedmekanismics.proxy
 org.cyclops.integratedmekanismics.value
