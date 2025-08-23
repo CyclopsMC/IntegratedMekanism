@@ -15,6 +15,7 @@ import net.minecraftforge.registries.RegisterEvent;
 import org.apache.logging.log4j.Level;
 import org.cyclops.commoncapabilities.api.ingredient.IngredientComponent;
 import org.cyclops.cyclopscore.config.ConfigHandler;
+import org.cyclops.cyclopscore.helper.MinecraftHelpers;
 import org.cyclops.cyclopscore.infobook.IInfoBookRegistry;
 import org.cyclops.cyclopscore.init.ModBaseVersionable;
 import org.cyclops.cyclopscore.modcompat.ModCompatLoader;
@@ -24,6 +25,7 @@ import org.cyclops.integrateddynamics.IntegratedDynamics;
 import org.cyclops.integrateddynamics.api.network.INetwork;
 import org.cyclops.integrateddynamics.core.event.IntegratedDynamicsSetupEvent;
 import org.cyclops.integrateddynamics.infobook.OnTheDynamicsOfIntegrationBook;
+import org.cyclops.integratedmekanismics.client.render.value.ValueTypeWorldRenderersMekanism;
 import org.cyclops.integratedmekanismics.ingredient.IngredientComponentCapabilitiesMekanism;
 import org.cyclops.integratedmekanismics.ingredient.IngredientComponentsMekanism;
 import org.cyclops.integratedmekanismics.modcompat.integratedterminals.ModCompatIntegratedTerminals;
@@ -78,6 +80,10 @@ public class IntegratedMekanismics extends ModBaseVersionable<IntegratedMekanism
 
     protected void onSetup(IntegratedDynamicsSetupEvent event) {
         ValueTypesMekanism.load();
+
+        if (MinecraftHelpers.isClientSide()) {
+            ValueTypeWorldRenderersMekanism.load();
+        }
 
         MinecraftForge.EVENT_BUS.addGenericListener(INetwork.class, new NetworkCapabilityConstructorsMekanism()::onNetworkLoad);
 
