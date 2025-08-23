@@ -4,11 +4,13 @@ import com.google.common.collect.ImmutableList;
 import mekanism.api.chemical.ChemicalStack;
 import mekanism.common.capabilities.Capabilities;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import org.apache.commons.lang3.tuple.Triple;
 import org.cyclops.commoncapabilities.api.ingredient.storage.IIngredientComponentStorage;
 import org.cyclops.cyclopscore.datastructure.DimPos;
+import org.cyclops.cyclopscore.helper.FluidHelpers;
 import org.cyclops.integrateddynamics.api.evaluate.EvaluationException;
 import org.cyclops.integrateddynamics.api.evaluate.operator.IOperator;
 import org.cyclops.integrateddynamics.api.evaluate.variable.IValueType;
@@ -33,6 +35,7 @@ import org.cyclops.integrateddynamics.part.aspect.write.AspectWriteBuilders;
 import org.cyclops.integratedmekanismics.GeneralConfig;
 import org.cyclops.integratedmekanismics.IntegratedMekanismics;
 import org.cyclops.integratedmekanismics.core.ChemicalHelpers;
+import org.cyclops.integratedmekanismics.ingredient.MekanismIngredientComponents;
 import org.cyclops.integratedmekanismics.network.ChemicalNetworkConfig;
 import org.cyclops.integratedmekanismics.value.MekanismValueTypes;
 import org.cyclops.integratedmekanismics.value.ValueObjectTypeChemicalStack;
@@ -139,6 +142,19 @@ public class MekanismAspectWriteBuilders {
                 //PROP_EXACTAMOUNT,
                 PROP_CHECK_AMOUNT
         ));
+        public static final IAspectProperties PROPERTIES_FILTER = new AspectProperties(ImmutableList.<IAspectPropertyTypeInstance>of(
+                TunnelAspectWriteBuilders.PROP_FILTER_APPLY_TO_INSERTIONS,
+                TunnelAspectWriteBuilders.PROP_FILTER_APPLY_TO_EXTRACTIONS,
+                TunnelAspectWriteBuilders.PROP_FILTER_ALLOW_ALL_IF_NOT_APPLIED
+        ));
+        public static final IAspectProperties PROPERTIES_FILTER_CHECKS = new AspectProperties(ImmutableList.<IAspectPropertyTypeInstance>of(
+                TunnelAspectWriteBuilders.PROP_FILTER_APPLY_TO_INSERTIONS,
+                TunnelAspectWriteBuilders.PROP_FILTER_APPLY_TO_EXTRACTIONS,
+                TunnelAspectWriteBuilders.PROP_FILTER_ALLOW_ALL_IF_NOT_APPLIED,
+                TunnelAspectWriteBuilders.PROP_BLACKLIST,
+                PROP_RATE,
+                PROP_CHECK_AMOUNT
+        ));
 
         static {
             PROPERTIES.setValue(TunnelAspectWriteBuilders.PROP_CHANNEL, ValueTypeInteger.ValueInteger.of(IPositionedAddonsNetworkIngredients.DEFAULT_CHANNEL));
@@ -179,10 +195,33 @@ public class MekanismAspectWriteBuilders {
             //PROPERTIES_RATECHECKSLIST.setValue(PROP_EXACTAMOUNT, ValueTypeBoolean.ValueBoolean.of(false));
             PROPERTIES_RATECHECKSLIST.setValue(TunnelAspectWriteBuilders.PROP_PASSIVE_IO, ValueTypeBoolean.ValueBoolean.of(true));
             PROPERTIES_RATECHECKSLIST.setValue(PROP_CHECK_AMOUNT, ValueTypeBoolean.ValueBoolean.of(false));
+
+            PROPERTIES_FILTER.setValue(TunnelAspectWriteBuilders.PROP_FILTER_APPLY_TO_INSERTIONS, ValueTypeBoolean.ValueBoolean.of(true));
+            PROPERTIES_FILTER.setValue(TunnelAspectWriteBuilders.PROP_FILTER_APPLY_TO_EXTRACTIONS, ValueTypeBoolean.ValueBoolean.of(true));
+            PROPERTIES_FILTER.setValue(TunnelAspectWriteBuilders.PROP_FILTER_ALLOW_ALL_IF_NOT_APPLIED, ValueTypeBoolean.ValueBoolean.of(false));
+
+            PROPERTIES_FILTER_CHECKS.setValue(TunnelAspectWriteBuilders.PROP_FILTER_APPLY_TO_INSERTIONS, ValueTypeBoolean.ValueBoolean.of(true));
+            PROPERTIES_FILTER_CHECKS.setValue(TunnelAspectWriteBuilders.PROP_FILTER_APPLY_TO_EXTRACTIONS, ValueTypeBoolean.ValueBoolean.of(true));
+            PROPERTIES_FILTER_CHECKS.setValue(TunnelAspectWriteBuilders.PROP_FILTER_ALLOW_ALL_IF_NOT_APPLIED, ValueTypeBoolean.ValueBoolean.of(false));
+            PROPERTIES_FILTER_CHECKS.setValue(TunnelAspectWriteBuilders.PROP_BLACKLIST, ValueTypeBoolean.ValueBoolean.of(false));
+            PROPERTIES_FILTER_CHECKS.setValue(PROP_RATE, ValueTypeLong.ValueLong.of(1000));
+            PROPERTIES_FILTER_CHECKS.setValue(PROP_CHECK_AMOUNT, ValueTypeBoolean.ValueBoolean.of(false));
         }
 
         public static final IAspectValuePropagator<Triple<PartTarget, IAspectProperties, Boolean>, Triple<PartTarget, IAspectProperties, Long>>
                 PROP_BOOLEAN_GETRATE = input -> Triple.of(input.getLeft(), input.getMiddle(), input.getRight() ? input.getMiddle().getValue(PROP_RATE).getRawValue() : 0);
+        public static final IAspectValuePropagator<Triple<PartTarget, IAspectProperties, Boolean>, Triple<PartTarget, IAspectProperties, ChanneledTargetInformation<ChemicalStack<?>, Integer>>>
+                PROP_BOOLEAN_PREDICATE = input -> {
+            IAspectProperties properties = input.getMiddle();
+            // TODO: restore exact amount
+            IngredientPredicate<ChemicalStack<?>, Integer> chemicalMatcher = new IngredientPredicate<ChemicalStack<?>, Integer>(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK, false, false, 0, properties.getValue(PROP_CHECK_AMOUNT).getRawValue()) {
+                @Override
+                public boolean test(ChemicalStack<?> integer) {
+                    return input.getRight();
+                }
+            };
+            return Triple.of(input.getLeft(), input.getMiddle(), ChanneledTargetInformation.of(chemicalMatcher, chemicalMatcher, -1));
+        };
         public static final IAspectValuePropagator<Triple<PartTarget, IAspectProperties, Long>, Triple<PartTarget, IAspectProperties, ChanneledTargetInformation<ChemicalStack<?>, Integer>>>
                 PROP_LONG_CHEMICALPREDICATE = input -> {
             // TODO: restore exact amount
@@ -320,6 +359,142 @@ public class MekanismAspectWriteBuilders {
             }
             return null;
         };
+
+    }
+
+    public static final class World {
+
+        public static final AspectBuilder<ValueTypeBoolean.ValueBoolean, ValueTypeBoolean, Triple<PartTarget, IAspectProperties, Boolean>>
+                BUILDER_BOOLEAN = AspectWriteBuilders.BUILDER_BOOLEAN.byMod(IntegratedMekanismics._instance)
+                .appendKind("world").handle(AspectWriteBuilders.PROP_GET_BOOLEAN).withProperties(TunnelAspectWriteBuilders.PROPERTIES_CHANNEL);
+        public static final AspectBuilder<ValueTypeLong.ValueLong, ValueTypeLong, Triple<PartTarget, IAspectProperties, Long>>
+                BUILDER_LONG = TunnelAspectWriteBuilders.BUILDER_LONG.byMod(IntegratedMekanismics._instance)
+                .appendKind("world").handle(AspectWriteBuilders.PROP_GET_LONG).withProperties(TunnelAspectWriteBuilders.PROPERTIES_CHANNEL);
+        public static final AspectBuilder<ValueObjectTypeChemicalStack.ValueChemicalStack, ValueObjectTypeChemicalStack, Triple<PartTarget, IAspectProperties, ChemicalStack<?>>>
+                BUILDER_CHEMICALSTACK = MekanismAspectWriteBuilders.BUILDER_CHEMICALSTACK.byMod(IntegratedMekanismics._instance)
+                .appendKind("world").handle(MekanismAspectWriteBuilders.PROP_GET_CHEMICALSTACK).withProperties(TunnelAspectWriteBuilders.PROPERTIES_CHANNEL);
+        public static final AspectBuilder<ValueTypeList.ValueList, ValueTypeList, Triple<PartTarget, IAspectProperties, ValueTypeList.ValueList>>
+                BUILDER_LIST = AspectWriteBuilders.BUILDER_LIST.byMod(IntegratedMekanismics._instance)
+                .appendKind("world").withProperties(TunnelAspectWriteBuilders.PROPERTIES_CHANNEL);
+        public static final AspectBuilder<ValueTypeOperator.ValueOperator, ValueTypeOperator, Triple<PartTarget, IAspectProperties, ValueTypeOperator.ValueOperator>>
+                BUILDER_OPERATOR = AspectWriteBuilders.BUILDER_OPERATOR.byMod(IntegratedMekanismics._instance)
+                .appendKind("world").withProperties(TunnelAspectWriteBuilders.PROPERTIES_CHANNEL);
+
+        public static final class Chemical {
+
+            public static final IAspectProperties PROPERTIES_CHEMICAL = new AspectProperties(ImmutableList.<IAspectPropertyTypeInstance>of(
+                    TunnelAspectWriteBuilders.PROP_CHANNEL,
+                    TunnelAspectWriteBuilders.PROP_ROUNDROBIN,
+                    TunnelAspectWriteBuilders.PROP_EMPTYISANY
+            ));
+            public static final IAspectProperties PROPERTIES_CHEMICALLIST = new AspectProperties(ImmutableList.<IAspectPropertyTypeInstance>of(
+                    TunnelAspectWriteBuilders.PROP_CHANNEL,
+                    TunnelAspectWriteBuilders.PROP_ROUNDROBIN,
+                    TunnelAspectWriteBuilders.PROP_BLACKLIST
+            ));
+            public static final IAspectProperties PROPERTIES_RATE = MekanismAspectWriteBuilders.Chemical.PROPERTIES_RATE.clone();
+            public static final IAspectProperties PROPERTIES_RATECHECKS = MekanismAspectWriteBuilders.Chemical.PROPERTIES_RATECHECKS.clone();
+            public static final IAspectProperties PROPERTIES_RATECHECKSCRAFT = MekanismAspectWriteBuilders.Chemical.PROPERTIES_RATECHECKSCRAFT.clone();
+            public static final IAspectProperties PROPERTIES_RATECHECKSLIST = MekanismAspectWriteBuilders.Chemical.PROPERTIES_RATECHECKSLIST.clone();
+
+            static {
+                PROPERTIES_CHEMICAL.setValue(TunnelAspectWriteBuilders.PROP_CHANNEL, ValueTypeInteger.ValueInteger.of(IPositionedAddonsNetworkIngredients.DEFAULT_CHANNEL));
+                PROPERTIES_CHEMICAL.setValue(TunnelAspectWriteBuilders.PROP_ROUNDROBIN, ValueTypeBoolean.ValueBoolean.of(false));
+                PROPERTIES_CHEMICAL.setValue(TunnelAspectWriteBuilders.PROP_BLACKLIST, ValueTypeBoolean.ValueBoolean.of(false));
+                PROPERTIES_CHEMICAL.setValue(TunnelAspectWriteBuilders.PROP_EMPTYISANY, ValueTypeBoolean.ValueBoolean.of(false));
+                PROPERTIES_CHEMICAL.removeValue(TunnelAspectWriteBuilders.PROP_PASSIVE_IO);
+
+                PROPERTIES_CHEMICALLIST.setValue(TunnelAspectWriteBuilders.PROP_CHANNEL, ValueTypeInteger.ValueInteger.of(IPositionedAddonsNetworkIngredients.DEFAULT_CHANNEL));
+                PROPERTIES_CHEMICALLIST.setValue(TunnelAspectWriteBuilders.PROP_ROUNDROBIN, ValueTypeBoolean.ValueBoolean.of(false));
+                PROPERTIES_CHEMICALLIST.setValue(TunnelAspectWriteBuilders.PROP_BLACKLIST, ValueTypeBoolean.ValueBoolean.of(false));
+                PROPERTIES_CHEMICALLIST.removeValue(TunnelAspectWriteBuilders.PROP_PASSIVE_IO);
+
+                PROPERTIES_RATE.setValue(TunnelAspectWriteBuilders.World.PROPERTY_ENTITYINDEX, ValueTypeInteger.ValueInteger.of(0));
+                PROPERTIES_RATE.removeValue(TunnelAspectWriteBuilders.PROP_PASSIVE_IO);
+
+                PROPERTIES_RATECHECKS.setValue(TunnelAspectWriteBuilders.World.PROPERTY_ENTITYINDEX, ValueTypeInteger.ValueInteger.of(0));
+                PROPERTIES_RATECHECKS.setValue(TunnelAspectWriteBuilders.PROP_BLACKLIST, ValueTypeBoolean.ValueBoolean.of(false));
+                PROPERTIES_RATECHECKS.removeValue(TunnelAspectWriteBuilders.PROP_PASSIVE_IO);
+
+                PROPERTIES_RATECHECKSCRAFT.setValue(TunnelAspectWriteBuilders.World.PROPERTY_ENTITYINDEX, ValueTypeInteger.ValueInteger.of(0));
+                PROPERTIES_RATECHECKSCRAFT.setValue(TunnelAspectWriteBuilders.PROP_BLACKLIST, ValueTypeBoolean.ValueBoolean.of(false));
+                PROPERTIES_RATECHECKSCRAFT.removeValue(TunnelAspectWriteBuilders.PROP_PASSIVE_IO);
+
+                PROPERTIES_RATECHECKSLIST.setValue(TunnelAspectWriteBuilders.World.PROPERTY_ENTITYINDEX, ValueTypeInteger.ValueInteger.of(0));
+                PROPERTIES_RATECHECKSLIST.removeValue(TunnelAspectWriteBuilders.PROP_PASSIVE_IO);
+            }
+
+            public static final IAspectValuePropagator<Triple<PartTarget, IAspectProperties, Boolean>, IChemicalTarget>
+                    PROP_BOOLEAN_CHEMICALTARGET = input -> {
+                IngredientPredicate<ChemicalStack<?>, Integer> chemicalStackPredicate = input.getRight() ? ChemicalHelpers
+                        .matchAll(FluidHelpers.BUCKET_VOLUME, false)
+                        : ChemicalHelpers.MATCH_NONE;
+                return IChemicalTarget.ofCapabilityProvider(
+                        chemicalStackPredicate,
+                        input.getLeft(),
+                        input.getMiddle(),
+                        chemicalStackPredicate);
+            };
+            public static final IAspectValuePropagator<Triple<PartTarget, IAspectProperties, ChemicalStack>, IChemicalTarget>
+                    PROP_CHEMICALSTACK_CHEMICALTARGET = input -> {
+                IAspectProperties properties = input.getMiddle();
+                boolean blacklist = properties.getValue(TunnelAspectWriteBuilders.PROP_BLACKLIST).getRawValue();
+                int amount = FluidHelpers.BUCKET_VOLUME;
+                ChemicalStack prototype = ChemicalHelpers.prototypeWithCount(input.getRight(), amount);
+                boolean checkChemical = true;
+
+                // If the (original) prototype is empty, adjust match flags based on the empty behaviour
+                if (input.getRight() == null) {
+                    IngredientPredicate.EmptyBehaviour emptyBehaviour = IngredientPredicate.EmptyBehaviour.fromBoolean(properties.getValue(TunnelAspectWriteBuilders.PROP_EMPTYISANY).getRawValue());
+                    if (emptyBehaviour == IngredientPredicate.EmptyBehaviour.ANY) {
+                        checkChemical = false;
+                    } else {
+                        prototype = null;
+                    }
+                }
+
+                IngredientPredicate<ChemicalStack<?>, Integer> chemicalStackPredicate = ChemicalHelpers.matchChemicalStack(prototype, checkChemical, false, blacklist, true);
+                return IChemicalTarget.ofBlock(chemicalStackPredicate, input.getLeft(), input.getMiddle(), chemicalStackPredicate);
+            };
+            public static final IAspectValuePropagator<Triple<PartTarget, IAspectProperties, ValueTypeList.ValueList>, IChemicalTarget>
+                    PROP_CHEMICALSTACKLIST_CHEMICALTARGET = input -> {
+                ValueTypeList.ValueList list = input.getRight();
+                TunnelAspectWriteBuilders.validateListValues(list, MekanismValueTypes.OBJECT_CHEMICALSTACK);
+
+                IAspectProperties properties = input.getMiddle();
+                boolean blacklist = properties.getValue(TunnelAspectWriteBuilders.PROP_BLACKLIST).getRawValue();
+                IngredientPredicate<ChemicalStack<?>, Integer> chemicalStackPredicate = ChemicalHelpers.matchChemicalStacks(list.getRawValue(), true, false, blacklist, FluidHelpers.BUCKET_VOLUME, true);
+                return IChemicalTarget.ofBlock(chemicalStackPredicate, input.getLeft(), input.getMiddle(), chemicalStackPredicate);
+            };
+            public static final IAspectValuePropagator<Triple<PartTarget, IAspectProperties, ValueTypeOperator.ValueOperator>, IChemicalTarget>
+                    PROP_CHEMICALSTACKPREDICATE_CHEMICALTARGET = input -> {
+                IOperator predicate = input.getRight().getRawValue();
+                if (predicate.getInputTypes().length == 1
+                        && ValueHelpers.correspondsTo(predicate.getInputTypes()[0], MekanismValueTypes.OBJECT_CHEMICALSTACK)
+                        && ValueHelpers.correspondsTo(predicate.getOutputType(), ValueTypes.BOOLEAN)) {
+                    IngredientPredicate<ChemicalStack<?>, Integer> chemicalStackPredicate = ChemicalHelpers.matchPredicate(input.getLeft(), predicate,
+                            FluidHelpers.BUCKET_VOLUME, true);
+                    return IChemicalTarget.ofBlock(chemicalStackPredicate, input.getLeft(), input.getMiddle(), chemicalStackPredicate);
+                } else {
+                    Component current = ValueTypeOperator.getSignature(predicate);
+                    Component expected = ValueTypeOperator.getSignature(new IValueType[]{MekanismValueTypes.OBJECT_CHEMICALSTACK}, ValueTypes.BOOLEAN);
+                    throw new EvaluationException(Component.translatable(L10NValues.ASPECT_ERROR_INVALIDTYPE,
+                            expected, current));
+                }
+            };
+
+            public static final IAspectValuePropagator<Triple<PartTarget, IAspectProperties, ChanneledTargetInformation<ChemicalStack<?>, Integer>>, IChemicalTarget>
+                    PROP_ENTITY_CHEMICALTARGET = input -> {
+                PartTarget partTarget = input.getLeft();
+                IAspectProperties properties = input.getMiddle();
+                IngredientPredicate<ChemicalStack<?>, Integer> chemicalStackPredicate = input.getRight().getIngredientPredicate();
+                int entityIndex = properties.getValue(TunnelAspectWriteBuilders.World.PROPERTY_ENTITYINDEX).getRawValue();
+
+                Entity entity = TunnelAspectWriteBuilders.getEntity(partTarget.getTarget(), entityIndex);
+                return IChemicalTarget.ofEntity(chemicalStackPredicate, partTarget, entity, properties, chemicalStackPredicate);
+            };
+
+        }
 
     }
 

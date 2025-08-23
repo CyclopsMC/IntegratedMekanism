@@ -7,6 +7,7 @@ import org.cyclops.integrateddynamics.core.part.aspect.AspectRegistry;
 import org.cyclops.integrateddynamics.part.aspect.Aspects;
 import org.cyclops.integratedmekanismics.GeneralConfig;
 import org.cyclops.integratedmekanismics.IntegratedMekanismics;
+import org.cyclops.integratedmekanismics.part.aspect.MekanismAspects;
 import org.cyclops.integratedtunnels.core.part.PartTypeTunnelAspectsWorld;
 import org.cyclops.integratedtunnels.part.PartStateWorld;
 
@@ -18,13 +19,11 @@ public class PartTypeExporterWorldChemical extends PartTypeTunnelAspectsWorld<Pa
     public PartTypeExporterWorldChemical(String name) {
         super(name);
         AspectRegistry.getInstance().register(this, Lists.<IAspect>newArrayList(
-                // TODO
-//                TunnelAspects.Write.World.ENTITY_FLUID_BOOLEAN_EXPORT,
-//                TunnelAspects.Write.World.ENTITY_FLUID_INTEGER_EXPORT,
-//                TunnelAspects.Write.World.ENTITY_FLUID_FLUIDSTACK_EXPORT,
-//                TunnelAspects.Write.World.ENTITY_FLUID_LISTFLUIDSTACK_EXPORT,
-//                TunnelAspects.Write.World.ENTITY_FLUID_PREDICATEFLUIDSTACK_EXPORT,
-//                TunnelAspects.Write.World.ENTITY_FLUID_NBT_EXPORT
+                MekanismAspects.Write.World.ENTITY_CHEMICAL_BOOLEAN_EXPORT,
+                MekanismAspects.Write.World.ENTITY_CHEMICAL_INTEGER_EXPORT,
+                MekanismAspects.Write.World.ENTITY_CHEMICAL_CHEMICALSTACK_EXPORT,
+                MekanismAspects.Write.World.ENTITY_CHEMICAL_LISTCHEMICALSTACK_EXPORT,
+                MekanismAspects.Write.World.ENTITY_CHEMICAL_PREDICATECHEMICALSTACK_EXPORT
         ));
     }
 

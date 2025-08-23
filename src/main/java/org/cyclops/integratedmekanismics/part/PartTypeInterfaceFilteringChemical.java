@@ -18,6 +18,7 @@ import org.cyclops.integratedmekanismics.IntegratedMekanismics;
 import org.cyclops.integratedmekanismics.core.CapabilityHelpers;
 import org.cyclops.integratedmekanismics.network.ChemicalNetworkConfig;
 import org.cyclops.integratedmekanismics.network.IChemicalNetwork;
+import org.cyclops.integratedmekanismics.part.aspect.MekanismAspects;
 import org.cyclops.integratedtunnels.core.part.PartTypeInterfacePositionedAddonFiltering;
 
 import java.util.List;
@@ -30,11 +31,10 @@ public class PartTypeInterfaceFilteringChemical extends PartTypeInterfacePositio
     public PartTypeInterfaceFilteringChemical(String name) {
         super(name);
         AspectRegistry.getInstance().register(this, Lists.<IAspect>newArrayList(
-                // TODO
-//                TunnelAspects.Write.FluidFilter.BOOLEAN_SET_FILTER,
-//                TunnelAspects.Write.FluidFilter.CHEMICALSTACK_SET_FILTER,
-//                TunnelAspects.Write.FluidFilter.LIST_SET_FILTER,
-//                TunnelAspects.Write.FluidFilter.PREDICATE_SET_FILTER
+                MekanismAspects.Write.ChemicalFilter.BOOLEAN_SET_FILTER,
+                MekanismAspects.Write.ChemicalFilter.CHEMICALSTACK_SET_FILTER,
+                MekanismAspects.Write.ChemicalFilter.LIST_SET_FILTER,
+                MekanismAspects.Write.ChemicalFilter.PREDICATE_SET_FILTER
         ));
     }
 
