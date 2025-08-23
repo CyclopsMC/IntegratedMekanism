@@ -308,6 +308,7 @@ curseforge {
             relations {
                 requiredDependency 'cyclops-core'
                 requiredDependency 'integrated-dynamics'
+                requiredDependency 'mekanism'
                 optionalDependency 'integrated-tunnels'
                 optionalDependency 'integrated-crafting'
                 optionalDependency 'integrated-terminals'
@@ -346,6 +347,7 @@ modrinth {
       required.project "Z9DM0LJ4" // Cyclops Core
       required.project "oFXrCkDI" // Common Capabilities
       required.project "yYzdQHJI" // Integrated Dynamics
+      required.project "Ce6I4WUE" // Mekanism
       optional.project "Etqy1Omb" // Integrated Tunnels
       optional.project "qwpACdla" // Integrated Crafting
       optional.project "HmLJoQ1K" // Integrated Terminals
