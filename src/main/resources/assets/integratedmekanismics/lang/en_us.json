@@ -3,6 +3,25 @@
     "itemGroup.integratedmekanismics": "Integrated Mekanismics",
     "general.integratedmekanismics.description": "Compability mod between Mekanism and the Integrated Dynamics mods.",
 
+    "_comment": "Recipe components",
+    "recipecomponent.mekanism.chemicalstack": "Chemical",
+
+    "_comment": "Value types",
+    "valuetype.integratedmekanismics.error.chemical.no_chemical": "The inserted item contains no chemical.",
+    "valuetype.integratedmekanismics.chemicalstack": "Chemical",
+
+    "_comment": "Part types",
+    "parttype.integratedmekanismics.interface_chemical": "Chemical Interface",
+    "parttype.integratedmekanismics.interface_chemical.info": "Attaches a chemical tank to the network",
+
+    "_comment": "Gui",
+    "gui.integratedterminals.terminal_storage.sort.chemicalstack.id": "Chemical ID",
+    "gui.integratedterminals.terminal_storage.sort.chemicalstack.id.info": "Sort by internal chemical registry ID.",
+    "gui.integratedterminals.terminal_storage.sort.chemicalstack.name": "Chemical Name",
+    "gui.integratedterminals.terminal_storage.sort.chemicalstack.name.info": "Sort by chemical name.",
+    "gui.integratedterminals.terminal_storage.sort.chemicalstack.quantity": "Chemical Amount",
+    "gui.integratedterminals.terminal_storage.sort.chemicalstack.quantity.info": "Sort by amount of mB.",
+
     "_comment": "------ On the Dynamics of Integration contents ------",
 
     "info_book.integratedmekanismics.section.main": "Terminals"

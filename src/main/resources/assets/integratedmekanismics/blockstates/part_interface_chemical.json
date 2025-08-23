@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "facing=north":   { "model": "integratedmekanismics:block/part_interface_chemical", "y": 180 },
+    "facing=east":    { "model": "integratedmekanismics:block/part_interface_chemical", "y": 270 },
+    "facing=south":   { "model": "integratedmekanismics:block/part_interface_chemical"           },
+    "facing=west":    { "model": "integratedmekanismics:block/part_interface_chemical", "y": 90  },
+    "facing=up":      { "model": "integratedmekanismics:block/part_interface_chemical", "x": 90  },
+    "facing=down":    { "model": "integratedmekanismics:block/part_interface_chemical", "x": 270 }
+  }
+}
