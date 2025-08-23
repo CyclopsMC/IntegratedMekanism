@@ -223,7 +223,6 @@ else
     version = "${project.minecraft_version}-${project.mod_version}-${build_number}"
 
 jar {
-    archiveClassifier.set('slim')
     manifest {
         attributes([
                 "FMLAT": "accesstransformer.cfg",
