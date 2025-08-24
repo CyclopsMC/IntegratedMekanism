@@ -23,6 +23,7 @@ import org.cyclops.cyclopscore.proxy.IClientProxy;
 import org.cyclops.cyclopscore.proxy.ICommonProxy;
 import org.cyclops.integrateddynamics.IntegratedDynamics;
 import org.cyclops.integrateddynamics.api.network.INetwork;
+import org.cyclops.integrateddynamics.command.CommandTest;
 import org.cyclops.integrateddynamics.core.event.IntegratedDynamicsSetupEvent;
 import org.cyclops.integrateddynamics.infobook.OnTheDynamicsOfIntegrationBook;
 import org.cyclops.integratedmekanismics.client.render.value.ValueTypeWorldRenderersMekanism;
@@ -35,7 +36,11 @@ import org.cyclops.integratedmekanismics.network.NetworkCapabilityConstructorsMe
 import org.cyclops.integratedmekanismics.operator.MekanismOperators;
 import org.cyclops.integratedmekanismics.proxy.ClientProxy;
 import org.cyclops.integratedmekanismics.proxy.CommonProxy;
+import org.cyclops.integratedmekanismics.test.TestChemicalStackOperators;
+import org.cyclops.integratedmekanismics.test.TestItemStackOperators;
 import org.cyclops.integratedmekanismics.value.MekanismValueTypes;
+
+import java.util.List;
 
 /**
  * The main mod class of this mod.
@@ -82,6 +87,12 @@ public class IntegratedMekanismics extends ModBaseVersionable<IntegratedMekanism
     protected void onSetup(IntegratedDynamicsSetupEvent event) {
         MekanismValueTypes.load();
         MekanismOperators.load();
+
+        // Add test classes
+        CommandTest.CLASSES.addAll(List.of(
+                TestChemicalStackOperators.class.getName(),
+                TestItemStackOperators.class.getName()
+        ));
 
         if (MinecraftHelpers.isClientSide()) {
             ValueTypeWorldRenderersMekanism.load();

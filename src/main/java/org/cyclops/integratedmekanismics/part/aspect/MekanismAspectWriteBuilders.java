@@ -450,7 +450,7 @@ public class MekanismAspectWriteBuilders {
                     PROP_CHEMICALSTACK_CHEMICALTARGET = input -> {
                 IAspectProperties properties = input.getMiddle();
                 boolean blacklist = properties.getValue(TunnelAspectWriteBuilders.PROP_BLACKLIST).getRawValue();
-                int amount = ChemicalHelpers.BUCKET_VOLUME;
+                long amount = ChemicalHelpers.BUCKET_VOLUME;
                 ChemicalStack prototype = ChemicalHelpers.prototypeWithCount(input.getRight(), amount);
                 boolean checkChemical = true;
 

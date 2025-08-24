@@ -32,7 +32,7 @@ import java.util.stream.Stream;
  */
 public class ChemicalHelpers {
 
-    public static final int BUCKET_VOLUME = FluidHelpers.BUCKET_VOLUME;
+    public static final long BUCKET_VOLUME = FluidHelpers.BUCKET_VOLUME;
 
     public static ForgeRegistry<Chemical> getStackRegistry(ChemicalStack<?> instance) {
         if (instance instanceof GasStack) {

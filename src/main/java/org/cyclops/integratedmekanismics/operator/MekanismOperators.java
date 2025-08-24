@@ -68,7 +68,7 @@ public class MekanismOperators {
             .output(ValueTypes.BOOLEAN)
             .symbol("is_chemicalstack").operatorName("ischemicalstack").interactName("isChemicalStack")
             .function(OperatorBuilders.FUNCTION_ITEMSTACK_TO_BOOLEAN.build(
-                    itemStack -> !itemStack.isEmpty() && !CapabilityHelpers.getChemicalHandler(itemStack).isPresent()
+                    itemStack -> !itemStack.isEmpty() && CapabilityHelpers.getChemicalHandler(itemStack).isPresent()
             )).build());
 
     /**

@@ -29,16 +29,29 @@ public class CapabilityHelpers {
         return lazyOptional;
     }
 
-    public static <T> LazyOptional<T> getFirstOf(ItemStack itemStack, List<Capability<? extends T>> capabilities) {
-        LazyOptional<T> lazyOptional = LazyOptional.empty();
+    /**
+     * Get the first chemical handler that contains something.
+     * If all are empty, it returns the first one.
+     * @param itemStack An item.
+     * @param capabilities An ordered collection of capabilities.
+     * @return An optional chemical handler.
+     * @param <T> The chemical handler type.
+     */
+    public static <T extends IChemicalHandler<?, ?>> LazyOptional<T> getFirstOf(ItemStack itemStack, List<Capability<? extends T>> capabilities) {
+        LazyOptional<T> lazyOptionalFirst = LazyOptional.empty();
         for (Capability<? extends T> capability : capabilities) {
             LazyOptional<T> lazyOptionalCurrent = itemStack.getCapability(capability).cast();
             if (lazyOptionalCurrent.isPresent()) {
-                lazyOptional = lazyOptionalCurrent;
-                break;
+                T handler = lazyOptionalCurrent.resolve().get();
+                if (handler.getTanks() > 0 && !handler.getChemicalInTank(0).isEmpty()) {
+                    return lazyOptionalCurrent;
+                }
+                if (!lazyOptionalFirst.isPresent()) {
+                    lazyOptionalFirst = lazyOptionalCurrent;
+                }
             }
         }
-        return lazyOptional;
+        return lazyOptionalFirst;
     }
 
     public static LazyOptional<IChemicalHandler<?, ?>> getChemicalHandler(ItemStack itemStack) {
