@@ -25,9 +25,11 @@ import org.cyclops.integrateddynamics.IntegratedDynamics;
 import org.cyclops.integrateddynamics.api.network.INetwork;
 import org.cyclops.integrateddynamics.command.CommandTest;
 import org.cyclops.integrateddynamics.core.event.IntegratedDynamicsSetupEvent;
+import org.cyclops.integrateddynamics.core.ingredient.IngredientComponentHandlers;
 import org.cyclops.integrateddynamics.infobook.OnTheDynamicsOfIntegrationBook;
 import org.cyclops.integratedmekanismics.client.render.value.ValueTypeWorldRenderersMekanism;
 import org.cyclops.integratedmekanismics.ingredient.IngredientComponentCapabilitiesMekanism;
+import org.cyclops.integratedmekanismics.ingredient.IngredientComponentHandlerChemical;
 import org.cyclops.integratedmekanismics.ingredient.MekanismIngredientComponents;
 import org.cyclops.integratedmekanismics.modcompat.integratedterminals.ModCompatIntegratedTerminals;
 import org.cyclops.integratedmekanismics.modcompat.integratedtunnels.ModCompatIntegratedTunnels;
@@ -37,6 +39,7 @@ import org.cyclops.integratedmekanismics.operator.MekanismOperators;
 import org.cyclops.integratedmekanismics.proxy.ClientProxy;
 import org.cyclops.integratedmekanismics.proxy.CommonProxy;
 import org.cyclops.integratedmekanismics.test.TestChemicalStackOperators;
+import org.cyclops.integratedmekanismics.test.TestIngredientsOperators;
 import org.cyclops.integratedmekanismics.test.TestItemStackOperators;
 import org.cyclops.integratedmekanismics.value.MekanismValueTypes;
 
@@ -77,6 +80,7 @@ public class IntegratedMekanismics extends ModBaseVersionable<IntegratedMekanism
     protected void onRegistriesLoad(RegisterEvent event) {
         if (event.getRegistryKey().equals(ForgeRegistries.BLOCKS.getRegistryKey())) {
             IngredientComponent.REGISTRY.register(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK.getName(), MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK);
+            IngredientComponentHandlers.REGISTRY.register(new IngredientComponentHandlerChemical());
         }
     }
 
@@ -91,6 +95,7 @@ public class IntegratedMekanismics extends ModBaseVersionable<IntegratedMekanism
         // Add test classes
         CommandTest.CLASSES.addAll(List.of(
                 TestChemicalStackOperators.class.getName(),
+                TestIngredientsOperators.class.getName(),
                 TestItemStackOperators.class.getName()
         ));
 
