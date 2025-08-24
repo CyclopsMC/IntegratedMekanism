@@ -1,8 +1,10 @@
 package org.cyclops.integratedmekanismics.part.aspect;
 
 import mekanism.api.chemical.ChemicalStack;
+import mekanism.api.chemical.IChemicalHandler;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.common.capabilities.Capability;
 import org.cyclops.commoncapabilities.api.ingredient.storage.IIngredientComponentStorage;
 import org.cyclops.commoncapabilities.api.ingredient.storage.IIngredientComponentStorageSlotted;
 import org.cyclops.integrateddynamics.api.network.INetwork;
@@ -28,6 +30,9 @@ public interface IChemicalTarget extends IChanneledTarget<IChemicalNetwork, Chem
     public IIngredientComponentStorageSlotted<ChemicalStack<?>, Integer> getChemicalChannelSlotted();
 
     public IIngredientComponentStorage<ChemicalStack<?>, Integer> getStorage();
+
+    // TODO: this hack can be removed in 1.21 when Mekanism puts all chemicals in a single registry, and just use getStorage() without args.
+    public <H extends IChemicalHandler<?, ?>> IIngredientComponentStorage<ChemicalStack<?>, Integer> getStorage(Capability<H> chemicalCapability);
 
     public IngredientPredicate<ChemicalStack<?>, Integer> getChemicalStackMatcher();
 
@@ -66,16 +71,6 @@ public interface IChemicalTarget extends IChanneledTarget<IChemicalNetwork, Chem
         INetwork network = IChanneledTarget.getNetworkChecked(center);
         PartStateRoundRobin<?> partState = IChanneledTarget.getPartState(center);
         return new ChemicalTargetCapabilityProvider(transfer, network, null, target.getSide(),
-                chemicalStackMatcher, partTarget, properties, partState);
-    }
-
-    public static IChemicalTarget ofStorage(ITunnelTransfer transfer, INetwork network, PartTarget partTarget,
-                                               IAspectProperties properties,
-                                               IngredientPredicate<ChemicalStack<?>, Integer> chemicalStackMatcher,
-                                               IIngredientComponentStorage<ChemicalStack<?>, Integer> storage) {
-        PartPos center = partTarget.getCenter();
-        PartStateRoundRobin<?> partState = IChanneledTarget.getPartState(center);
-        return new ChemicalTargetStorage(transfer, network, storage,
                 chemicalStackMatcher, partTarget, properties, partState);
     }
 

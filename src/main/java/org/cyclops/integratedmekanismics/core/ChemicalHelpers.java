@@ -1,5 +1,6 @@
 package org.cyclops.integratedmekanismics.core;
 
+import com.google.common.collect.Streams;
 import mekanism.api.MekanismAPI;
 import mekanism.api.chemical.Chemical;
 import mekanism.api.chemical.ChemicalStack;
@@ -8,7 +9,11 @@ import mekanism.api.chemical.infuse.InfusionStack;
 import mekanism.api.chemical.pigment.PigmentStack;
 import mekanism.api.chemical.slurry.SlurryStack;
 import mekanism.common.registries.MekanismGases;
+import net.minecraft.ResourceLocationException;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraftforge.registries.ForgeRegistry;
+import org.cyclops.cyclopscore.helper.FluidHelpers;
 import org.cyclops.integrateddynamics.api.evaluate.operator.IOperator;
 import org.cyclops.integrateddynamics.api.evaluate.variable.IValueTypeListProxy;
 import org.cyclops.integrateddynamics.api.part.PartTarget;
@@ -20,11 +25,14 @@ import org.cyclops.integratedmekanismics.value.ValueObjectTypeChemicalStack;
 import org.cyclops.integratedtunnels.core.predicate.IngredientPredicate;
 
 import javax.annotation.Nullable;
+import java.util.stream.Stream;
 
 /**
  * @author rubensworks
  */
 public class ChemicalHelpers {
+
+    public static final int BUCKET_VOLUME = FluidHelpers.BUCKET_VOLUME;
 
     public static ForgeRegistry<Chemical> getStackRegistry(ChemicalStack<?> instance) {
         if (instance instanceof GasStack) {
@@ -126,6 +134,29 @@ public class ChemicalHelpers {
             }
         }
         return prototype;
+    }
+
+    /**
+     * Retrieves a Stream of chemicals that are registered to this tag name.
+     *
+     * @param name The tag name
+     * @return A Stream containing chemicals registered for this tag
+     */
+    public static Stream<ChemicalStack<?>> getChemicalTagValues(String name) throws ResourceLocationException {
+        return Streams.concat(
+                MekanismAPI.gasRegistry().tags()
+                        .getTag(TagKey.create(MekanismAPI.GAS_REGISTRY_NAME, new ResourceLocation(name))).stream()
+                        .map(chemical -> new GasStack(chemical, BUCKET_VOLUME)),
+                MekanismAPI.infuseTypeRegistry().tags()
+                        .getTag(TagKey.create(MekanismAPI.INFUSE_TYPE_REGISTRY_NAME, new ResourceLocation(name))).stream()
+                        .map(chemical -> new InfusionStack(chemical, BUCKET_VOLUME)),
+                MekanismAPI.pigmentRegistry().tags()
+                        .getTag(TagKey.create(MekanismAPI.PIGMENT_REGISTRY_NAME, new ResourceLocation(name))).stream()
+                        .map(chemical -> new PigmentStack(chemical, BUCKET_VOLUME)),
+                MekanismAPI.slurryRegistry().tags()
+                        .getTag(TagKey.create(MekanismAPI.SLURRY_REGISTRY_NAME, new ResourceLocation(name))).stream()
+                        .map(chemical -> new SlurryStack(chemical, BUCKET_VOLUME))
+        );
     }
 
 }

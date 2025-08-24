@@ -1,11 +1,16 @@
 package org.cyclops.integratedmekanismics.part.aspect;
 
+import com.google.common.collect.Maps;
 import mekanism.api.chemical.ChemicalStack;
+import mekanism.api.chemical.IChemicalHandler;
 import net.minecraft.core.Direction;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import org.cyclops.commoncapabilities.api.ingredient.IngredientComponent;
 import org.cyclops.commoncapabilities.api.ingredient.storage.IIngredientComponentStorage;
 import org.cyclops.commoncapabilities.api.ingredient.storage.IIngredientComponentStorageSlotted;
+import org.cyclops.commoncapabilities.api.ingredient.storage.IIngredientComponentStorageWrapperHandler;
+import org.cyclops.commoncapabilities.api.ingredient.storage.IngredientComponentStorageEmpty;
 import org.cyclops.integrateddynamics.api.network.INetwork;
 import org.cyclops.integrateddynamics.api.part.PartTarget;
 import org.cyclops.integrateddynamics.api.part.aspect.property.IAspectProperties;
@@ -17,6 +22,7 @@ import org.cyclops.integratedtunnels.core.predicate.IngredientPredicate;
 import org.cyclops.integratedtunnels.part.aspect.*;
 
 import javax.annotation.Nullable;
+import java.util.Map;
 
 /**
  * @author rubensworks
@@ -28,6 +34,11 @@ public class ChemicalTargetCapabilityProvider extends ChanneledTargetCapabilityP
     private final PartTarget partTarget;
     private final IngredientPredicate<ChemicalStack<?>, Integer> chemicalStackMatcher;
     private final IAspectProperties properties;
+
+    // TODO: this hack can be removed in 1.21 when Mekanism puts all chemicals in a single registry
+    private final ICapabilityProvider capabilityProvider;
+    private final Direction side;
+    private final Map<Capability<?>, IIngredientComponentStorage<ChemicalStack<?>, Integer>> storages = Maps.newIdentityHashMap();
 
     public ChemicalTargetCapabilityProvider(ITunnelTransfer transfer, INetwork network, @Nullable ICapabilityProvider capabilityProvider,
                                             Direction side, IngredientPredicate<ChemicalStack<?>, Integer> chemicalStackMatcher,
@@ -42,6 +53,9 @@ public class ChemicalTargetCapabilityProvider extends ChanneledTargetCapabilityP
         this.chemicalStackMatcher = chemicalStackMatcher;
         this.partTarget = partTarget;
         this.properties = properties;
+
+        this.capabilityProvider = capabilityProvider;
+        this.side = side;
     }
 
     @Override
@@ -57,6 +71,21 @@ public class ChemicalTargetCapabilityProvider extends ChanneledTargetCapabilityP
     @Override
     public IIngredientComponentStorageSlotted<ChemicalStack<?>, Integer> getChemicalChannelSlotted() {
         return getChanneledNetwork().getChannelSlotted(getChannel());
+    }
+
+    // TODO: this hack can be removed in 1.21 when Mekanism puts all chemicals in a single registry
+    @Override
+    public <H extends IChemicalHandler<?, ?>> IIngredientComponentStorage<ChemicalStack<?>, Integer> getStorage(Capability<H> chemicalCapability) {
+        IIngredientComponentStorage<ChemicalStack<?>, Integer> storage = this.storages.get(chemicalCapability);
+        if (storage == null) {
+            IIngredientComponentStorageWrapperHandler<ChemicalStack<?>, Integer, H> wrapperHandler = getComponent().getStorageWrapperHandler(chemicalCapability);
+            storage = this.capabilityProvider.getCapability(chemicalCapability, side)
+                    .map(wrapperHandler::wrapComponentStorage)
+                    .orElseGet(() -> new IngredientComponentStorageEmpty<>(this.getComponent()));;
+            this.storages.put(chemicalCapability, storage);
+        }
+
+        return storage;
     }
 
     @Override

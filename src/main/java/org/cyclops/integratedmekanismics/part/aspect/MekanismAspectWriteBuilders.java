@@ -2,6 +2,7 @@ package org.cyclops.integratedmekanismics.part.aspect;
 
 import com.google.common.collect.ImmutableList;
 import mekanism.api.chemical.ChemicalStack;
+import mekanism.api.chemical.IChemicalHandler;
 import mekanism.common.capabilities.Capabilities;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
@@ -10,7 +11,6 @@ import net.minecraftforge.common.util.LazyOptional;
 import org.apache.commons.lang3.tuple.Triple;
 import org.cyclops.commoncapabilities.api.ingredient.storage.IIngredientComponentStorage;
 import org.cyclops.cyclopscore.datastructure.DimPos;
-import org.cyclops.cyclopscore.helper.FluidHelpers;
 import org.cyclops.integrateddynamics.api.evaluate.EvaluationException;
 import org.cyclops.integrateddynamics.api.evaluate.operator.IOperator;
 import org.cyclops.integrateddynamics.api.evaluate.variable.IValueType;
@@ -34,6 +34,7 @@ import org.cyclops.integrateddynamics.core.part.aspect.property.AspectPropertyTy
 import org.cyclops.integrateddynamics.part.aspect.write.AspectWriteBuilders;
 import org.cyclops.integratedmekanismics.GeneralConfig;
 import org.cyclops.integratedmekanismics.IntegratedMekanismics;
+import org.cyclops.integratedmekanismics.core.CapabilityHelpers;
 import org.cyclops.integratedmekanismics.core.ChemicalHelpers;
 import org.cyclops.integratedmekanismics.ingredient.MekanismIngredientComponents;
 import org.cyclops.integratedmekanismics.network.ChemicalNetworkConfig;
@@ -311,19 +312,24 @@ public class MekanismAspectWriteBuilders {
                 // as the predicate must apply to each slotted ingredient.
                 // Only do this for exporting, not for importing, as this would otherwise break round-robin imports.
                 IIngredientComponentStorage<ChemicalStack<?>, Integer> source = input.getChemicalStackMatcher().hasMatchFlags() ? input.getChemicalChannel() : input.getChemicalChannelSlotted();
-                TunnelHelpers.moveSingleStateOptimized(
-                        input.getNetwork(),
-                        input.getChanneledNetwork(),
-                        input.getChannel(),
-                        input.getConnection(),
-                        source,
-                        -1,
-                        input.getStorage(),
-                        -1,
-                        input.getChemicalStackMatcher(),
-                        input.getPartTarget().getCenter(),
-                        input.isCraftIfFailed()
-                );
+                for (Capability<? extends IChemicalHandler<?, ?>> chemicalCapability : CapabilityHelpers.CHEMICAL_CAPABILITIES) { // TODO: this hack can be removed in 1.21 when Mekanism puts all chemicals in a single registry
+                    ChemicalStack<?> moved = TunnelHelpers.moveSingleStateOptimized(
+                            input.getNetwork(),
+                            input.getChanneledNetwork(),
+                            input.getChannel(),
+                            input.getConnection(),
+                            source,
+                            -1,
+                            input.getStorage(chemicalCapability),
+                            -1,
+                            input.getChemicalStackMatcher(),
+                            input.getPartTarget().getCenter(),
+                            input.isCraftIfFailed()
+                    );
+                    if (!moved.isEmpty()) { // TODO: this hack can be removed in 1.21 when Mekanism puts all chemicals in a single registry
+                        break;
+                    }
+                }
                 input.postTransfer();
             }
             return null;
@@ -342,19 +348,24 @@ public class MekanismAspectWriteBuilders {
 
             if (input.hasValidTarget()) {
                 input.preTransfer();
-                TunnelHelpers.moveSingleStateOptimized(
-                        input.getNetwork(),
-                        input.getChanneledNetwork(),
-                        input.getChannel(),
-                        input.getConnection(),
-                        input.getStorage(),
-                        -1,
-                        input.getChemicalChannel(),
-                        -1,
-                        input.getChemicalStackMatcher(),
-                        input.getPartTarget().getCenter(),
-                        false
-                );
+                for (Capability<? extends IChemicalHandler<?, ?>> chemicalCapability : CapabilityHelpers.CHEMICAL_CAPABILITIES) { // TODO: this hack can be removed in 1.21 when Mekanism puts all chemicals in a single registry
+                    ChemicalStack<?> moved = TunnelHelpers.moveSingleStateOptimized(
+                            input.getNetwork(),
+                            input.getChanneledNetwork(),
+                            input.getChannel(),
+                            input.getConnection(),
+                            input.getStorage(chemicalCapability),
+                            -1,
+                            input.getChemicalChannel(),
+                            -1,
+                            input.getChemicalStackMatcher(),
+                            input.getPartTarget().getCenter(),
+                            false
+                    );
+                    if (!moved.isEmpty()) { // TODO: this hack can be removed in 1.21 when Mekanism puts all chemicals in a single registry
+                        break;
+                    }
+                }
                 input.postTransfer();
             }
             return null;
@@ -427,7 +438,7 @@ public class MekanismAspectWriteBuilders {
             public static final IAspectValuePropagator<Triple<PartTarget, IAspectProperties, Boolean>, IChemicalTarget>
                     PROP_BOOLEAN_CHEMICALTARGET = input -> {
                 IngredientPredicate<ChemicalStack<?>, Integer> chemicalStackPredicate = input.getRight() ? ChemicalHelpers
-                        .matchAll(FluidHelpers.BUCKET_VOLUME, false)
+                        .matchAll(ChemicalHelpers.BUCKET_VOLUME, false)
                         : ChemicalHelpers.MATCH_NONE;
                 return IChemicalTarget.ofCapabilityProvider(
                         chemicalStackPredicate,
@@ -439,7 +450,7 @@ public class MekanismAspectWriteBuilders {
                     PROP_CHEMICALSTACK_CHEMICALTARGET = input -> {
                 IAspectProperties properties = input.getMiddle();
                 boolean blacklist = properties.getValue(TunnelAspectWriteBuilders.PROP_BLACKLIST).getRawValue();
-                int amount = FluidHelpers.BUCKET_VOLUME;
+                int amount = ChemicalHelpers.BUCKET_VOLUME;
                 ChemicalStack prototype = ChemicalHelpers.prototypeWithCount(input.getRight(), amount);
                 boolean checkChemical = true;
 
@@ -463,7 +474,7 @@ public class MekanismAspectWriteBuilders {
 
                 IAspectProperties properties = input.getMiddle();
                 boolean blacklist = properties.getValue(TunnelAspectWriteBuilders.PROP_BLACKLIST).getRawValue();
-                IngredientPredicate<ChemicalStack<?>, Integer> chemicalStackPredicate = ChemicalHelpers.matchChemicalStacks(list.getRawValue(), true, false, blacklist, FluidHelpers.BUCKET_VOLUME, true);
+                IngredientPredicate<ChemicalStack<?>, Integer> chemicalStackPredicate = ChemicalHelpers.matchChemicalStacks(list.getRawValue(), true, false, blacklist, ChemicalHelpers.BUCKET_VOLUME, true);
                 return IChemicalTarget.ofBlock(chemicalStackPredicate, input.getLeft(), input.getMiddle(), chemicalStackPredicate);
             };
             public static final IAspectValuePropagator<Triple<PartTarget, IAspectProperties, ValueTypeOperator.ValueOperator>, IChemicalTarget>
@@ -473,7 +484,7 @@ public class MekanismAspectWriteBuilders {
                         && ValueHelpers.correspondsTo(predicate.getInputTypes()[0], MekanismValueTypes.OBJECT_CHEMICALSTACK)
                         && ValueHelpers.correspondsTo(predicate.getOutputType(), ValueTypes.BOOLEAN)) {
                     IngredientPredicate<ChemicalStack<?>, Integer> chemicalStackPredicate = ChemicalHelpers.matchPredicate(input.getLeft(), predicate,
-                            FluidHelpers.BUCKET_VOLUME, true);
+                            ChemicalHelpers.BUCKET_VOLUME, true);
                     return IChemicalTarget.ofBlock(chemicalStackPredicate, input.getLeft(), input.getMiddle(), chemicalStackPredicate);
                 } else {
                     Component current = ValueTypeOperator.getSignature(predicate);

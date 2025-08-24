@@ -15,6 +15,8 @@ import java.util.List;
  */
 public class CapabilityHelpers {
 
+    public static final List<Capability<? extends IChemicalHandler<?, ?>>> CHEMICAL_CAPABILITIES = List.of(Capabilities.GAS_HANDLER, Capabilities.INFUSION_HANDLER, Capabilities.PIGMENT_HANDLER, Capabilities.SLURRY_HANDLER);
+
     public static <T> LazyOptional<T> getFirstOf(PartPos pos, List<Capability<? extends T>> capabilities) {
         LazyOptional<T> lazyOptional = LazyOptional.empty();
         for (Capability<? extends T> capability : capabilities) {
@@ -40,6 +42,6 @@ public class CapabilityHelpers {
     }
 
     public static LazyOptional<IChemicalHandler<?, ?>> getChemicalHandler(ItemStack itemStack) {
-        return getFirstOf(itemStack, List.of(Capabilities.GAS_HANDLER, Capabilities.INFUSION_HANDLER, Capabilities.PIGMENT_HANDLER, Capabilities.SLURRY_HANDLER));
+        return getFirstOf(itemStack, CHEMICAL_CAPABILITIES);
     }
 }
