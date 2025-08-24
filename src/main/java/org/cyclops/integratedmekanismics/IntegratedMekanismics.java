@@ -32,6 +32,7 @@ import org.cyclops.integratedmekanismics.modcompat.integratedterminals.ModCompat
 import org.cyclops.integratedmekanismics.modcompat.integratedtunnels.ModCompatIntegratedTunnels;
 import org.cyclops.integratedmekanismics.network.ChemicalNetworkConfig;
 import org.cyclops.integratedmekanismics.network.NetworkCapabilityConstructorsMekanism;
+import org.cyclops.integratedmekanismics.operator.MekanismOperators;
 import org.cyclops.integratedmekanismics.proxy.ClientProxy;
 import org.cyclops.integratedmekanismics.proxy.CommonProxy;
 import org.cyclops.integratedmekanismics.value.MekanismValueTypes;
@@ -80,6 +81,7 @@ public class IntegratedMekanismics extends ModBaseVersionable<IntegratedMekanism
 
     protected void onSetup(IntegratedDynamicsSetupEvent event) {
         MekanismValueTypes.load();
+        MekanismOperators.load();
 
         if (MinecraftHelpers.isClientSide()) {
             ValueTypeWorldRenderersMekanism.load();
