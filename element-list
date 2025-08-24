@@ -7,6 +7,7 @@ org.cyclops.integratedmekanismics.modcompat.integratedterminals
 org.cyclops.integratedmekanismics.modcompat.integratedterminals.sorter
 org.cyclops.integratedmekanismics.modcompat.integratedtunnels
 org.cyclops.integratedmekanismics.network
+org.cyclops.integratedmekanismics.operator
 org.cyclops.integratedmekanismics.part
 org.cyclops.integratedmekanismics.part.aspect
 org.cyclops.integratedmekanismics.proxy
