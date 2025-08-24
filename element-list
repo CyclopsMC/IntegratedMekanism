@@ -11,4 +11,5 @@ org.cyclops.integratedmekanismics.operator
 org.cyclops.integratedmekanismics.part
 org.cyclops.integratedmekanismics.part.aspect
 org.cyclops.integratedmekanismics.proxy
+org.cyclops.integratedmekanismics.test
 org.cyclops.integratedmekanismics.value
