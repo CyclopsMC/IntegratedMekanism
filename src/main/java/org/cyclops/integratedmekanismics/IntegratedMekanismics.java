@@ -1,6 +1,5 @@
 package org.cyclops.integratedmekanismics;
 
-import com.google.common.collect.Lists;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
@@ -27,7 +26,6 @@ import org.cyclops.integrateddynamics.api.network.INetwork;
 import org.cyclops.integrateddynamics.command.CommandTest;
 import org.cyclops.integrateddynamics.core.event.IntegratedDynamicsSetupEvent;
 import org.cyclops.integrateddynamics.core.ingredient.IngredientComponentHandlers;
-import org.cyclops.integrateddynamics.core.part.aspect.AspectRegistry;
 import org.cyclops.integrateddynamics.infobook.OnTheDynamicsOfIntegrationBook;
 import org.cyclops.integratedmekanismics.client.render.value.ValueTypeWorldRenderersMekanism;
 import org.cyclops.integratedmekanismics.ingredient.IngredientComponentCapabilitiesMekanism;
@@ -38,8 +36,6 @@ import org.cyclops.integratedmekanismics.modcompat.integratedtunnels.ModCompatIn
 import org.cyclops.integratedmekanismics.network.ChemicalNetworkConfig;
 import org.cyclops.integratedmekanismics.network.NetworkCapabilityConstructorsMekanism;
 import org.cyclops.integratedmekanismics.operator.MekanismOperators;
-import org.cyclops.integratedmekanismics.part.aspect.MekanismAspects;
-import org.cyclops.integratedmekanismics.part.aspect.listproxy.MekanismValueTypeListProxyFactories;
 import org.cyclops.integratedmekanismics.proxy.ClientProxy;
 import org.cyclops.integratedmekanismics.proxy.CommonProxy;
 import org.cyclops.integratedmekanismics.test.TestChemicalStackOperators;
@@ -95,7 +91,6 @@ public class IntegratedMekanismics extends ModBaseVersionable<IntegratedMekanism
     protected void onSetup(IntegratedDynamicsSetupEvent event) {
         MekanismValueTypes.load();
         MekanismOperators.load();
-        MekanismValueTypeListProxyFactories.load();
 
         // Add test classes
         CommandTest.CLASSES.addAll(List.of(
@@ -119,15 +114,6 @@ public class IntegratedMekanismics extends ModBaseVersionable<IntegratedMekanism
                 .registerSection(this,
                         OnTheDynamicsOfIntegrationBook.getInstance(), "info_book.integrateddynamics.tutorials",
                         "/data/" + Reference.MOD_ID + "/info/mekanismics_tutorials.xml");
-
-        // Inject aspects into ID parts
-        AspectRegistry.getInstance().register(org.cyclops.integrateddynamics.core.part.PartTypes.NETWORK_READER, Lists.newArrayList(
-                MekanismAspects.Read.Chemical.LONG_COUNT,
-                MekanismAspects.Read.Chemical.LONG_COUNTMAX,
-                MekanismAspects.Read.Chemical.LIST_CHEMICALSTACKS,
-                MekanismAspects.Read.Chemical.OPERATOR_GETCHEMICALCOUNT,
-                MekanismAspects.Read.Chemical.INTEGER_INTERFACES
-        ));
     }
 
     @Override
