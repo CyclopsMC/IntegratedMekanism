@@ -10,6 +10,8 @@ org.cyclops.integratedmekanismics.network
 org.cyclops.integratedmekanismics.operator
 org.cyclops.integratedmekanismics.part
 org.cyclops.integratedmekanismics.part.aspect
+org.cyclops.integratedmekanismics.part.aspect.listproxy
+org.cyclops.integratedmekanismics.part.aspect.operator
 org.cyclops.integratedmekanismics.proxy
 org.cyclops.integratedmekanismics.test
 org.cyclops.integratedmekanismics.value
