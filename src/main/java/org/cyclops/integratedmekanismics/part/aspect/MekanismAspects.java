@@ -1,10 +1,19 @@
 package org.cyclops.integratedmekanismics.part.aspect;
 
+import com.google.common.collect.Iterators;
+import mekanism.api.chemical.ChemicalStack;
+import mekanism.api.chemical.gas.GasStack;
+import net.minecraft.resources.ResourceLocation;
+import org.cyclops.commoncapabilities.api.ingredient.storage.IIngredientComponentStorage;
+import org.cyclops.integrateddynamics.api.part.aspect.IAspectRead;
 import org.cyclops.integrateddynamics.api.part.aspect.IAspectWrite;
-import org.cyclops.integrateddynamics.core.evaluate.variable.ValueTypeBoolean;
-import org.cyclops.integrateddynamics.core.evaluate.variable.ValueTypeList;
-import org.cyclops.integrateddynamics.core.evaluate.variable.ValueTypeLong;
-import org.cyclops.integrateddynamics.core.evaluate.variable.ValueTypeOperator;
+import org.cyclops.integrateddynamics.core.evaluate.operator.Operators;
+import org.cyclops.integrateddynamics.core.evaluate.operator.PositionedOperator;
+import org.cyclops.integrateddynamics.core.evaluate.variable.*;
+import org.cyclops.integrateddynamics.part.aspect.read.AspectReadBuilders;
+import org.cyclops.integratedmekanismics.Reference;
+import org.cyclops.integratedmekanismics.ingredient.ChemicalMatch;
+import org.cyclops.integratedmekanismics.part.aspect.operator.PositionedOperatorIngredientIndexChemical;
 import org.cyclops.integratedmekanismics.value.ValueObjectTypeChemicalStack;
 import org.cyclops.integratedtunnels.part.aspect.TunnelAspectWriteBuilders;
 
@@ -13,6 +22,48 @@ import org.cyclops.integratedtunnels.part.aspect.TunnelAspectWriteBuilders;
  * @author rubensworks
  */
 public class MekanismAspects {
+
+    public static final class Read {
+
+        public static final class Chemical {
+            public static final IAspectRead<ValueTypeLong.ValueLong, ValueTypeLong>
+                    LONG_COUNT = MekanismAspectReadBuilders.Network.Chemical.BUILDER_LONG
+                    .handle(MekanismAspectReadBuilders.Network.Chemical.PROP_GET_CHANNELINDEX)
+                    .handle(channel -> channel.stream().mapToLong(ChemicalStack::getAmount).sum())
+                    .handle(AspectReadBuilders.PROP_GET_LONG, "count")
+                    .buildRead();
+            public static final IAspectRead<ValueTypeLong.ValueLong, ValueTypeLong>
+                    LONG_COUNTMAX = MekanismAspectReadBuilders.Network.Chemical.BUILDER_LONG
+                    .handle(MekanismAspectReadBuilders.Network.Chemical.PROP_GET_CHANNEL)
+                    .handle(IIngredientComponentStorage::getMaxQuantity)
+                    .handle(AspectReadBuilders.PROP_GET_LONG, "countmax")
+                    .buildRead();
+            public static final IAspectRead<ValueTypeList.ValueList, ValueTypeList>
+                    LIST_CHEMICALSTACKS = MekanismAspectReadBuilders.Network.Chemical.BUILDER_LIST
+                    .handle(MekanismAspectReadBuilders.Network.Chemical.PROP_GET_LIST, "chemicalstacks")
+                    .buildRead();
+            public static final IAspectRead<ValueTypeOperator.ValueOperator, ValueTypeOperator>
+                    OPERATOR_GETCHEMICALCOUNT = MekanismAspectReadBuilders.Network.Chemical.BUILDER_OPERATOR
+                    .handle(input -> ValueTypeOperator.ValueOperator.of(new PositionedOperatorIngredientIndexChemical(
+                            input.getLeft().getTarget().getPos(),
+                            input.getLeft().getTarget().getSide(),
+                            input.getRight().getValue(AspectReadBuilders.Network.PROPERTY_CHANNEL).getRawValue()
+                    )))
+                    .appendKind("countbychemical")
+                    .buildRead();
+            public static final IAspectRead<ValueTypeInteger.ValueInteger, ValueTypeInteger>
+                    INTEGER_INTERFACES = MekanismAspectReadBuilders.Network.Chemical.BUILDER_INTEGER
+                    .handle(MekanismAspectReadBuilders.Network.Chemical.PROP_GET_CHANNELINDEX)
+                    .handle(channel -> Iterators.size(channel.getPositions(GasStack.EMPTY, ChemicalMatch.ANY)))
+                    .handle(AspectReadBuilders.PROP_GET_INTEGER, "interfaces")
+                    .buildRead();
+            static {
+                Operators.REGISTRY.registerSerializer(new PositionedOperator.Serializer(
+                        PositionedOperatorIngredientIndexChemical.class, new ResourceLocation(Reference.MOD_ID, "positioned_ingredient_index_chemical")));
+            }
+        }
+
+    }
 
     public static final class Write {
 

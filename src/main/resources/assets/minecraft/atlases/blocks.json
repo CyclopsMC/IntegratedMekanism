@@ -17,5 +17,10 @@
   { "type": "minecraft:single", "resource": "integratedmekanismics:part/exporter_chemical_error" },
   { "type": "minecraft:single", "resource": "integratedmekanismics:aspects/write/chemical/import" },
   { "type": "minecraft:single", "resource": "integratedmekanismics:aspects/write/chemical/export" },
-  { "type": "minecraft:single", "resource": "integratedmekanismics:aspects/write/chemical/filter" }
+  { "type": "minecraft:single", "resource": "integratedmekanismics:aspects/write/chemical/filter" },
+  { "type": "minecraft:single", "resource": "integratedmekanismics:aspects/read/long/chemicalnetwork/countmax" },
+  { "type": "minecraft:single", "resource": "integratedmekanismics:aspects/read/long/chemicalnetwork/count" },
+  { "type": "minecraft:single", "resource": "integratedmekanismics:aspects/read/list/chemicalnetwork/chemicalstacks" },
+  { "type": "minecraft:single", "resource": "integratedmekanismics:aspects/read/integer/chemicalnetwork/interfaces" },
+  { "type": "minecraft:single", "resource": "integratedmekanismics:aspects/read/operator/chemicalnetwork/countbychemical" }
 ]}

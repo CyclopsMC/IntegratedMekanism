@@ -32,6 +32,17 @@
     "_comment": "Aspects",
 
     "_comment": "# Network aspects",
+    "aspect.integratedmekanismics.read.long.chemicalnetwork.count": "Network Chemical Count",
+    "aspect.integratedmekanismics.read.long.chemicalnetwork.count.info": "Get the total amount of chemicals in the network",
+    "aspect.integratedmekanismics.read.long.chemicalnetwork.countmax": "Network Chemical Max Count",
+    "aspect.integratedmekanismics.read.long.chemicalnetwork.countmax.info": "The upper limit of the total amount of chemicals that can be stored in the network",
+    "aspect.integratedmekanismics.read.list.chemicalnetwork.chemicalstacks": "Network Chemicals",
+    "aspect.integratedmekanismics.read.list.chemicalnetwork.chemicalstacks.info": "Get a list of all chemicals in the network",
+    "aspect.integratedmekanismics.read.operator.chemicalnetwork.countbychemical": "Network Count Of Chemical",
+    "operator.integrateddynamics.virtual.countbychemical": "Network Count Of Chemical",
+    "aspect.integratedmekanismics.read.operator.chemicalnetwork.countbychemical.info": "Get the total count of the given chemical in the network",
+    "aspect.integratedmekanismics.read.integer.chemicalnetwork.interfaces": "Network Chemical Interfaces",
+    "aspect.integratedmekanismics.read.integer.chemicalnetwork.interfaces.info": "Get number of valid interfaces for chemical storage",
 
     "_comment": "# Chemical",
     "aspect.integratedmekanismics.write.boolean.chemical.export": "Export All Chemicals",
