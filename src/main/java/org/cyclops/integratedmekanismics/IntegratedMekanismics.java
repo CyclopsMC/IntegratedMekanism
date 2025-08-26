@@ -31,6 +31,7 @@ import org.cyclops.integratedmekanismics.client.render.value.ValueTypeWorldRende
 import org.cyclops.integratedmekanismics.ingredient.IngredientComponentCapabilitiesMekanism;
 import org.cyclops.integratedmekanismics.ingredient.IngredientComponentHandlerChemical;
 import org.cyclops.integratedmekanismics.ingredient.MekanismIngredientComponents;
+import org.cyclops.integratedmekanismics.modcompat.integratedrest.ModCompatIntegratedRest;
 import org.cyclops.integratedmekanismics.modcompat.integratedscripting.ModCompatIntegratedScripting;
 import org.cyclops.integratedmekanismics.modcompat.integratedterminals.ModCompatIntegratedTerminals;
 import org.cyclops.integratedmekanismics.modcompat.integratedtunnels.ModCompatIntegratedTunnels;
@@ -77,6 +78,7 @@ public class IntegratedMekanismics extends ModBaseVersionable<IntegratedMekanism
         modCompatLoader.addModCompat(new ModCompatIntegratedTunnels());
         modCompatLoader.addModCompat(new ModCompatIntegratedTerminals());
         modCompatLoader.addModCompat(new ModCompatIntegratedScripting());
+        modCompatLoader.addModCompat(new ModCompatIntegratedRest());
     }
 
     protected void onRegistriesLoad(RegisterEvent event) {

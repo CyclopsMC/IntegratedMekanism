@@ -137,6 +137,12 @@ dependencies {
         implementation fg.deobf("org.cyclops.integratedscripting:integratedscripting:${project.integratedscripting_version}")
     }
 
+    if(secrets.integratedrest_version_local) {
+        implementation fg.deobf("org.cyclops.integratedrest:integratedrest:${secrets.integratedrest_version_local}")
+    } else {
+        implementation fg.deobf("org.cyclops.integratedrest:integratedrest:${project.integratedrest_version}")
+    }
+
     if(secrets.commoncapabilities_version_local) {
         implementation "org.cyclops.commoncapabilities:commoncapabilities:${secrets.commoncapabilities_version_local}:deobf"
     } else {

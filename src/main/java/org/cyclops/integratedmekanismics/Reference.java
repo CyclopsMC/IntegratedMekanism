@@ -20,5 +20,6 @@ public class Reference {
     public static final String MOD_INTEGRATEDTERMINALS = "integratedterminals";
     public static final String MOD_INTEGRATEDCRAFTING = "integratedcrafting";
     public static final String MOD_INTEGRATEDSCRIPTING = "integratedscripting";
+    public static final String MOD_INTEGRATEDREST = "integratedrest";
 
 }
