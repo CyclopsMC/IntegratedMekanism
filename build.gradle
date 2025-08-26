@@ -131,6 +131,11 @@ dependencies {
             transitive = false
         }
     }
+    if(secrets.integratedscripting_version_local) {
+        implementation fg.deobf("org.cyclops.integratedscripting:integratedscripting:${secrets.integratedscripting_version_local}")
+    } else {
+        implementation fg.deobf("org.cyclops.integratedscripting:integratedscripting:${project.integratedscripting_version}")
+    }
 
     if(secrets.commoncapabilities_version_local) {
         implementation "org.cyclops.commoncapabilities:commoncapabilities:${secrets.commoncapabilities_version_local}:deobf"
@@ -143,8 +148,12 @@ dependencies {
     implementation fg.deobf("mekanism:Mekanism:${mekanism_version}:all")
 
     modLib "com.google.re2j:re2j:1.1"
+    modLib ("io.netty:netty-codec-http:4.1.77.Final") {
+        transitive = false
+    }
 	
 	testImplementation "junit:junit:4.12"
+    testImplementation "org.mockito:mockito-core:1.+"
 
     // Locally sourced extra mods for runtime (i.e. testing)
     for (extraModJar in fileTree(dir: extraModsDir, include: '*.jar')) {
@@ -311,6 +320,7 @@ curseforge {
                 optionalDependency 'integrated-tunnels'
                 optionalDependency 'integrated-crafting'
                 optionalDependency 'integrated-terminals'
+                optionalDependency 'integrated-scripting'
             }
         }
 
@@ -350,6 +360,7 @@ modrinth {
       optional.project "Etqy1Omb" // Integrated Tunnels
       optional.project "qwpACdla" // Integrated Crafting
       optional.project "HmLJoQ1K" // Integrated Terminals
+      optional.project "uDJkuFRe" // Integrated Scripting
     }
 }
 

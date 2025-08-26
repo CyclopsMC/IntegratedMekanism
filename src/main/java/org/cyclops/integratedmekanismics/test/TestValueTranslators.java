@@ -1,0 +1,78 @@
+package org.cyclops.integratedmekanismics.test;
+
+import com.google.common.collect.Sets;
+import mekanism.api.chemical.gas.GasStack;
+import mekanism.common.registries.MekanismGases;
+import org.cyclops.integrateddynamics.api.evaluate.EvaluationException;
+import org.cyclops.integrateddynamics.core.test.IntegrationBefore;
+import org.cyclops.integrateddynamics.core.test.IntegrationTest;
+import org.cyclops.integrateddynamics.core.test.TestHelpers;
+import org.cyclops.integratedmekanismics.value.ValueObjectTypeChemicalStack;
+import org.cyclops.integratedscripting.api.evaluate.translation.IEvaluationExceptionFactory;
+import org.cyclops.integratedscripting.evaluate.ScriptHelpers;
+import org.cyclops.integratedscripting.evaluate.translation.ValueTranslators;
+import org.cyclops.integratedscripting.vendors.org.graalvm.polyglot.Context;
+import org.cyclops.integratedscripting.vendors.org.graalvm.polyglot.Value;
+
+/**
+ * @author rubensworks
+ */
+public class TestValueTranslators {
+
+    private static Context CTX = null;
+    private static IEvaluationExceptionFactory EF = ScriptHelpers.getDummyEvaluationExceptionFactory();
+
+    @IntegrationBefore
+    public void before() {
+        try {
+            CTX = ScriptHelpers.createPopulatedContext(null);
+        } catch (EvaluationException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static Value getJsValue(String jsString) {
+        return CTX.eval("js", jsString);
+    }
+
+    @IntegrationTest
+    public void testObjectChemical() throws EvaluationException {
+        TestHelpers.assertEqual(ValueTranslators.REGISTRY.translateFromGraal(CTX, getJsValue("exports = { id_chemical: { chemical: 'mekanism:gas', type: 'mekanism:steam', amount: 1000 } }"), EF), ValueObjectTypeChemicalStack.ValueChemicalStack.of(new GasStack(MekanismGases.STEAM, 1000)), "chemical raw value");
+
+        Value translated = ValueTranslators.REGISTRY.translateToGraal(CTX, ValueObjectTypeChemicalStack.ValueChemicalStack.of(new GasStack(MekanismGases.STEAM, 1000)), EF);
+        TestHelpers.assertEqual(translated.hasMembers(), true, "hasMembers true");
+        TestHelpers.assertEqual(translated.getMemberKeys(), Sets.newHashSet("id_chemical"), "member keys is correct");
+        TestHelpers.assertEqual(translated.getMember("id_chemical").hasMembers(), true, "id_chemical hasMembers true");
+        TestHelpers.assertEqual(translated.getMember("id_chemical").getMemberKeys(), Sets.newHashSet("chemical", "type", "amount"), "id_chemical keys is correct");
+        TestHelpers.assertEqual(translated.getMember("id_chemical").getMember("chemical").asString(), "mekanism:gas", "id_chemical has member chemical");
+        TestHelpers.assertEqual(translated.getMember("id_chemical").getMember("type").asString(), "mekanism:steam", "id_chemical has member type");
+        TestHelpers.assertEqual(translated.getMember("id_chemical").getMember("amount").asInt(), 1000, "id_chemical has member amount");
+    }
+
+    @IntegrationTest
+    public void testObjectChemicalMethods() throws EvaluationException {
+        TestHelpers.assertEqual(ValueTranslators.REGISTRY.translateToGraal(CTX, ValueObjectTypeChemicalStack.ValueChemicalStack.of(new GasStack(MekanismGases.STEAM, 1000)), EF).invokeMember("amount").asInt(), 1000, "amount can be invoked for chemical stacks");
+        TestHelpers.assertEqual(ValueTranslators.REGISTRY.translateToGraal(CTX, ValueObjectTypeChemicalStack.ValueChemicalStack.of(new GasStack(MekanismGases.STEAM, 123)), EF).invokeMember("amount").asInt(), 123, "amount can be invoked for chemical stacks");
+    }
+
+    @IntegrationTest
+    public void testGlobalFunctions() throws EvaluationException {
+        Value ops = CTX.getBindings("js").getMember("idContext").getMember("ops");
+
+        TestHelpers.assertEqual(
+                ops.invokeMember("anyEquals",
+                        ValueTranslators.REGISTRY.translateToGraal(CTX, ValueObjectTypeChemicalStack.ValueChemicalStack.of(new GasStack(MekanismGases.STEAM, 10)), EF),
+                        ValueTranslators.REGISTRY.translateToGraal(CTX, ValueObjectTypeChemicalStack.ValueChemicalStack.of(new GasStack(MekanismGases.STEAM, 20)), EF)
+                ).asBoolean(),
+                false,
+                "anyEquals works for chemical stacks"
+        );
+
+        TestHelpers.assertEqual(
+                ops.invokeMember("chemicalstackAmount", ValueTranslators.REGISTRY.translateToGraal(CTX, ValueObjectTypeChemicalStack.ValueChemicalStack.of(new GasStack(MekanismGases.STEAM, 1000)), EF)).asInt(),
+                1000,
+                "chemicalstackAmount works for chemical stacks"
+        );
+    }
+
+}
