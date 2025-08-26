@@ -3,6 +3,8 @@ org.cyclops.integratedmekanismics.client.render.value
 org.cyclops.integratedmekanismics.core
 org.cyclops.integratedmekanismics.core.predicate
 org.cyclops.integratedmekanismics.ingredient
+org.cyclops.integratedmekanismics.modcompat.integratedscripting
+org.cyclops.integratedmekanismics.modcompat.integratedscripting.translation
 org.cyclops.integratedmekanismics.modcompat.integratedterminals
 org.cyclops.integratedmekanismics.modcompat.integratedterminals.sorter
 org.cyclops.integratedmekanismics.modcompat.integratedtunnels
