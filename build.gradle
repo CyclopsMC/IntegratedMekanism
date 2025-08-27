@@ -84,6 +84,18 @@ repositories {
             includeGroup("mekanism")
         }
     }
+    maven {
+        name 'Blame Jared'
+        url 'https://maven.blamejared.com/'
+    }
+    maven {
+        name "EMI"
+        url "https://maven.terraformersmc.com/"
+    }
+    maven {
+        name "REI"
+        url "https://maven.shedaniel.me/"
+    }
     flatDir {
         name "extra-mods"
         dir file(extraModsDir)
@@ -102,11 +114,11 @@ dependencies {
 	
     // Add something like 'integrateddynamics_version_local=0.1.0-DEV' to your gradle.properties if you want to use a custom local Integrated Tunnels Compat version.
     if(secrets.integrateddynamics_version_local) {
-        implementation("org.cyclops.integrateddynamics:integrateddynamics:${secrets.integrateddynamics_version_local}:deobf") {
+        implementation fg.deobf("org.cyclops.integrateddynamics:integrateddynamics:${secrets.integrateddynamics_version_local}") {
             transitive = false
         }
     } else {
-        implementation("org.cyclops.integrateddynamics:integrateddynamics:${project.integrateddynamics_version}:deobf") {
+        implementation fg.deobf("org.cyclops.integrateddynamics:integrateddynamics:${project.integrateddynamics_version}") {
             transitive = false
         }
     }
@@ -118,9 +130,9 @@ dependencies {
         }
     }
     if(secrets.integratedterminals_version_local) {
-        implementation "org.cyclops.integratedterminals:integratedterminals:${secrets.integratedterminals_version_local}:deobf"
+        implementation fg.deobf("org.cyclops.integratedterminals:integratedterminals:${secrets.integratedterminals_version_local}")
     } else {
-        implementation ("org.cyclops.integratedterminals:integratedterminals:${project.integratedterminals_version}:deobf") {
+        implementation fg.deobf("org.cyclops.integratedterminals:integratedterminals:${project.integratedterminals_version}") {
             transitive = false
         }
     }
@@ -151,7 +163,15 @@ dependencies {
         }
     }
 
-    implementation fg.deobf("mekanism:Mekanism:${mekanism_version}:all")
+    implementation fg.deobf("mekanism:Mekanism:${mekanism_version}:all") // https://modmaven.dev/
+
+    implementation fg.deobf("mezz.jei:jei-${project.jei_version}") // https://maven.blamejared.com/mezz/jei/ https://dvs1.progwml6.com/jenkins/
+
+    compileOnly fg.deobf("dev.emi:emi-forge:${emi_version}") // https://maven.terraformersmc.com/releases/dev/emi/emi-forge
+
+    compileOnly fg.deobf("me.shedaniel:RoughlyEnoughItems-forge:${rei_version}") // https://maven.shedaniel.me/me/shedaniel/RoughlyEnoughItems-forge/ or just look on CurseForge by modloader and MC version...
+    implementation fg.deobf("me.shedaniel.cloth:cloth-config-forge:$cloth_config_version");
+    implementation fg.deobf("dev.architectury:architectury-forge:$architectury_version");
 
     modLib "com.google.re2j:re2j:1.1"
     modLib ("io.netty:netty-codec-http:4.1.77.Final") {
