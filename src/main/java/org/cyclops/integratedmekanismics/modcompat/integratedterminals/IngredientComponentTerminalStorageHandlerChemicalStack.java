@@ -14,6 +14,7 @@ import mekanism.client.gui.GuiUtils;
 import mekanism.client.render.MekanismRenderer;
 import mekanism.common.capabilities.Capabilities;
 import mekanism.common.registries.MekanismBlocks;
+import mekanism.common.util.ChemicalUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -94,6 +95,7 @@ public class IngredientComponentTerminalStorageHandlerChemicalStack implements I
                     List<Component> lines = Lists.newArrayList();
                     lines.add(((MutableComponent) instance.getTextComponent())
                             .withStyle(Style.EMPTY.withColor(instance.getChemicalColorRepresentation())));
+                    ChemicalUtil.addChemicalDataToTooltip(lines, instance.getType(), false);
                     addQuantityTooltip(lines, instance);
                     if (additionalTooltipLines != null) {
                         lines.addAll(additionalTooltipLines);
