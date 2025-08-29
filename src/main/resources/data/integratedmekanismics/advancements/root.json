@@ -15,6 +15,7 @@
   "parent": "integrateddynamics:network_foundations/variables",
   "rewards": {
     "recipes": [
+      "integratedmekanismics:part_chemical_reader",
       "integratedmekanismics:part_interface_chemical",
       "integratedmekanismics:part_exporter_chemical",
       "integratedmekanismics:part_importer_chemical",
