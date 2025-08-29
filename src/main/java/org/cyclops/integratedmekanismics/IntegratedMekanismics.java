@@ -38,6 +38,8 @@ import org.cyclops.integratedmekanismics.modcompat.integratedtunnels.ModCompatIn
 import org.cyclops.integratedmekanismics.network.ChemicalNetworkConfig;
 import org.cyclops.integratedmekanismics.network.NetworkCapabilityConstructorsMekanism;
 import org.cyclops.integratedmekanismics.operator.MekanismOperators;
+import org.cyclops.integratedmekanismics.part.PartTypesMekanism;
+import org.cyclops.integratedmekanismics.part.aspect.listproxy.MekanismValueTypeListProxyFactories;
 import org.cyclops.integratedmekanismics.proxy.ClientProxy;
 import org.cyclops.integratedmekanismics.proxy.CommonProxy;
 import org.cyclops.integratedmekanismics.test.TestChemicalStackOperators;
@@ -68,6 +70,7 @@ public class IntegratedMekanismics extends ModBaseVersionable<IntegratedMekanism
 
     public void onRegistriesCreate(NewRegistryEvent event) {
         IngredientComponentCapabilitiesMekanism.load();
+        PartTypesMekanism.load();
     }
 
     @Override
@@ -93,6 +96,7 @@ public class IntegratedMekanismics extends ModBaseVersionable<IntegratedMekanism
     }
 
     protected void onSetup(IntegratedDynamicsSetupEvent event) {
+        MekanismValueTypeListProxyFactories.load();
         MekanismValueTypes.load();
         MekanismOperators.load();
 

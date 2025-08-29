@@ -6,9 +6,9 @@ import net.minecraftforge.registries.NewRegistryEvent;
 import org.cyclops.cyclopscore.modcompat.ICompatInitializer;
 import org.cyclops.integrateddynamics.core.event.IntegratedDynamicsSetupEvent;
 import org.cyclops.integrateddynamics.core.part.aspect.AspectRegistry;
-import org.cyclops.integratedmekanismics.part.PartTypesMekanism;
-import org.cyclops.integratedmekanismics.part.aspect.MekanismAspects;
-import org.cyclops.integratedmekanismics.part.aspect.listproxy.MekanismValueTypeListProxyFactories;
+import org.cyclops.integratedmekanismics.modcompat.integratedtunnels.aspect.MekanismTunnelsAspects;
+import org.cyclops.integratedmekanismics.modcompat.integratedtunnels.aspect.listproxy.MekanismTunnelsValueTypeListProxyFactories;
+import org.cyclops.integratedmekanismics.modcompat.integratedtunnels.part.PartTypesMekanismTunnels;
 
 /**
  * @author rubensworks
@@ -21,19 +21,19 @@ public class ModCompatInitializerIntegratedTunnels implements ICompatInitializer
     }
 
     public void onRegistriesCreate(NewRegistryEvent event) {
-        PartTypesMekanism.load();
+        PartTypesMekanismTunnels.load();
     }
 
     protected void onSetup(IntegratedDynamicsSetupEvent event) {
-        MekanismValueTypeListProxyFactories.load();
+        MekanismTunnelsValueTypeListProxyFactories.load();
 
         // Inject aspects into ID parts
         AspectRegistry.getInstance().register(org.cyclops.integrateddynamics.core.part.PartTypes.NETWORK_READER, Lists.newArrayList(
-                MekanismAspects.Read.Chemical.LONG_COUNT,
-                MekanismAspects.Read.Chemical.LONG_COUNTMAX,
-                MekanismAspects.Read.Chemical.LIST_CHEMICALSTACKS,
-                MekanismAspects.Read.Chemical.OPERATOR_GETCHEMICALCOUNT,
-                MekanismAspects.Read.Chemical.INTEGER_INTERFACES
+                MekanismTunnelsAspects.Read.Chemical.LONG_COUNT,
+                MekanismTunnelsAspects.Read.Chemical.LONG_COUNTMAX,
+                MekanismTunnelsAspects.Read.Chemical.LIST_CHEMICALSTACKS,
+                MekanismTunnelsAspects.Read.Chemical.OPERATOR_GETCHEMICALCOUNT,
+                MekanismTunnelsAspects.Read.Chemical.INTEGER_INTERFACES
         ));
     }
 }

@@ -1,92 +1,90 @@
 package org.cyclops.integratedmekanismics.part.aspect;
 
+import com.google.common.collect.ImmutableList;
 import mekanism.api.chemical.ChemicalStack;
-import net.minecraft.core.Direction;
-import net.minecraftforge.common.capabilities.Capability;
+import mekanism.api.chemical.IChemicalHandler;
+import mekanism.api.chemical.gas.GasStack;
 import org.apache.commons.lang3.tuple.Pair;
-import org.cyclops.commoncapabilities.api.ingredient.storage.IIngredientComponentStorage;
-import org.cyclops.cyclopscore.datastructure.DimPos;
-import org.cyclops.integrateddynamics.api.ingredient.IIngredientPositionsIndex;
-import org.cyclops.integrateddynamics.api.network.INetwork;
-import org.cyclops.integrateddynamics.api.network.IPositionedAddonsNetworkIngredients;
 import org.cyclops.integrateddynamics.api.part.PartTarget;
 import org.cyclops.integrateddynamics.api.part.aspect.property.IAspectProperties;
-import org.cyclops.integrateddynamics.core.evaluate.variable.ValueTypeInteger;
-import org.cyclops.integrateddynamics.core.evaluate.variable.ValueTypeList;
-import org.cyclops.integrateddynamics.core.evaluate.variable.ValueTypeLong;
-import org.cyclops.integrateddynamics.core.evaluate.variable.ValueTypeOperator;
-import org.cyclops.integrateddynamics.core.helper.NetworkHelpers;
+import org.cyclops.integrateddynamics.api.part.aspect.property.IAspectPropertyTypeInstance;
+import org.cyclops.integrateddynamics.core.evaluate.variable.*;
 import org.cyclops.integrateddynamics.core.part.aspect.build.AspectBuilder;
 import org.cyclops.integrateddynamics.core.part.aspect.build.IAspectValuePropagator;
+import org.cyclops.integrateddynamics.core.part.aspect.property.AspectProperties;
+import org.cyclops.integrateddynamics.core.part.aspect.property.AspectPropertyTypeInstance;
 import org.cyclops.integrateddynamics.part.aspect.read.AspectReadBuilders;
-import org.cyclops.integratedmekanismics.IntegratedMekanismics;
-import org.cyclops.integratedmekanismics.network.ChemicalNetworkConfig;
-import org.cyclops.integratedmekanismics.part.aspect.listproxy.ValueTypeListProxyPositionedChemicalNetwork;
-
-import java.util.Optional;
+import org.cyclops.integratedmekanismics.Reference;
+import org.cyclops.integratedmekanismics.core.CapabilityHelpers;
+import org.cyclops.integratedmekanismics.core.EmptyChemicalHandler;
+import org.cyclops.integratedmekanismics.part.aspect.listproxy.ValueTypeListProxyPositionedChemicalTankCapacities;
+import org.cyclops.integratedmekanismics.part.aspect.listproxy.ValueTypeListProxyPositionedChemicalTankChemicalStacks;
+import org.cyclops.integratedmekanismics.value.MekanismValueTypes;
+import org.cyclops.integratedmekanismics.value.ValueObjectTypeChemicalStack;
 
 /**
  * @author rubensworks
  */
 public class MekanismAspectReadBuilders {
 
-    public static final class Network {
+    // --------------- Value type builders ---------------
+    public static final AspectBuilder<ValueObjectTypeChemicalStack.ValueChemicalStack, ValueObjectTypeChemicalStack, Pair<PartTarget, IAspectProperties>>
+            BUILDER_OBJECT_CHEMICALSTACK = AspectBuilder.forReadType(MekanismValueTypes.OBJECT_CHEMICALSTACK).byMod(Reference.MOD_ID);
 
-        public static <T, M> Optional<IIngredientComponentStorage<T, M>> getChannel(Capability<? extends IPositionedAddonsNetworkIngredients<T, M>> networkCapability,
-                                                                                    DimPos dimPos, Direction side, int channel) {
-            INetwork network = NetworkHelpers.getNetwork(dimPos.getLevel(true), dimPos.getBlockPos(), side).orElse(null);
-            return Optional.ofNullable(network != null ? network.getCapability(networkCapability)
-                    .map(itemNetwork -> {
-                        itemNetwork.scheduleObservation();
-                        return itemNetwork.getChannel(channel);
-                    })
-                    .orElse(null) : null);
+    // --------------- Value type propagators ---------------
+    public static final IAspectValuePropagator<ChemicalStack<?>, ValueObjectTypeChemicalStack.ValueChemicalStack>
+            PROP_GET_CHEMICALSTACK = ValueObjectTypeChemicalStack.ValueChemicalStack::of;
+
+    // --------------- Value type builders ---------------
+
+    public static final class Chemical {
+
+        public static final IAspectPropertyTypeInstance<ValueTypeInteger, ValueTypeInteger.ValueInteger> PROP_TANKID =
+                new AspectPropertyTypeInstance<>(ValueTypes.INTEGER, "aspect.aspecttypes.integrateddynamics.integer.tankid", AspectReadBuilders.VALIDATOR_INTEGER_POSITIVE);
+        public static final IAspectProperties PROPERTIES = new AspectProperties(ImmutableList.of(
+                PROP_TANKID
+        ));
+        static {
+            PROPERTIES.setValue(PROP_TANKID, ValueTypeInteger.ValueInteger.of(0)); // Not required in this case, but we do this here just as an example on how to set default values.
         }
 
-        public static <T, M> Optional<IIngredientPositionsIndex<T, M>> getChannelIndex(Capability<? extends IPositionedAddonsNetworkIngredients<T, M>> networkCapability,
-                                                                                       DimPos dimPos, Direction side, int channel) {
-            INetwork network = NetworkHelpers.getNetwork(dimPos.getLevel(true), dimPos.getBlockPos(), side).orElse(null);
-            return Optional.ofNullable(network != null ? network.getCapability(networkCapability)
-                    .map(itemNetwork -> {
-                        itemNetwork.scheduleObservation();
-                        return itemNetwork.getChannelIndex(channel);
-                    })
-                    .orElse(null) : null);
-        }
+        public static final IAspectValuePropagator<Pair<PartTarget, IAspectProperties>, IChemicalHandler<?, ?>> PROP_GET = input -> {
+            return CapabilityHelpers.getFirstOf(input.getLeft().getTarget(), CapabilityHelpers.CHEMICAL_CAPABILITIES)
+                    .orElse(EmptyChemicalHandler.INSTANCE);
+        };
+        public static final IAspectValuePropagator<Pair<PartTarget, IAspectProperties>, Pair<IChemicalHandler<?, ?>, Integer>> PROP_GET_ACTIVATABLE = input -> {
+            IChemicalHandler<?, ?> chemicalHandler = CapabilityHelpers.getFirstOf(input.getLeft().getTarget(), CapabilityHelpers.CHEMICAL_CAPABILITIES).orElse(null);
+            if(chemicalHandler != null) {
+                int i = input.getRight().getValue(PROP_TANKID).getRawValue();
+                if(i < chemicalHandler.getTanks()) {
+                    return Pair.of(chemicalHandler, i);
+                }
+            }
+            return null;
+        };
+        public static final IAspectValuePropagator<Pair<IChemicalHandler<?, ?>, Integer>, ChemicalStack<?>>
+                PROP_GET_CHEMICALSTACK = tankInfo -> tankInfo != null ? tankInfo.getLeft().getChemicalInTank(tankInfo.getRight()) : GasStack.EMPTY;
 
-        public static final class Chemical {
-            public static final AspectBuilder<ValueTypeList.ValueList, ValueTypeList, Pair<PartTarget, IAspectProperties>>
-                    BUILDER_LIST = AspectReadBuilders.BUILDER_LIST.byMod(IntegratedMekanismics._instance)
-                    .withProperties(AspectReadBuilders.Network.PROPERTIES)
-                    .appendKind("chemicalnetwork");
-            public static final AspectBuilder<ValueTypeInteger.ValueInteger, ValueTypeInteger, Pair<PartTarget, IAspectProperties>>
-                    BUILDER_INTEGER = AspectReadBuilders.BUILDER_INTEGER.byMod(IntegratedMekanismics._instance)
-                    .withProperties(AspectReadBuilders.Network.PROPERTIES)
-                    .appendKind("chemicalnetwork");
-            public static final AspectBuilder<ValueTypeLong.ValueLong, ValueTypeLong, Pair<PartTarget, IAspectProperties>>
-                    BUILDER_LONG = AspectReadBuilders.BUILDER_LONG.byMod(IntegratedMekanismics._instance)
-                    .withProperties(AspectReadBuilders.Network.PROPERTIES)
-                    .appendKind("chemicalnetwork");
-            public static final AspectBuilder<ValueTypeOperator.ValueOperator, ValueTypeOperator, Pair<PartTarget, IAspectProperties>>
-                    BUILDER_OPERATOR = AspectReadBuilders.BUILDER_OPERATOR.byMod(IntegratedMekanismics._instance)
-                    .withProperties(AspectReadBuilders.Network.PROPERTIES)
-                    .appendKind("chemicalnetwork");
+        public static final IAspectValuePropagator<Pair<PartTarget, IAspectProperties>, ValueTypeList.ValueList>
+                PROP_GET_LIST_CHEMICALSTACKS = input -> ValueTypeList.ValueList.ofFactory(new ValueTypeListProxyPositionedChemicalTankChemicalStacks(
+                input.getLeft().getTarget().getPos(), input.getLeft().getTarget().getSide()
+        ));
+        public static final IAspectValuePropagator<Pair<PartTarget, IAspectProperties>, ValueTypeList.ValueList>
+                PROP_GET_LIST_CAPACITIES = input -> ValueTypeList.ValueList.ofFactory(new ValueTypeListProxyPositionedChemicalTankCapacities(
+                input.getLeft().getTarget().getPos(), input.getLeft().getTarget().getSide()
+        ));
 
-            public static final IAspectValuePropagator<Pair<PartTarget, IAspectProperties>, IIngredientComponentStorage<ChemicalStack<?>, Integer>> PROP_GET_CHANNEL = input -> {
-                int channel = input.getRight().getValue(AspectReadBuilders.Network.PROPERTY_CHANNEL).getRawValue();
-                return getChannel(ChemicalNetworkConfig.CAPABILITY, input.getLeft().getTarget().getPos(), input.getLeft().getTarget().getSide(), channel).orElse(null);
-            };
-            public static final IAspectValuePropagator<Pair<PartTarget, IAspectProperties>, IIngredientPositionsIndex<ChemicalStack<?>, Integer>> PROP_GET_CHANNELINDEX = input -> {
-                int channel = input.getRight().getValue(AspectReadBuilders.Network.PROPERTY_CHANNEL).getRawValue();
-                return getChannelIndex(ChemicalNetworkConfig.CAPABILITY, input.getLeft().getTarget().getPos(), input.getLeft().getTarget().getSide(), channel).orElse(null);
-            };
+        public static final AspectBuilder<ValueTypeBoolean.ValueBoolean, ValueTypeBoolean, IChemicalHandler<?, ?>>
+                BUILDER_BOOLEAN = AspectReadBuilders.BUILDER_BOOLEAN.byMod(Reference.MOD_ID).handle(PROP_GET, "chemical");
+        public static final AspectBuilder<ValueTypeInteger.ValueInteger, ValueTypeInteger, IChemicalHandler<?, ?>>
+                BUILDER_INTEGER = AspectReadBuilders.BUILDER_INTEGER.byMod(Reference.MOD_ID).handle(PROP_GET, "chemical");
+        public static final AspectBuilder<ValueTypeLong.ValueLong, ValueTypeLong, IChemicalHandler<?, ?>>
+                BUILDER_LONG = AspectReadBuilders.BUILDER_LONG.byMod(Reference.MOD_ID).handle(PROP_GET, "chemical");
+        public static final AspectBuilder<ValueTypeLong.ValueLong, ValueTypeLong, Pair<IChemicalHandler<?, ?>, Integer>>
+                BUILDER_LONG_ACTIVATABLE = AspectReadBuilders.BUILDER_LONG.byMod(Reference.MOD_ID).handle(PROP_GET_ACTIVATABLE, "chemical").withProperties(PROPERTIES);
+        public static final AspectBuilder<ValueTypeDouble.ValueDouble, ValueTypeDouble, Pair<IChemicalHandler<?, ?>, Integer>>
+                BUILDER_DOUBLE_ACTIVATABLE = AspectReadBuilders.BUILDER_DOUBLE.byMod(Reference.MOD_ID).handle(PROP_GET_ACTIVATABLE, "chemical").withProperties(PROPERTIES);
 
-            public static final IAspectValuePropagator<Pair<PartTarget, IAspectProperties>, ValueTypeList.ValueList>
-                    PROP_GET_LIST = input -> ValueTypeList.ValueList.ofFactory(new ValueTypeListProxyPositionedChemicalNetwork(
-                    input.getLeft().getTarget().getPos(),
-                    input.getLeft().getTarget().getSide(),
-                    input.getRight().getValue(AspectReadBuilders.Network.PROPERTY_CHANNEL).getRawValue()));
-        }
     }
 
 }

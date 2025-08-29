@@ -12,11 +12,7 @@ public class PartTypesMekanism {
 
     public static void load() {}
 
-    public static final PartTypeInterfaceChemical INTERFACE_CHEMICAL = REGISTRY.register(new PartTypeInterfaceChemical("interface_chemical"));
-    public static final PartTypeInterfaceFilteringChemical INTERFACE_FILTERING_CHEMICAL = REGISTRY.register(new PartTypeInterfaceFilteringChemical("interface_filter_chemical"));
-    public static final PartTypeImporterChemical IMPORTER_CHEMICAL = REGISTRY.register(new PartTypeImporterChemical("importer_chemical"));
-    public static final PartTypeExporterChemical EXPORTER_CHEMICAL = REGISTRY.register(new PartTypeExporterChemical("exporter_chemical"));
-    public static final PartTypeImporterWorldChemical IMPORTER_WORLD_CHEMICAL = REGISTRY.register(new PartTypeImporterWorldChemical("importer_world_chemical"));
-    public static final PartTypeExporterWorldChemical EXPORTER_WORLD_CHEMICAL = REGISTRY.register(new PartTypeExporterWorldChemical("exporter_world_chemical"));
+    // Readers
+    public static final PartTypeChemicalReader CHEMICAL_READER = REGISTRY.register(new PartTypeChemicalReader("chemical_reader"));
 
 }

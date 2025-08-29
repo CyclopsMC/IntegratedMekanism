@@ -17,16 +17,28 @@ public class CapabilityHelpers {
 
     public static final List<Capability<? extends IChemicalHandler<?, ?>>> CHEMICAL_CAPABILITIES = List.of(Capabilities.GAS_HANDLER, Capabilities.INFUSION_HANDLER, Capabilities.PIGMENT_HANDLER, Capabilities.SLURRY_HANDLER);
 
-    public static <T> LazyOptional<T> getFirstOf(PartPos pos, List<Capability<? extends T>> capabilities) {
+    public static <T extends IChemicalHandler<?, ?>> LazyOptional<T> getFirstOf(PartPos pos, List<Capability<? extends T>> capabilities) {
         LazyOptional<T> lazyOptional = LazyOptional.empty();
         for (Capability<? extends T> capability : capabilities) {
             LazyOptional<T> lazyOptionalCurrent = BlockEntityHelpers.getCapability(pos.getPos(), pos.getSide(), capability).cast();
-            if (lazyOptionalCurrent.isPresent()) {
+            if (!lazyOptional.isPresent()) {
+                lazyOptional = lazyOptionalCurrent;
+            } else if (lazyOptionalCurrent.isPresent() && hasChemical(lazyOptionalCurrent.resolve().get())) {
                 lazyOptional = lazyOptionalCurrent;
                 break;
             }
         }
         return lazyOptional;
+    }
+
+    public static boolean hasChemical(IChemicalHandler<?, ?> handler) {
+        int tanks = handler.getTanks();
+        for (int i = 0; i < tanks; i++) {
+            if (!handler.getChemicalInTank(i).isEmpty()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

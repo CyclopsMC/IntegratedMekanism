@@ -1,24 +1,14 @@
 package org.cyclops.integratedmekanismics.part.aspect;
 
-import com.google.common.collect.Iterators;
 import mekanism.api.chemical.ChemicalStack;
-import mekanism.api.chemical.gas.GasStack;
-import net.minecraft.resources.ResourceLocation;
-import org.cyclops.commoncapabilities.api.ingredient.storage.IIngredientComponentStorage;
+import mekanism.api.chemical.IChemicalHandler;
 import org.cyclops.integrateddynamics.api.part.aspect.IAspectRead;
-import org.cyclops.integrateddynamics.api.part.aspect.IAspectWrite;
-import org.cyclops.integrateddynamics.core.evaluate.operator.Operators;
-import org.cyclops.integrateddynamics.core.evaluate.operator.PositionedOperator;
 import org.cyclops.integrateddynamics.core.evaluate.variable.*;
 import org.cyclops.integrateddynamics.part.aspect.read.AspectReadBuilders;
 import org.cyclops.integratedmekanismics.Reference;
-import org.cyclops.integratedmekanismics.ingredient.ChemicalMatch;
-import org.cyclops.integratedmekanismics.part.aspect.operator.PositionedOperatorIngredientIndexChemical;
 import org.cyclops.integratedmekanismics.value.ValueObjectTypeChemicalStack;
-import org.cyclops.integratedtunnels.part.aspect.TunnelAspectWriteBuilders;
 
 /**
- * Collection of all mekanism aspects.
  * @author rubensworks
  */
 public class MekanismAspects {
@@ -26,235 +16,92 @@ public class MekanismAspects {
     public static final class Read {
 
         public static final class Chemical {
-            public static final IAspectRead<ValueTypeLong.ValueLong, ValueTypeLong>
-                    LONG_COUNT = MekanismAspectReadBuilders.Network.Chemical.BUILDER_LONG
-                    .handle(MekanismAspectReadBuilders.Network.Chemical.PROP_GET_CHANNELINDEX)
-                    .handle(channel -> channel.stream().mapToLong(ChemicalStack::getAmount).sum())
-                    .handle(AspectReadBuilders.PROP_GET_LONG, "count")
-                    .buildRead();
-            public static final IAspectRead<ValueTypeLong.ValueLong, ValueTypeLong>
-                    LONG_COUNTMAX = MekanismAspectReadBuilders.Network.Chemical.BUILDER_LONG
-                    .handle(MekanismAspectReadBuilders.Network.Chemical.PROP_GET_CHANNEL)
-                    .handle(IIngredientComponentStorage::getMaxQuantity)
-                    .handle(AspectReadBuilders.PROP_GET_LONG, "countmax")
-                    .buildRead();
-            public static final IAspectRead<ValueTypeList.ValueList, ValueTypeList>
-                    LIST_CHEMICALSTACKS = MekanismAspectReadBuilders.Network.Chemical.BUILDER_LIST
-                    .handle(MekanismAspectReadBuilders.Network.Chemical.PROP_GET_LIST, "chemicalstacks")
-                    .buildRead();
-            public static final IAspectRead<ValueTypeOperator.ValueOperator, ValueTypeOperator>
-                    OPERATOR_GETCHEMICALCOUNT = MekanismAspectReadBuilders.Network.Chemical.BUILDER_OPERATOR
-                    .handle(input -> ValueTypeOperator.ValueOperator.of(new PositionedOperatorIngredientIndexChemical(
-                            input.getLeft().getTarget().getPos(),
-                            input.getLeft().getTarget().getSide(),
-                            input.getRight().getValue(AspectReadBuilders.Network.PROPERTY_CHANNEL).getRawValue()
-                    )))
-                    .appendKind("countbychemical")
-                    .buildRead();
-            public static final IAspectRead<ValueTypeInteger.ValueInteger, ValueTypeInteger>
-                    INTEGER_INTERFACES = MekanismAspectReadBuilders.Network.Chemical.BUILDER_INTEGER
-                    .handle(MekanismAspectReadBuilders.Network.Chemical.PROP_GET_CHANNELINDEX)
-                    .handle(channel -> Iterators.size(channel.getPositions(GasStack.EMPTY, ChemicalMatch.ANY)))
-                    .handle(AspectReadBuilders.PROP_GET_INTEGER, "interfaces")
-                    .buildRead();
-            static {
-                Operators.REGISTRY.registerSerializer(new PositionedOperator.Serializer(
-                        PositionedOperatorIngredientIndexChemical.class, new ResourceLocation(Reference.MOD_ID, "positioned_ingredient_index_chemical")));
-            }
-        }
 
-    }
+            public static final IAspectRead<ValueTypeBoolean.ValueBoolean, ValueTypeBoolean> BOOLEAN_FULL =
+                    MekanismAspectReadBuilders.Chemical.BUILDER_BOOLEAN.handle(tankInfo -> {
+                        boolean allFull = true;
+                        for (int i = 0; i < tankInfo.getTanks(); i++) {
+                            if (tankInfo.getChemicalInTank(i).isEmpty() && tankInfo.getTankCapacity(i) > 0
+                                    || (!tankInfo.getChemicalInTank(i).isEmpty() && tankInfo.getChemicalInTank(i).getAmount() < tankInfo.getTankCapacity(i))) {
+                                allFull = false;
+                            }
+                        }
+                        return allFull;
+                    }).handle(AspectReadBuilders.PROP_GET_BOOLEAN, "full").buildRead();
+            public static final IAspectRead<ValueTypeBoolean.ValueBoolean, ValueTypeBoolean> BOOLEAN_EMPTY =
+                    MekanismAspectReadBuilders.Chemical.BUILDER_BOOLEAN.handle(tankInfo -> {
+                        for (int i = 0; i < tankInfo.getTanks(); i++) {
+                            if (!tankInfo.getChemicalInTank(i).isEmpty() && tankInfo.getTankCapacity(i) > 0
+                                    || (!tankInfo.getChemicalInTank(i).isEmpty() && tankInfo.getChemicalInTank(i).getAmount() < tankInfo.getTankCapacity(i))) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    }).handle(AspectReadBuilders.PROP_GET_BOOLEAN, "empty").buildRead();
+            public static final IAspectRead<ValueTypeBoolean.ValueBoolean, ValueTypeBoolean> BOOLEAN_NONEMPTY =
+                    MekanismAspectReadBuilders.Chemical.BUILDER_BOOLEAN.handle(tankInfo -> {
+                        boolean hasChemical = false;
+                        for (int i = 0; i < tankInfo.getTanks(); i++) {
+                            if (!tankInfo.getChemicalInTank(i).isEmpty() && tankInfo.getChemicalInTank(i).getAmount() > 0) {
+                                hasChemical = true;
+                            }
+                        }
+                        return hasChemical;
+                    }).handle(AspectReadBuilders.PROP_GET_BOOLEAN, "nonempty").buildRead();
+            public static final IAspectRead<ValueTypeBoolean.ValueBoolean, ValueTypeBoolean> BOOLEAN_APPLICABLE =
+                    MekanismAspectReadBuilders.Chemical.BUILDER_BOOLEAN.handle(
+                            tankInfo -> tankInfo.getTanks() > 0
+                    ).handle(AspectReadBuilders.PROP_GET_BOOLEAN, "applicable").buildRead();
 
-    public static final class Write {
+            public static final IAspectRead<ValueTypeLong.ValueLong, ValueTypeLong> LONG_AMOUNT =
+                    MekanismAspectReadBuilders.Chemical.BUILDER_LONG_ACTIVATABLE.handle(MekanismAspectReadBuilders.Chemical.PROP_GET_CHEMICALSTACK).handle(
+                            ChemicalStack::getAmount
+                    ).handle(AspectReadBuilders.PROP_GET_LONG, "amount").buildRead();
+            public static final IAspectRead<ValueTypeLong.ValueLong, ValueTypeLong> LONG_AMOUNTTOTAL =
+                    MekanismAspectReadBuilders.Chemical.BUILDER_LONG.handle(tankInfo -> {
+                        long amount = 0;
+                        for (int i = 0; i < tankInfo.getTanks(); i++) {
+                            amount += tankInfo.getChemicalInTank(i).getAmount();
+                        }
+                        return amount;
+                    }).handle(AspectReadBuilders.PROP_GET_LONG, "totalamount").buildRead();
+            public static final IAspectRead<ValueTypeLong.ValueLong, ValueTypeLong> LONG_CAPACITY =
+                    MekanismAspectReadBuilders.Chemical.BUILDER_LONG_ACTIVATABLE.handle(
+                            tankInfo -> tankInfo != null ? tankInfo.getLeft().getTankCapacity(tankInfo.getRight()) : 0
+                    ).handle(AspectReadBuilders.PROP_GET_LONG, "capacity").buildRead();
+            public static final IAspectRead<ValueTypeLong.ValueLong, ValueTypeLong> LONG_CAPACITYTOTAL =
+                    MekanismAspectReadBuilders.Chemical.BUILDER_LONG.handle(tankInfo -> {
+                        long capacity = 0;
+                        for (int i = 0; i < tankInfo.getTanks(); i++) {
+                            capacity += tankInfo.getTankCapacity(i);
+                        }
+                        return capacity;
+                    }).handle(AspectReadBuilders.PROP_GET_LONG, "totalcapacity").buildRead();
+            public static final IAspectRead<ValueTypeInteger.ValueInteger, ValueTypeInteger> INTEGER_TANKS =
+                    MekanismAspectReadBuilders.Chemical.BUILDER_INTEGER.handle(
+                            IChemicalHandler::getTanks
+                    ).handle(AspectReadBuilders.PROP_GET_INTEGER, "tanks").buildRead();
 
-        public static final class Chemical {
+            public static final IAspectRead<ValueTypeDouble.ValueDouble, ValueTypeDouble> DOUBLE_FILLRATIO =
+                    MekanismAspectReadBuilders.Chemical.BUILDER_DOUBLE_ACTIVATABLE.handle(tankInfo -> {
+                        if(tankInfo == null) {
+                            return 0D;
+                        }
+                        double amount = tankInfo.getLeft().getChemicalInTank(tankInfo.getRight()).getAmount();
+                        return amount / (double) tankInfo.getLeft().getTankCapacity(tankInfo.getRight());
+                    }).handle(AspectReadBuilders.PROP_GET_DOUBLE, "fillratio").buildRead();
 
-            public static final IAspectWrite<ValueTypeBoolean.ValueBoolean, ValueTypeBoolean> BOOLEAN_EXPORT =
-                    MekanismAspectWriteBuilders.Chemical.BUILDER_BOOLEAN
-                            .withProperties(MekanismAspectWriteBuilders.Chemical.PROPERTIES_RATE)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_BOOLEAN_GETRATE)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_LONG_CHEMICALPREDICATE)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_CHEMICALTARGET)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_EXPORT)
-                            .appendKind("export").buildWrite();
-            public static final IAspectWrite<ValueTypeLong.ValueLong, ValueTypeLong> LONG_EXPORT =
-                    MekanismAspectWriteBuilders.Chemical.BUILDER_LONG
-                            .withProperties(MekanismAspectWriteBuilders.Chemical.PROPERTIES)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_LONG_CHEMICALPREDICATE)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_CHEMICALTARGET)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_EXPORT)
-                            .appendKind("export").buildWrite();
-            public static final IAspectWrite<ValueObjectTypeChemicalStack.ValueChemicalStack, ValueObjectTypeChemicalStack> CHEMICALSTACK_EXPORT =
-                    MekanismAspectWriteBuilders.Chemical.BUILDER_CHEMICALSTACK
-                            .withProperties(MekanismAspectWriteBuilders.Chemical.PROPERTIES_RATECHECKSCRAFT)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_CHEMICALSTACK_CHEMICALPREDICATE)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_CHEMICALTARGET)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_EXPORT)
-                            .appendKind("export").buildWrite();
-            public static final IAspectWrite<ValueTypeList.ValueList, ValueTypeList> LIST_EXPORT =
-                    MekanismAspectWriteBuilders.Chemical.BUILDER_LIST
-                            .withProperties(MekanismAspectWriteBuilders.Chemical.PROPERTIES_RATECHECKSLIST)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_CHEMICALSTACKLIST_CHEMICALPREDICATE)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_CHEMICALTARGET)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_EXPORT)
-                            .appendKind("export").buildWrite();
-            public static final IAspectWrite<ValueTypeOperator.ValueOperator, ValueTypeOperator> PREDICATE_EXPORT =
-                    MekanismAspectWriteBuilders.Chemical.BUILDER_OPERATOR
-                            .withProperties(MekanismAspectWriteBuilders.Chemical.PROPERTIES_RATE)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_CHEMICALSTACKPREDICATE_CHEMICALPREDICATE)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_CHEMICALTARGET)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_EXPORT)
-                            .appendKind("export").buildWrite();
+            public static final IAspectRead<ValueTypeList.ValueList, ValueTypeList> LIST_TANKCHEMICALS =
+                    AspectReadBuilders.BUILDER_LIST.byMod(Reference.MOD_ID).appendKind("chemical").handle(MekanismAspectReadBuilders.Chemical.PROP_GET_LIST_CHEMICALSTACKS, "chemicalstacks").buildRead();
+            public static final IAspectRead<ValueTypeList.ValueList, ValueTypeList> LIST_TANKCAPACITIES =
+                    AspectReadBuilders.BUILDER_LIST.byMod(Reference.MOD_ID).appendKind("chemical").handle(MekanismAspectReadBuilders.Chemical.PROP_GET_LIST_CAPACITIES, "capacities").buildRead();
 
-            public static final IAspectWrite<ValueTypeBoolean.ValueBoolean, ValueTypeBoolean> BOOLEAN_IMPORT =
-                    MekanismAspectWriteBuilders.Chemical.BUILDER_BOOLEAN
-                            .withProperties(MekanismAspectWriteBuilders.Chemical.PROPERTIES_RATE)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_BOOLEAN_GETRATE)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_LONG_CHEMICALPREDICATE)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_CHEMICALTARGET)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_IMPORT)
-                            .appendKind("import").buildWrite();
-            public static final IAspectWrite<ValueTypeLong.ValueLong, ValueTypeLong> LONG_IMPORT =
-                    MekanismAspectWriteBuilders.Chemical.BUILDER_LONG
-                            .withProperties(MekanismAspectWriteBuilders.Chemical.PROPERTIES)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_LONG_CHEMICALPREDICATE)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_CHEMICALTARGET)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_IMPORT)
-                            .appendKind("import").buildWrite();
-            public static final IAspectWrite<ValueObjectTypeChemicalStack.ValueChemicalStack, ValueObjectTypeChemicalStack> CHEMICALSTACK_IMPORT =
-                    MekanismAspectWriteBuilders.Chemical.BUILDER_CHEMICALSTACK
-                            .withProperties(MekanismAspectWriteBuilders.Chemical.PROPERTIES_RATECHECKS)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_CHEMICALSTACK_CHEMICALPREDICATE)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_CHEMICALTARGET)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_IMPORT)
-                            .appendKind("import").buildWrite();
-            public static final IAspectWrite<ValueTypeList.ValueList, ValueTypeList> LIST_IMPORT =
-                    MekanismAspectWriteBuilders.Chemical.BUILDER_LIST
-                            .withProperties(MekanismAspectWriteBuilders.Chemical.PROPERTIES_RATECHECKSLIST)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_CHEMICALSTACKLIST_CHEMICALPREDICATE)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_CHEMICALTARGET)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_IMPORT)
-                            .appendKind("import").buildWrite();
-            public static final IAspectWrite<ValueTypeOperator.ValueOperator, ValueTypeOperator> PREDICATE_IMPORT =
-                    MekanismAspectWriteBuilders.Chemical.BUILDER_OPERATOR
-                            .withProperties(MekanismAspectWriteBuilders.Chemical.PROPERTIES_RATE)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_CHEMICALSTACKPREDICATE_CHEMICALPREDICATE)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_CHEMICALTARGET)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_IMPORT)
-                            .appendKind("import").buildWrite();
-
-        }
-
-        public static final class World {
-
-            public static final IAspectWrite<ValueTypeBoolean.ValueBoolean, ValueTypeBoolean> ENTITY_CHEMICAL_BOOLEAN_IMPORT =
-                    MekanismAspectWriteBuilders.World.BUILDER_BOOLEAN
-                            .withProperties(MekanismAspectWriteBuilders.World.Chemical.PROPERTIES_RATE)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_BOOLEAN_GETRATE)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_LONG_CHEMICALPREDICATE)
-                            .handle(MekanismAspectWriteBuilders.World.Chemical.PROP_ENTITY_CHEMICALTARGET)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_IMPORT)
-                            .appendKind("entity").appendKind("chemical").appendKind("import").buildWrite();
-            public static final IAspectWrite<ValueTypeLong.ValueLong, ValueTypeLong> ENTITY_CHEMICAL_INTEGER_IMPORT =
-                    MekanismAspectWriteBuilders.World.BUILDER_LONG
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_LONG_CHEMICALPREDICATE)
-                            .handle(MekanismAspectWriteBuilders.World.Chemical.PROP_ENTITY_CHEMICALTARGET)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_IMPORT)
-                            .appendKind("entity").appendKind("chemical").appendKind("import").buildWrite();
-            public static final IAspectWrite<ValueObjectTypeChemicalStack.ValueChemicalStack, ValueObjectTypeChemicalStack> ENTITY_CHEMICAL_CHEMICALSTACK_IMPORT =
-                    MekanismAspectWriteBuilders.World.BUILDER_CHEMICALSTACK
-                            .withProperties(MekanismAspectWriteBuilders.World.Chemical.PROPERTIES_RATECHECKS)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_CHEMICALSTACK_CHEMICALPREDICATE)
-                            .handle(MekanismAspectWriteBuilders.World.Chemical.PROP_ENTITY_CHEMICALTARGET)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_IMPORT)
-                            .appendKind("entity").appendKind("chemical").appendKind("import").buildWrite();
-            public static final IAspectWrite<ValueTypeList.ValueList, ValueTypeList> ENTITY_CHEMICAL_LISTCHEMICALSTACK_IMPORT =
-                    MekanismAspectWriteBuilders.World.BUILDER_LIST
-                            .withProperties(MekanismAspectWriteBuilders.World.Chemical.PROPERTIES_RATECHECKSLIST)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_CHEMICALSTACKLIST_CHEMICALPREDICATE)
-                            .handle(MekanismAspectWriteBuilders.World.Chemical.PROP_ENTITY_CHEMICALTARGET)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_IMPORT)
-                            .appendKind("entity").appendKind("chemical").appendKind("import").buildWrite();
-            public static final IAspectWrite<ValueTypeOperator.ValueOperator, ValueTypeOperator> ENTITY_CHEMICAL_PREDICATECHEMICALSTACK_IMPORT =
-                    MekanismAspectWriteBuilders.World.BUILDER_OPERATOR
-                            .withProperties(MekanismAspectWriteBuilders.World.Chemical.PROPERTIES_RATE)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_CHEMICALSTACKPREDICATE_CHEMICALPREDICATE)
-                            .handle(MekanismAspectWriteBuilders.World.Chemical.PROP_ENTITY_CHEMICALTARGET)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_IMPORT)
-                            .appendKind("entity").appendKind("chemical").appendKind("import").buildWrite();
-
-            public static final IAspectWrite<ValueTypeBoolean.ValueBoolean, ValueTypeBoolean> ENTITY_CHEMICAL_BOOLEAN_EXPORT =
-                    MekanismAspectWriteBuilders.World.BUILDER_BOOLEAN
-                            .withProperties(MekanismAspectWriteBuilders.World.Chemical.PROPERTIES_RATE)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_BOOLEAN_GETRATE)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_LONG_CHEMICALPREDICATE)
-                            .handle(MekanismAspectWriteBuilders.World.Chemical.PROP_ENTITY_CHEMICALTARGET)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_EXPORT)
-                            .appendKind("entity").appendKind("chemical").appendKind("export").buildWrite();
-            public static final IAspectWrite<ValueTypeLong.ValueLong, ValueTypeLong> ENTITY_CHEMICAL_INTEGER_EXPORT =
-                    MekanismAspectWriteBuilders.World.BUILDER_LONG
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_LONG_CHEMICALPREDICATE)
-                            .handle(MekanismAspectWriteBuilders.World.Chemical.PROP_ENTITY_CHEMICALTARGET)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_EXPORT)
-                            .appendKind("entity").appendKind("chemical").appendKind("export").buildWrite();
-            public static final IAspectWrite<ValueObjectTypeChemicalStack.ValueChemicalStack, ValueObjectTypeChemicalStack> ENTITY_CHEMICAL_CHEMICALSTACK_EXPORT =
-                    MekanismAspectWriteBuilders.World.BUILDER_CHEMICALSTACK
-                            .withProperties(MekanismAspectWriteBuilders.World.Chemical.PROPERTIES_RATECHECKSCRAFT)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_CHEMICALSTACK_CHEMICALPREDICATE)
-                            .handle(MekanismAspectWriteBuilders.World.Chemical.PROP_ENTITY_CHEMICALTARGET)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_EXPORT)
-                            .appendKind("entity").appendKind("chemical").appendKind("export").buildWrite();
-            public static final IAspectWrite<ValueTypeList.ValueList, ValueTypeList> ENTITY_CHEMICAL_LISTCHEMICALSTACK_EXPORT =
-                    MekanismAspectWriteBuilders.World.BUILDER_LIST
-                            .withProperties(MekanismAspectWriteBuilders.World.Chemical.PROPERTIES_RATECHECKSLIST)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_CHEMICALSTACKLIST_CHEMICALPREDICATE)
-                            .handle(MekanismAspectWriteBuilders.World.Chemical.PROP_ENTITY_CHEMICALTARGET)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_EXPORT)
-                            .appendKind("entity").appendKind("chemical").appendKind("export").buildWrite();
-            public static final IAspectWrite<ValueTypeOperator.ValueOperator, ValueTypeOperator> ENTITY_CHEMICAL_PREDICATECHEMICALSTACK_EXPORT =
-                    MekanismAspectWriteBuilders.World.BUILDER_OPERATOR
-                            .withProperties(MekanismAspectWriteBuilders.World.Chemical.PROPERTIES_RATE)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_CHEMICALSTACKPREDICATE_CHEMICALPREDICATE)
-                            .handle(MekanismAspectWriteBuilders.World.Chemical.PROP_ENTITY_CHEMICALTARGET)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_EXPORT)
-                            .appendKind("entity").appendKind("chemical").appendKind("export").buildWrite();
-
-        }
-
-        public static final class ChemicalFilter {
-
-            public static final IAspectWrite<ValueTypeBoolean.ValueBoolean, ValueTypeBoolean> BOOLEAN_SET_FILTER =
-                    MekanismAspectWriteBuilders.Chemical.BUILDER_BOOLEAN
-                            .withProperties(MekanismAspectWriteBuilders.Chemical.PROPERTIES_FILTER)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_BOOLEAN_PREDICATE)
-                            .handle(TunnelAspectWriteBuilders.propSetFilter())
-                            .appendActivator(TunnelAspectWriteBuilders.PREPARE_FILTER)
-                            .appendDeactivator(TunnelAspectWriteBuilders.RESET_FILTER)
-                            .appendKind("filter").buildWrite();
-            public static final IAspectWrite<ValueObjectTypeChemicalStack.ValueChemicalStack, ValueObjectTypeChemicalStack> CHEMICALSTACK_SET_FILTER =
-                    MekanismAspectWriteBuilders.Chemical.BUILDER_CHEMICALSTACK
-                            .withProperties(MekanismAspectWriteBuilders.Chemical.PROPERTIES_FILTER_CHECKS)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_CHEMICALSTACK_CHEMICALPREDICATE)
-                            .handle(TunnelAspectWriteBuilders.propSetFilter())
-                            .appendActivator(TunnelAspectWriteBuilders.PREPARE_FILTER)
-                            .appendDeactivator(TunnelAspectWriteBuilders.RESET_FILTER)
-                            .appendKind("filter").buildWrite();
-            public static final IAspectWrite<ValueTypeList.ValueList, ValueTypeList> LIST_SET_FILTER =
-                    MekanismAspectWriteBuilders.Chemical.BUILDER_LIST
-                            .withProperties(MekanismAspectWriteBuilders.Chemical.PROPERTIES_FILTER_CHECKS)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_CHEMICALSTACKLIST_CHEMICALPREDICATE)
-                            .handle(TunnelAspectWriteBuilders.propSetFilter())
-                            .appendActivator(TunnelAspectWriteBuilders.PREPARE_FILTER)
-                            .appendDeactivator(TunnelAspectWriteBuilders.RESET_FILTER)
-                            .appendKind("filter").buildWrite();
-            public static final IAspectWrite<ValueTypeOperator.ValueOperator, ValueTypeOperator> PREDICATE_SET_FILTER =
-                    MekanismAspectWriteBuilders.Chemical.BUILDER_OPERATOR
-                            .withProperties(MekanismAspectWriteBuilders.Chemical.PROPERTIES_FILTER)
-                            .handle(MekanismAspectWriteBuilders.Chemical.PROP_CHEMICALSTACKPREDICATE_CHEMICALPREDICATE)
-                            .handle(TunnelAspectWriteBuilders.propSetFilter())
-                            .appendActivator(TunnelAspectWriteBuilders.PREPARE_FILTER)
-                            .appendDeactivator(TunnelAspectWriteBuilders.RESET_FILTER)
-                            .appendKind("filter").buildWrite();
+            public static final IAspectRead<ValueObjectTypeChemicalStack.ValueChemicalStack, ValueObjectTypeChemicalStack> CHEMICALSTACK =
+                    MekanismAspectReadBuilders.BUILDER_OBJECT_CHEMICALSTACK
+                            .handle(MekanismAspectReadBuilders.Chemical.PROP_GET_ACTIVATABLE, "chemical").withProperties(MekanismAspectReadBuilders.Chemical.PROPERTIES)
+                            .handle(MekanismAspectReadBuilders.Chemical.PROP_GET_CHEMICALSTACK)
+                            .handle(MekanismAspectReadBuilders.PROP_GET_CHEMICALSTACK)
+                            .buildRead();
 
         }
 

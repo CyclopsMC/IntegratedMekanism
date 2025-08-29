@@ -11,6 +11,8 @@
     "valuetype.integratedmekanismics.chemicalstack": "Chemical",
 
     "_comment": "Part types",
+    "parttype.integratedmekanismics.chemical_reader": "Chemical Reader",
+    "parttype.integratedmekanismics.chemical_reader.info": "Reads chemical tanks",
     "parttype.integratedmekanismics.interface_chemical": "Chemical Interface",
     "parttype.integratedmekanismics.interface_chemical.info": "Attaches a chemical tank to the network",
     "parttype.integratedmekanismics.interface_filter_chemical": "Filtering Chemical Interface",
@@ -30,6 +32,39 @@
     "aspect.aspecttypes.integratedmekanismics.boolean.chemical.checkamount.info": "If only exactly the given chemical amount is allowed to be moved in one tick, not less.",
 
     "_comment": "Aspects",
+
+    "_comment": "# Chemical aspects",
+    "aspect.integratedmekanismics.read.boolean.chemical.empty": "Tank Empty",
+    "aspect.integratedmekanismics.read.boolean.chemical.empty.info": "If the target chemical tank is empty",
+    "aspect.integratedmekanismics.read.boolean.chemical.full": "Tank Full",
+    "aspect.integratedmekanismics.read.boolean.chemical.full.info": "If the target chemical tank is full",
+    "aspect.integratedmekanismics.read.boolean.chemical.nonempty": "Tank Not Empty",
+    "aspect.integratedmekanismics.read.boolean.chemical.nonempty.info": "If the target chemical tank has something in it",
+    "aspect.integratedmekanismics.read.boolean.chemical.applicable": "Is Tank",
+    "aspect.integratedmekanismics.read.boolean.chemical.applicable.info": "If the target has a chemical tank",
+
+    "aspect.integratedmekanismics.read.long.chemical.amount": "Chemical Amount",
+    "aspect.integratedmekanismics.read.long.chemical.amount.info": "The amount of chemical in mB in the active tank",
+    "aspect.integratedmekanismics.read.long.chemical.totalamount": "Total Chemical Amount",
+    "aspect.integratedmekanismics.read.long.chemical.totalamount.info": "The total amount of chemical in mB",
+    "aspect.integratedmekanismics.read.long.chemical.capacity": "Chemical Capacity",
+    "aspect.integratedmekanismics.read.long.chemical.capacity.info": "Total capacity of the active tank",
+    "aspect.integratedmekanismics.read.long.chemical.totalcapacity": "Total Chemical Capacity",
+    "aspect.integratedmekanismics.read.long.chemical.totalcapacity.info": "Total capacity of the tank",
+
+    "aspect.integratedmekanismics.read.integer.chemical.tanks": "Tanks",
+    "aspect.integratedmekanismics.read.integer.chemical.tanks.info": "The amount of tanks found at the target",
+
+    "aspect.integratedmekanismics.read.double.chemical.fillratio": "Chemical Fill Ratio",
+    "aspect.integratedmekanismics.read.double.chemical.fillratio.info": "The amount of chemical in the active tank divided by its capacity",
+
+    "aspect.integratedmekanismics.read.list.chemical.chemicalstacks": "Tank Chemicals",
+    "aspect.integratedmekanismics.read.list.chemical.chemicalstacks.info": "The list of chemicals in all tanks",
+    "aspect.integratedmekanismics.read.list.chemical.capacities": "Tank Capacities",
+    "aspect.integratedmekanismics.read.list.chemical.capacities.info": "The list of capacities of all tanks",
+
+    "aspect.integratedmekanismics.read.chemicalstack.chemical": "Tank Chemical",
+    "aspect.integratedmekanismics.read.chemicalstack.chemical.info": "The chemical in the target tank",
 
     "_comment": "# Network aspects",
     "aspect.integratedmekanismics.read.long.chemicalnetwork.count": "Network Chemical Count",
