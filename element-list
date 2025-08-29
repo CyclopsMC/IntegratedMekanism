@@ -10,12 +10,15 @@ org.cyclops.integratedmekanismics.modcompat.integratedscripting.translation
 org.cyclops.integratedmekanismics.modcompat.integratedterminals
 org.cyclops.integratedmekanismics.modcompat.integratedterminals.sorter
 org.cyclops.integratedmekanismics.modcompat.integratedtunnels
+org.cyclops.integratedmekanismics.modcompat.integratedtunnels.aspect
+org.cyclops.integratedmekanismics.modcompat.integratedtunnels.aspect.listproxy
+org.cyclops.integratedmekanismics.modcompat.integratedtunnels.aspect.operator
+org.cyclops.integratedmekanismics.modcompat.integratedtunnels.part
 org.cyclops.integratedmekanismics.network
 org.cyclops.integratedmekanismics.operator
 org.cyclops.integratedmekanismics.part
 org.cyclops.integratedmekanismics.part.aspect
 org.cyclops.integratedmekanismics.part.aspect.listproxy
-org.cyclops.integratedmekanismics.part.aspect.operator
 org.cyclops.integratedmekanismics.proxy
 org.cyclops.integratedmekanismics.test
 org.cyclops.integratedmekanismics.value
