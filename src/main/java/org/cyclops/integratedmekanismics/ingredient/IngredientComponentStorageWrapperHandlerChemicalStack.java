@@ -18,6 +18,7 @@ import mekanism.api.chemical.pigment.PigmentStack;
 import mekanism.api.chemical.slurry.ISlurryHandler;
 import mekanism.api.chemical.slurry.Slurry;
 import mekanism.api.chemical.slurry.SlurryStack;
+import mekanism.common.capabilities.Capabilities;
 import net.minecraft.core.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -27,6 +28,7 @@ import org.cyclops.commoncapabilities.api.ingredient.storage.IIngredientComponen
 import org.cyclops.commoncapabilities.api.ingredient.storage.IIngredientComponentStorageSlotted;
 import org.cyclops.commoncapabilities.api.ingredient.storage.IIngredientComponentStorageWrapperHandler;
 import org.cyclops.cyclopscore.ingredient.collection.FilteredIngredientCollectionIterator;
+import org.cyclops.integratedmekanismics.network.ChemicalNetwork;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -169,9 +171,11 @@ public abstract class IngredientComponentStorageWrapperHandlerChemicalStack<CHEM
     public static abstract class ChemicalStorageWrapper<CHEMICAL extends Chemical<CHEMICAL>, STACK extends ChemicalStack<CHEMICAL>> implements IChemicalHandler<CHEMICAL, STACK> {
 
         private final IIngredientComponentStorage<ChemicalStack<?>, Integer> storage;
+        private final Capability<? extends IChemicalHandler<CHEMICAL, STACK>> capability; // TODO: this hack can be removed in 1.21 when Mekanism puts all chemicals in a single registry
 
-        public ChemicalStorageWrapper(IIngredientComponentStorage<ChemicalStack<?>, Integer> storage) {
+        public ChemicalStorageWrapper(IIngredientComponentStorage<ChemicalStack<?>, Integer> storage, Capability<? extends IChemicalHandler<CHEMICAL, STACK>> capability) {
             this.storage = storage;
+            this.capability = capability;
         }
 
         @Override
@@ -201,6 +205,14 @@ public abstract class IngredientComponentStorageWrapperHandlerChemicalStack<CHEM
             return false;
         }
 
+        protected void beforeOperation() { // TODO: this hack can be removed in 1.21 when Mekanism puts all chemicals in a single registry
+            ChemicalNetwork.ACTIVE_CAPABILITY = capability;
+        }
+
+        protected void afterOperation() { // TODO: this hack can be removed in 1.21 when Mekanism puts all chemicals in a single registry
+            ChemicalNetwork.ACTIVE_CAPABILITY = null;
+        }
+
         @Override
         public STACK insertChemical(int i, STACK stack, Action action) {
             return stack;
@@ -213,17 +225,26 @@ public abstract class IngredientComponentStorageWrapperHandlerChemicalStack<CHEM
 
         @Override
         public STACK insertChemical(STACK resource, Action action) {
-            return (STACK) storage.insert(resource, chemicalActionToSimulate(action));
+            beforeOperation();
+            STACK ret = (STACK) storage.insert(resource, chemicalActionToSimulate(action));
+            afterOperation();
+            return ret;
         }
 
         @Override
         public STACK extractChemical(STACK resource, Action action) {
-            return (STACK) storage.extract(resource, ChemicalMatch.EXACT, chemicalActionToSimulate(action));
+            beforeOperation();
+            STACK ret = (STACK) storage.extract(resource, ChemicalMatch.EXACT, chemicalActionToSimulate(action));
+            afterOperation();
+            return ret;
         }
 
         @Override
         public STACK extractChemical(long maxDrain, Action action) {
-            return (STACK) storage.extract(maxDrain, chemicalActionToSimulate(action));
+            beforeOperation();
+            STACK ret = (STACK) storage.extract(maxDrain, chemicalActionToSimulate(action));
+            afterOperation();
+            return ret;
         }
 
         @Nonnull
@@ -237,8 +258,8 @@ public abstract class IngredientComponentStorageWrapperHandlerChemicalStack<CHEM
 
         private final IIngredientComponentStorageSlotted<ChemicalStack<?>, Integer> storage;
 
-        public ChemicalStorageWrapperSlotted(IIngredientComponentStorageSlotted<ChemicalStack<?>, Integer> storage) {
-            super(storage);
+        public ChemicalStorageWrapperSlotted(IIngredientComponentStorageSlotted<ChemicalStack<?>, Integer> storage, Capability<? extends IChemicalHandler<CHEMICAL, STACK>> capability) {
+            super(storage, capability);
             this.storage = storage;
         }
 
@@ -254,7 +275,10 @@ public abstract class IngredientComponentStorageWrapperHandlerChemicalStack<CHEM
             if (tank < 0 || tank >= tanks) {
                 throw new IndexOutOfBoundsException("Tank " + tank + " not in valid range - [0," + tanks + ")");
             }
-            return (STACK) this.storage.getSlotContents(tank);
+            beforeOperation();
+            STACK ret = (STACK) this.storage.getSlotContents(tank);
+            afterOperation();
+            return ret;
         }
 
         @Override
@@ -269,12 +293,18 @@ public abstract class IngredientComponentStorageWrapperHandlerChemicalStack<CHEM
 
         @Override
         public STACK insertChemical(int i, STACK stack, Action action) {
-            return (STACK) this.storage.insert(i, stack, chemicalActionToSimulate(action));
+            beforeOperation();
+            STACK ret = (STACK) this.storage.insert(i, stack, chemicalActionToSimulate(action));
+            afterOperation();
+            return ret;
         }
 
         @Override
         public STACK extractChemical(int i, long l, Action action) {
-            return (STACK) this.storage.extract(i, l, chemicalActionToSimulate(action));
+            beforeOperation();
+            STACK ret = (STACK) this.storage.extract(i, l, chemicalActionToSimulate(action));
+            afterOperation();
+            return ret;
         }
     }
 
@@ -283,42 +313,42 @@ public abstract class IngredientComponentStorageWrapperHandlerChemicalStack<CHEM
 
     public static final class StorageWrapperGasSlotted extends IngredientComponentStorageWrapperHandlerChemicalStack.ChemicalStorageWrapperSlotted<Gas, GasStack> implements IGasHandler {
         public StorageWrapperGasSlotted(IIngredientComponentStorageSlotted<ChemicalStack<?>, Integer> storage) {
-            super(storage);
+            super(storage, Capabilities.GAS_HANDLER);
         }
     }
     public static final class StorageWrapperGas extends IngredientComponentStorageWrapperHandlerChemicalStack.ChemicalStorageWrapper<Gas, GasStack> implements IGasHandler {
         public StorageWrapperGas(IIngredientComponentStorage<ChemicalStack<?>, Integer> storage) {
-            super(storage);
+            super(storage, Capabilities.GAS_HANDLER);
         }
     }
     public static final class StorageWrapperInfusionSlotted extends IngredientComponentStorageWrapperHandlerChemicalStack.ChemicalStorageWrapperSlotted<InfuseType, InfusionStack> implements IInfusionHandler {
         public StorageWrapperInfusionSlotted(IIngredientComponentStorageSlotted<ChemicalStack<?>, Integer> storage) {
-            super(storage);
+            super(storage, Capabilities.INFUSION_HANDLER);
         }
     }
     public static final class StorageWrapperInfusion extends IngredientComponentStorageWrapperHandlerChemicalStack.ChemicalStorageWrapper<InfuseType, InfusionStack> implements IInfusionHandler {
         public StorageWrapperInfusion(IIngredientComponentStorage<ChemicalStack<?>, Integer> storage) {
-            super(storage);
+            super(storage, Capabilities.INFUSION_HANDLER);
         }
     }
     public static final class StorageWrapperPigmentSlotted extends IngredientComponentStorageWrapperHandlerChemicalStack.ChemicalStorageWrapperSlotted<Pigment, PigmentStack> implements IPigmentHandler {
         public StorageWrapperPigmentSlotted(IIngredientComponentStorageSlotted<ChemicalStack<?>, Integer> storage) {
-            super(storage);
+            super(storage, Capabilities.PIGMENT_HANDLER);
         }
     }
     public static final class StorageWrapperPigment extends IngredientComponentStorageWrapperHandlerChemicalStack.ChemicalStorageWrapper<Pigment, PigmentStack> implements IPigmentHandler {
         public StorageWrapperPigment(IIngredientComponentStorage<ChemicalStack<?>, Integer> storage) {
-            super(storage);
+            super(storage, Capabilities.PIGMENT_HANDLER);
         }
     }
     public static final class StorageWrapperSlurrySlotted extends IngredientComponentStorageWrapperHandlerChemicalStack.ChemicalStorageWrapperSlotted<Slurry, SlurryStack> implements ISlurryHandler {
         public StorageWrapperSlurrySlotted(IIngredientComponentStorageSlotted<ChemicalStack<?>, Integer> storage) {
-            super(storage);
+            super(storage, Capabilities.SLURRY_HANDLER);
         }
     }
     public static final class StorageWrapperSlurry extends IngredientComponentStorageWrapperHandlerChemicalStack.ChemicalStorageWrapper<Slurry, SlurryStack> implements ISlurryHandler {
         public StorageWrapperSlurry(IIngredientComponentStorage<ChemicalStack<?>, Integer> storage) {
-            super(storage);
+            super(storage, Capabilities.SLURRY_HANDLER);
         }
     }
 

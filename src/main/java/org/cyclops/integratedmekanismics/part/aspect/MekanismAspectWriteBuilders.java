@@ -37,6 +37,7 @@ import org.cyclops.integratedmekanismics.IntegratedMekanismics;
 import org.cyclops.integratedmekanismics.core.CapabilityHelpers;
 import org.cyclops.integratedmekanismics.core.ChemicalHelpers;
 import org.cyclops.integratedmekanismics.ingredient.MekanismIngredientComponents;
+import org.cyclops.integratedmekanismics.network.ChemicalNetwork;
 import org.cyclops.integratedmekanismics.network.ChemicalNetworkConfig;
 import org.cyclops.integratedmekanismics.value.MekanismValueTypes;
 import org.cyclops.integratedmekanismics.value.ValueObjectTypeChemicalStack;
@@ -313,6 +314,7 @@ public class MekanismAspectWriteBuilders {
                 // Only do this for exporting, not for importing, as this would otherwise break round-robin imports.
                 IIngredientComponentStorage<ChemicalStack<?>, Integer> source = input.getChemicalStackMatcher().hasMatchFlags() ? input.getChemicalChannel() : input.getChemicalChannelSlotted();
                 for (Capability<? extends IChemicalHandler<?, ?>> chemicalCapability : CapabilityHelpers.CHEMICAL_CAPABILITIES) { // TODO: this hack can be removed in 1.21 when Mekanism puts all chemicals in a single registry
+                    ChemicalNetwork.ACTIVE_CAPABILITY = chemicalCapability;
                     ChemicalStack<?> moved = TunnelHelpers.moveSingleStateOptimized(
                             input.getNetwork(),
                             input.getChanneledNetwork(),
@@ -326,6 +328,7 @@ public class MekanismAspectWriteBuilders {
                             input.getPartTarget().getCenter(),
                             input.isCraftIfFailed()
                     );
+                    ChemicalNetwork.ACTIVE_CAPABILITY = null;
                     if (!moved.isEmpty()) { // TODO: this hack can be removed in 1.21 when Mekanism puts all chemicals in a single registry
                         break;
                     }
@@ -349,6 +352,7 @@ public class MekanismAspectWriteBuilders {
             if (input.hasValidTarget()) {
                 input.preTransfer();
                 for (Capability<? extends IChemicalHandler<?, ?>> chemicalCapability : CapabilityHelpers.CHEMICAL_CAPABILITIES) { // TODO: this hack can be removed in 1.21 when Mekanism puts all chemicals in a single registry
+                    ChemicalNetwork.ACTIVE_CAPABILITY = chemicalCapability;
                     ChemicalStack<?> moved = TunnelHelpers.moveSingleStateOptimized(
                             input.getNetwork(),
                             input.getChanneledNetwork(),
@@ -362,6 +366,7 @@ public class MekanismAspectWriteBuilders {
                             input.getPartTarget().getCenter(),
                             false
                     );
+                    ChemicalNetwork.ACTIVE_CAPABILITY = null;
                     if (!moved.isEmpty()) { // TODO: this hack can be removed in 1.21 when Mekanism puts all chemicals in a single registry
                         break;
                     }
