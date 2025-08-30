@@ -11,6 +11,8 @@ import org.cyclops.cyclopscore.config.extendedconfig.DummyConfig;
  */
 public class GeneralConfig extends DummyConfig {
 
+    @ConfigurableProperty(category = "general", comment = "If radioactive chemicals can be transferred across the network.", configLocation = ModConfig.Type.SERVER, isCommandable = true)
+    public static boolean transferRadioactiveChemicals = true;
     @ConfigurableProperty(category = "general", comment = "The base energy usage for the chemical reader.", minimalValue = 0, configLocation = ModConfig.Type.SERVER)
     public static int chemicalReaderBaseConsumption = 1;
     @ConfigurableProperty(category = "core", comment = "The maximum network chemical transfer rate.", isCommandable = true, minimalValue = 0, configLocation = ModConfig.Type.SERVER)

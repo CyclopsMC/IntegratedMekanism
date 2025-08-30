@@ -6,6 +6,8 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import mekanism.api.chemical.ChemicalStack;
 import mekanism.api.chemical.IChemicalHandler;
+import mekanism.api.chemical.gas.attribute.GasAttributes;
+import mekanism.api.radiation.IRadiationManager;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.Capability;
@@ -17,6 +19,7 @@ import org.cyclops.commoncapabilities.api.ingredient.storage.IngredientComponent
 import org.cyclops.cyclopscore.datastructure.DimPos;
 import org.cyclops.cyclopscore.helper.BlockEntityHelpers;
 import org.cyclops.cyclopscore.ingredient.storage.IngredientComponentStorageComposite;
+import org.cyclops.integrateddynamics.api.network.PositionedAddonsNetworkIngredientsFilter;
 import org.cyclops.integrateddynamics.api.part.PartPos;
 import org.cyclops.integrateddynamics.core.network.PositionedAddonsNetworkIngredients;
 import org.cyclops.integratedmekanismics.GeneralConfig;
@@ -88,6 +91,23 @@ public class ChemicalNetwork extends PositionedAddonsNetworkIngredients<Chemical
                 ChemicalNetwork.ACTIVE_CAPABILITY = null;
             }
             return new IngredientComponentStorageComposite<>(getComponent(), storages);
+        }
+    }
+
+    @Override
+    public @Nullable PositionedAddonsNetworkIngredientsFilter<ChemicalStack<?>> getPositionedStorageFilter(PartPos pos) {
+        // Do not allow radioactive chemicals to be passed if config option is enabled.
+        PositionedAddonsNetworkIngredientsFilter<ChemicalStack<?>> superFilter = super.getPositionedStorageFilter(pos);
+        if (GeneralConfig.transferRadioactiveChemicals || !IRadiationManager.INSTANCE.isRadiationEnabled()) {
+            return superFilter;
+        } else {
+            return new PositionedAddonsNetworkIngredientsFilter<>(
+                    (chemicalStack) -> {
+                        GasAttributes.Radiation attribute = chemicalStack.get(GasAttributes.Radiation.class);
+                        return (attribute == null || attribute.getRadioactivity() == 0)
+                                && (superFilter == null || superFilter.getFilter().test(chemicalStack));
+                    },
+                    true, true, superFilter == null || superFilter.isAllowAllIfFilterNotApplied());
         }
     }
 }
