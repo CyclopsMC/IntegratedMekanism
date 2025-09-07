@@ -1,4 +1,5 @@
 org.cyclops.integratedmekanismics
+org.cyclops.integratedmekanismics.capability.recipehandler
 org.cyclops.integratedmekanismics.client.render.value
 org.cyclops.integratedmekanismics.core
 org.cyclops.integratedmekanismics.core.predicate
