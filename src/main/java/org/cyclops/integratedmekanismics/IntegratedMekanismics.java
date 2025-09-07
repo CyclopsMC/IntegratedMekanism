@@ -27,6 +27,7 @@ import org.cyclops.integrateddynamics.command.CommandTest;
 import org.cyclops.integrateddynamics.core.event.IntegratedDynamicsSetupEvent;
 import org.cyclops.integrateddynamics.core.ingredient.IngredientComponentHandlers;
 import org.cyclops.integrateddynamics.infobook.OnTheDynamicsOfIntegrationBook;
+import org.cyclops.integratedmekanismics.capability.recipehandler.MekanismCapabilityLoader;
 import org.cyclops.integratedmekanismics.client.render.value.ValueTypeWorldRenderersMekanism;
 import org.cyclops.integratedmekanismics.ingredient.IngredientComponentCapabilitiesMekanism;
 import org.cyclops.integratedmekanismics.ingredient.IngredientComponentHandlerChemical;
@@ -71,6 +72,7 @@ public class IntegratedMekanismics extends ModBaseVersionable<IntegratedMekanism
     public void onRegistriesCreate(NewRegistryEvent event) {
         IngredientComponentCapabilitiesMekanism.load();
         PartTypesMekanism.load();
+        MekanismCapabilityLoader.load();
     }
 
     @Override

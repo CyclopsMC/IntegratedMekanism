@@ -118,7 +118,11 @@ public abstract class IngredientComponentStorageWrapperHandlerChemicalStack<CHEM
                 return getComponent().getMatcher().getEmptyInstance();
             }
 
-            return storage.insertChemical(ingredient, simulateToChemicalAction(simulate));
+            try {
+                return storage.insertChemical(ingredient, simulateToChemicalAction(simulate));
+            } catch (ClassCastException e) { // TODO: this try-catch can be removed in 1.21 when Mekanism puts all chemicals in a single registry
+                return ingredient;
+            }
         }
 
         @Override

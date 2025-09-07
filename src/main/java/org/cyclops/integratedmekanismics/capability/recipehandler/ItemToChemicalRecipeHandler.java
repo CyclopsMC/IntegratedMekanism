@@ -1,0 +1,60 @@
+package org.cyclops.integratedmekanismics.capability.recipehandler;
+
+import com.google.common.collect.Lists;
+import mekanism.api.chemical.Chemical;
+import mekanism.api.chemical.ChemicalStack;
+import mekanism.api.recipes.chemical.ItemStackToChemicalRecipe;
+import mekanism.common.recipe.IMekanismRecipeTypeProvider;
+import net.minecraft.world.level.Level;
+import org.cyclops.commoncapabilities.IngredientComponents;
+import org.cyclops.commoncapabilities.api.capability.recipehandler.IPrototypedIngredientAlternatives;
+import org.cyclops.commoncapabilities.api.capability.recipehandler.PrototypedIngredientAlternativesList;
+import org.cyclops.commoncapabilities.api.ingredient.IMixedIngredients;
+import org.cyclops.commoncapabilities.api.ingredient.IngredientComponent;
+import org.cyclops.integratedmekanismics.ingredient.MekanismIngredientComponents;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Supplier;
+
+/**
+ * @author rubensworks
+ */
+public class ItemToChemicalRecipeHandler<CHEMICAL extends Chemical<CHEMICAL>, STACK extends ChemicalStack<CHEMICAL>> extends MekanismRecipeHandler<ItemStackToChemicalRecipe<CHEMICAL, STACK>> {
+
+    protected ItemToChemicalRecipeHandler(IMekanismRecipeTypeProvider<? extends ItemStackToChemicalRecipe<CHEMICAL, STACK>, ?> recipeType, Supplier<Level> levelSupplier) {
+        super(recipeType, levelSupplier, Set.of(IngredientComponents.ITEMSTACK), Set.of(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK));
+    }
+
+    @Override
+    public boolean isValidSizeInput(IngredientComponent<?, ?> ingredientComponent, int size) {
+        return ingredientComponent == IngredientComponents.ITEMSTACK && size == 1;
+    }
+
+    @Override
+    protected void recipeToInputs(ItemStackToChemicalRecipe<CHEMICAL, STACK> recipe, Map<IngredientComponent<?, ?>, List<IPrototypedIngredientAlternatives<?, ?>>> inputs) {
+        inputs.put(IngredientComponents.ITEMSTACK, List.of(
+                new PrototypedIngredientAlternativesList<>(getPrototypesFromItemIngredient(recipe.getInput()))
+        ));
+    }
+
+    @Override
+    protected void recipeToOutputs(ItemStackToChemicalRecipe<CHEMICAL, STACK> recipe, Map<IngredientComponent<?, ?>, List<?>> outputs) {
+        outputs.put(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK, Lists.newArrayList(
+                recipe.getOutputDefinition().get(0)
+        ));
+    }
+
+    @Override
+    protected void recipeToOutputsSimulated(ItemStackToChemicalRecipe<CHEMICAL, STACK> recipe, IMixedIngredients input, Map<IngredientComponent<?, ?>, List<?>> outputs) {
+        outputs.put(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK, Lists.newArrayList(
+                recipe.getOutput(input.getInstances(IngredientComponents.ITEMSTACK).get(0))
+        ));
+    }
+
+    @Override
+    protected boolean doesRecipeMatchInput(ItemStackToChemicalRecipe<CHEMICAL, STACK> recipe, IMixedIngredients input) {
+        return recipe.getInput().test(input.getInstances(IngredientComponents.ITEMSTACK).get(0));
+    }
+}
