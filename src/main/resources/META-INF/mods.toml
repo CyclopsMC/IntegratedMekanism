@@ -1,15 +1,15 @@
 modLoader="javafml"
 loaderVersion="[47,)"
-issueTrackerURL="https://github.com/CyclopsMC/IntegratedMekanismics/issues"
-displayURL="https://www.curseforge.com/minecraft/mc-mods/integrated-mekanismics"
+issueTrackerURL="https://github.com/CyclopsMC/IntegratedMekanism/issues"
+displayURL="https://www.curseforge.com/minecraft/mc-mods/integrated-mekanism"
 license="MIT"
 logoFile="logo.png"
 authors="rubensworks (aka kroeser)"
 [[mods]]
-modId="integratedmekanismics"
+modId="integratedmekanism"
 version="${file.jarVersion}"
-displayName="IntegratedMekanismics"
-updateJSONURL="https://raw.githubusercontent.com/CyclopsMC/Versions/master/forge_update/integrated-mekanismics.json"
+displayName="IntegratedMekanism"
+updateJSONURL="https://raw.githubusercontent.com/CyclopsMC/Versions/master/forge_update/integrated-mekanism.json"
 description='''
 Compability mod between Mekanism and the Integrated Dynamics mods.
 '''

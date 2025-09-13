@@ -30,8 +30,8 @@ logger.lifecycle "BUILDING VERSION: " + build_number
 
 // Set mod details
 version = project.mod_version
-group = "org.cyclops.integratedmekanismics"
-archivesBaseName = "IntegratedMekanismics"
+group = "org.cyclops.integratedmekanism"
+archivesBaseName = "IntegratedMekanism"
 
 // Set Java details
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)

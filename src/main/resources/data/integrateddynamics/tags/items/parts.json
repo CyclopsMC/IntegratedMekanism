@@ -1,12 +1,12 @@
 {
   "replace": false,
   "values": [
-    "integratedmekanismics:part_chemical_reader",
-    "integratedmekanismics:part_interface_chemical",
-    "integratedmekanismics:part_interface_filter_chemical",
-    "integratedmekanismics:part_importer_chemical",
-    "integratedmekanismics:part_exporter_chemical",
-    "integratedmekanismics:part_importer_world_chemical",
-    "integratedmekanismics:part_exporter_world_chemical"
+    "integratedmekanism:part_chemical_reader",
+    "integratedmekanism:part_interface_chemical",
+    "integratedmekanism:part_interface_filter_chemical",
+    "integratedmekanism:part_importer_chemical",
+    "integratedmekanism:part_exporter_chemical",
+    "integratedmekanism:part_importer_world_chemical",
+    "integratedmekanism:part_exporter_world_chemical"
   ]
 }

@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "integratedmekanism:part_exporter_chemical"
+    },
+    {
+      "item": "integrateddynamics:logic_director"
+    }
+  ],
+  "result": {
+    "item": "integratedmekanism:part_exporter_world_chemical"
+  }
+}

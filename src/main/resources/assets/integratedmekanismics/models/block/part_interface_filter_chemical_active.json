@@ -1,6 +1,0 @@
-{
-    "parent": "integratedtunnels:block/connector",
-    "textures": {
-        "texture" : "integratedmekanismics:part/interface_filter_chemical_active"
-    }
-}

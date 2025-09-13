@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CBC",
+    "CCC"
+  ],
+  "key": {
+    "C": {
+      "item": "integrateddynamics:crystalized_menril_chunk"
+    },
+    "B": {
+      "item": "mekanism:basic_chemical_tank"
+    }
+  },
+  "result": {
+    "item": "integratedmekanism:part_interface_chemical",
+    "count": 4
+  }
+}

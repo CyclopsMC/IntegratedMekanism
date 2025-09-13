@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<section name="info_book.mekanism.section.tutorials">
+    <section name="info_book.mekanism.tutorials.introduction">
+        <paragraph>info_book.mekanism.tutorials.introduction.text1</paragraph>
+    </section>
+</section>

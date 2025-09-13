@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "facing=north": { "model": "integratedmekanism:block/part_chemical_reader", "y": 180 },
+    "facing=east":  { "model": "integratedmekanism:block/part_chemical_reader", "y": 270 },
+    "facing=south": { "model": "integratedmekanism:block/part_chemical_reader"           },
+    "facing=west":  { "model": "integratedmekanism:block/part_chemical_reader", "y": 90  },
+    "facing=up":    { "model": "integratedmekanism:block/part_chemical_reader", "x": 90  },
+    "facing=down":  { "model": "integratedmekanism:block/part_chemical_reader", "x": 270 }
+  }
+}

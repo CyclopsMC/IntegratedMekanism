@@ -1,7 +1,0 @@
-{
-    "parent": "integrateddynamics:block/part_reader",
-    "textures": {
-        "back": "integratedmekanismics:part/chemical_reader_back",
-        "front": "integratedmekanismics:part/chemical_reader_front"
-    }
-}

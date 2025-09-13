@@ -1,6 +1,0 @@
-{
-    "parent": "integratedtunnels:block/world_interface",
-    "textures": {
-        "texture" : "integratedmekanismics:part/exporter_world_chemical_inactive"
-    }
-}
