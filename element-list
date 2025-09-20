@@ -4,6 +4,7 @@ org.cyclops.integratedmekanism.client.render.value
 org.cyclops.integratedmekanism.core
 org.cyclops.integratedmekanism.core.predicate
 org.cyclops.integratedmekanism.ingredient
+org.cyclops.integratedmekanism.logicprogrammer
 org.cyclops.integratedmekanism.modcompat.integratedrest
 org.cyclops.integratedmekanism.modcompat.integratedrest.json
 org.cyclops.integratedmekanism.modcompat.integratedscripting
@@ -15,7 +16,9 @@ org.cyclops.integratedmekanism.modcompat.integratedtunnels.aspect
 org.cyclops.integratedmekanism.modcompat.integratedtunnels.aspect.listproxy
 org.cyclops.integratedmekanism.modcompat.integratedtunnels.aspect.operator
 org.cyclops.integratedmekanism.modcompat.integratedtunnels.part
+org.cyclops.integratedmekanism.modcompat.jei
 org.cyclops.integratedmekanism.network
+org.cyclops.integratedmekanism.network.packet
 org.cyclops.integratedmekanism.operator
 org.cyclops.integratedmekanism.part
 org.cyclops.integratedmekanism.part.aspect
