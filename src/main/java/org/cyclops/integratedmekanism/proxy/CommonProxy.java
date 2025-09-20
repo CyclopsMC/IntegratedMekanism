@@ -5,6 +5,9 @@ import org.cyclops.cyclopscore.network.PacketHandler;
 import org.cyclops.cyclopscore.proxy.CommonProxyComponent;
 import org.cyclops.integrateddynamics.IntegratedDynamics;
 import org.cyclops.integratedmekanism.IntegratedMekanism;
+import org.cyclops.integratedmekanism.network.packet.CPacketValueTypeRecipeChemicalLPElementSetRecipe;
+import org.cyclops.integratedmekanism.network.packet.LogicProgrammerValueTypeRecipeChemicalSlotPropertiesChangedPacket;
+import org.cyclops.integratedmekanism.network.packet.LogicProgrammerValueTypeRecipeChemicalValueChangedPacket;
 
 /**
  * Proxy for server and client side.
@@ -23,6 +26,9 @@ public class CommonProxy extends CommonProxyComponent {
         super.registerPacketHandlers(packetHandler);
 
         // Register packets.
+        packetHandler.register(LogicProgrammerValueTypeRecipeChemicalValueChangedPacket.class);
+        packetHandler.register(LogicProgrammerValueTypeRecipeChemicalSlotPropertiesChangedPacket.class);
+        packetHandler.register(CPacketValueTypeRecipeChemicalLPElementSetRecipe.class);
 
         IntegratedDynamics.clog("Registered packet handler.");
     }

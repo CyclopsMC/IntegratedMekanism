@@ -106,23 +106,27 @@ public class ValueObjectTypeChemicalStack extends ValueObjectTypeBase<ValueObjec
 
             @Override
             public ItemStack getValueAsItemStack(ValueChemicalStack value) {
-                ItemStack itemStack = new ItemStack(MekanismBlocks.BASIC_CHEMICAL_TANK);
-                if (value.getRawValue() instanceof GasStack chemicalStack) {
-                    itemStack.getCapability(Capabilities.GAS_HANDLER)
-                            .ifPresent(handler ->  handler.insertChemical(chemicalStack, Action.EXECUTE));
-                } else if (value.getRawValue() instanceof InfusionStack chemicalStack) {
-                    itemStack.getCapability(Capabilities.INFUSION_HANDLER)
-                            .ifPresent(handler ->  handler.insertChemical(chemicalStack, Action.EXECUTE));
-                } else if (value.getRawValue() instanceof PigmentStack chemicalStack) {
-                    itemStack.getCapability(Capabilities.PIGMENT_HANDLER)
-                            .ifPresent(handler ->  handler.insertChemical(chemicalStack, Action.EXECUTE));
-                } else if (value.getRawValue() instanceof SlurryStack chemicalStack) {
-                    itemStack.getCapability(Capabilities.SLURRY_HANDLER)
-                            .ifPresent(handler ->  handler.insertChemical(chemicalStack, Action.EXECUTE));
-                }
-                return itemStack;
+                return valueToItemStack(value.getRawValue());
             }
         });
+    }
+
+    public static ItemStack valueToItemStack(ChemicalStack<?> chemicalStackRaw) {
+        ItemStack itemStack = new ItemStack(MekanismBlocks.BASIC_CHEMICAL_TANK);
+        if (chemicalStackRaw instanceof GasStack chemicalStack) {
+            itemStack.getCapability(Capabilities.GAS_HANDLER)
+                    .ifPresent(handler ->  handler.insertChemical(chemicalStack, Action.EXECUTE));
+        } else if (chemicalStackRaw instanceof InfusionStack chemicalStack) {
+            itemStack.getCapability(Capabilities.INFUSION_HANDLER)
+                    .ifPresent(handler ->  handler.insertChemical(chemicalStack, Action.EXECUTE));
+        } else if (chemicalStackRaw instanceof PigmentStack chemicalStack) {
+            itemStack.getCapability(Capabilities.PIGMENT_HANDLER)
+                    .ifPresent(handler ->  handler.insertChemical(chemicalStack, Action.EXECUTE));
+        } else if (chemicalStackRaw instanceof SlurryStack chemicalStack) {
+            itemStack.getCapability(Capabilities.SLURRY_HANDLER)
+                    .ifPresent(handler ->  handler.insertChemical(chemicalStack, Action.EXECUTE));
+        }
+        return itemStack;
     }
 
     @Override

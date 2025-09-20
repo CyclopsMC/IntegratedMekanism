@@ -214,6 +214,10 @@
     "gui.integratedterminals.terminal_storage.sort.chemicalstack.name.info": "Sort by chemical name.",
     "gui.integratedterminals.terminal_storage.sort.chemicalstack.quantity": "Chemical Amount",
     "gui.integratedterminals.terminal_storage.sort.chemicalstack.quantity.info": "Sort by amount of mB.",
+    "gui.integratedmekanism.logicprogrammer.element.recipechemical.name": "Chemical Recipe",
+    "gui.integratedmekanism.logicprogrammer.element.recipechemical.tooltip.item": "Input and output items",
+    "gui.integratedmekanism.logicprogrammer.element.recipechemical.tooltip.fluid": "Input and output fluids",
+    "gui.integratedmekanism.logicprogrammer.element.recipechemical.tooltip.chemical": "Input and output chemicals",
 
     "_comment": "------ On the Dynamics of Integration contents ------",
 

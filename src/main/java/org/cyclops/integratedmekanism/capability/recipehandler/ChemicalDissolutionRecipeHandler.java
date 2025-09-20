@@ -58,7 +58,7 @@ public class ChemicalDissolutionRecipeHandler extends MekanismRecipeHandler<Chem
                 recipe.getOutput(
                         input.getInstances(IngredientComponents.ITEMSTACK).get(0),
                         chemicalStack instanceof GasStack gasStack ? gasStack : GasStack.EMPTY
-                )
+                ).getChemicalStack()
         ));
     }
 

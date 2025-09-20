@@ -32,6 +32,7 @@ import org.cyclops.integratedmekanism.client.render.value.ValueTypeWorldRenderer
 import org.cyclops.integratedmekanism.ingredient.IngredientComponentCapabilitiesMekanism;
 import org.cyclops.integratedmekanism.ingredient.IngredientComponentHandlerChemical;
 import org.cyclops.integratedmekanism.ingredient.MekanismIngredientComponents;
+import org.cyclops.integratedmekanism.logicprogrammer.MekanismLogicProgrammerElementTypes;
 import org.cyclops.integratedmekanism.modcompat.integratedrest.ModCompatIntegratedRest;
 import org.cyclops.integratedmekanism.modcompat.integratedscripting.ModCompatIntegratedScripting;
 import org.cyclops.integratedmekanism.modcompat.integratedterminals.ModCompatIntegratedTerminals;
@@ -101,6 +102,7 @@ public class IntegratedMekanism extends ModBaseVersionable<IntegratedMekanism> {
         MekanismValueTypeListProxyFactories.load();
         MekanismValueTypes.load();
         MekanismOperators.load();
+        MekanismLogicProgrammerElementTypes.load();
 
         // Add test classes
         CommandTest.CLASSES.addAll(List.of(

@@ -3,7 +3,6 @@ package org.cyclops.integratedmekanism.proxy;
 import org.cyclops.cyclopscore.init.ModBase;
 import org.cyclops.cyclopscore.proxy.ClientProxyComponent;
 import org.cyclops.integratedmekanism.IntegratedMekanism;
-import org.cyclops.integratedterminals.proxy.CommonProxy;
 
 /**
  * Proxy for the client side.
