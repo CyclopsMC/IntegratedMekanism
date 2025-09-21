@@ -126,7 +126,7 @@ public class ChemicalHelpers {
      */
     public static ChemicalStack<?> prototypeWithCount(ChemicalStack<?> prototype, long count) {
         if (prototype == null || prototype.getAmount() != count) {
-            if (prototype == null) {
+            if (prototype == null || prototype.isEmpty()) {
                 return count == 0 ? null : new GasStack(MekanismGases.HYDROGEN, count);
             } else {
                 prototype = prototype.copy();
