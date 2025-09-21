@@ -1,0 +1,27 @@
+{
+  "display": {
+    "icon": {
+      "item": "integrateddynamics:variable",
+      "nbt": "{\"aspectName\":\"integratedmekanism:write_chemicalstack_chemical_export\",\"partId\":1,\"_type\":\"integrateddynamics:aspect\",\"_id\":1}"
+    },
+    "title": {
+      "translate": "advancement.integratedmekanism.tunnels.export_chemical"
+    },
+    "description": {
+      "translate": "advancement.integratedmekanism.tunnels.export_chemical.desc"
+    }
+  },
+  "parent": "integratedmekanism:tunnels/import_all_chemicals",
+  "criteria": {
+    "criteria_0": {
+      "trigger": "integrateddynamics:part_writer_aspect",
+      "conditions": {
+        "parttype": "integratedmekanism:exporter_chemical",
+        "aspect": "integratedmekanism:write_chemicalstack_chemical_export",
+        "variable": {
+          "valuetype": "integratedmekanism:chemicalstack"
+        }
+      }
+    }
+  }
+}

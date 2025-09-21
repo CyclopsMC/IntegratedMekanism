@@ -1,7 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<section name="info_book.mekanism.section.main">
-    <section name="info_book.mekanism.introduction">
-        <paragraph>info_book.mekanism.introduction.text1</paragraph>
-        <paragraph>info_book.mekanism.introduction.text2</paragraph>
+<section name="info_book.integratedmekanism.manual">
+    <section name="info_book.integratedmekanism.manual.introduction">
+        <paragraph>info_book.integratedmekanism.manual.introduction.text1</paragraph>
+        <paragraph>info_book.integratedmekanism.manual.introduction.text2</paragraph>
+    </section>
+
+    <section name="info_book.integratedmekanism.manual.logic">
+        <section name="info_book.integratedmekanism.manual.logic.value_type_chemical">
+            <paragraph>info_book.integratedmekanism.manual.logic.value_type_chemical.text1</paragraph>
+            <paragraph>info_book.integratedmekanism.manual.logic.value_type_chemical.text2</paragraph>
+            <paragraph>info_book.integratedmekanism.manual.logic.value_type_chemical.text3</paragraph>
+        </section>
+
+        <section name="info_book.integratedmekanism.manual.logic.part_reader_chemical">
+            <tag>integratedmekanism:part_chemical_reader</tag>
+            <paragraph>info_book.integratedmekanism.manual.logic.part_reader_chemical.text1</paragraph>
+            <appendix type="minecraft:crafting">integratedmekanism:crafting/part_chemical_reader</appendix>
+            <appendix_list factory="integrateddynamics:part_aspects">integratedmekanism:chemical_reader</appendix_list>
+        </section>
+
+        <section name="info_book.integratedmekanism.manual.logic.operators">
+            <paragraph>info_book.integratedmekanism.manual.logic.operators.text1</paragraph>
+            <appendix_list factory="integrateddynamics:operators_output">integratedmekanism:.*</appendix_list>
+        </section>
+    </section>
+
+    <section name="info_book.integratedmekanism.manual.tunnels">
+        <tag type="mod">integratedtunnels</tag>
+        <tag>integratedmekanism:part_interface_chemical</tag>
+        <tag>integratedmekanism:part_exporter_chemical</tag>
+        <tag>integratedmekanism:part_importer_chemical</tag>
+        <tag>integratedmekanism:part_exporter_world_chemical</tag>
+        <tag>integratedmekanism:part_importer_world_chemical</tag>
+        <tag>integratedmekanism:part_interface_filter_chemical</tag>
+        <paragraph>info_book.integratedmekanism.manual.tunnels.text1</paragraph>
+        <paragraph>info_book.integratedmekanism.manual.tunnels.text2</paragraph>
+        <paragraph>info_book.integratedmekanism.manual.tunnels.text3</paragraph>
+        <appendix type="minecraft:crafting">integratedmekanism:crafting/part_interface_chemical</appendix>
+        <appendix type="minecraft:crafting">integratedmekanism:crafting/part_exporter_chemical</appendix>
+        <appendix_list factory="integrateddynamics:part_aspects">integratedmekanism:exporter_chemical</appendix_list>
+        <appendix type="minecraft:crafting">integratedmekanism:crafting/part_importer_chemical</appendix>
+        <appendix_list factory="integrateddynamics:part_aspects">integratedmekanism:importer_chemical</appendix_list>
+        <appendix type="minecraft:crafting">integratedmekanism:crafting/part_exporter_world_chemical</appendix>
+        <appendix_list factory="integrateddynamics:part_aspects">integratedmekanism:exporter_world_chemical</appendix_list>
+        <appendix type="minecraft:crafting">integratedmekanism:crafting/part_importer_world_chemical</appendix>
+        <appendix_list factory="integrateddynamics:part_aspects">integratedmekanism:importer_world_chemical</appendix_list>
+        <appendix type="minecraft:crafting">integratedmekanism:crafting/part_interface_filter_chemical</appendix>
+        <appendix_list factory="integrateddynamics:part_aspects">integratedmekanism:interface_filter_chemical</appendix_list>
+    </section>
+
+    <section name="info_book.integratedmekanism.manual.terminals">
+        <tag type="mod">integratedterminals</tag>
+        <paragraph>info_book.integratedmekanism.manual.terminals.text1</paragraph>
+    </section>
+
+    <section name="info_book.integratedmekanism.manual.crafting">
+        <tag type="mod">integratedcrafting</tag>
+        <paragraph>info_book.integratedmekanism.manual.crafting.text1</paragraph>
     </section>
 </section>

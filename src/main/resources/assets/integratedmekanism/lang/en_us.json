@@ -219,7 +219,69 @@
     "gui.integratedmekanism.logicprogrammer.element.recipechemical.tooltip.fluid": "Input and output fluids",
     "gui.integratedmekanism.logicprogrammer.element.recipechemical.tooltip.chemical": "Input and output chemicals",
 
+    "_comment": "Advancements",
+    "advancement.integratedmekanism.reading.reader": "Chemical Reading",
+    "advancement.integratedmekanism.reading.reader.desc": "Get started with Chemical automation using the Chemical Reader.",
+    "advancement.integratedmekanism.reading.chemical_tank_empty": "Reaction vessel dry",
+    "advancement.integratedmekanism.reading.chemical_tank_empty.desc": "Read if a tank is empty using the Chemical Reader.",
+    "advancement.integratedmekanism.reading.chemical_tank_chemical": "What does the tank have?",
+    "advancement.integratedmekanism.reading.chemical_tank_chemical.desc": "Read the chemical content of a tank using the Chemical Reader.",
+    "advancement.integratedmekanism.reading.chemical_radioactive": "Logical Dosimeter",
+    "advancement.integratedmekanism.reading.chemical_radioactive.desc": "Check if a chemical is radioactive.",
+    "advancement.integratedmekanism.tunnels.interface_chemical": "Chemical Interfacing",
+    "advancement.integratedmekanism.tunnels.interface_chemical.desc": "Get started with Chemical transfers using the Chemical Interface.",
+    "advancement.integratedmekanism.tunnels.import_all_chemicals": "ALL THE CHEMICALS!",
+    "advancement.integratedmekanism.tunnels.import_all_chemicals.desc": "Import all chemicals using the Chemical Importer.",
+    "advancement.integratedmekanism.tunnels.export_chemical": "Precise Chemical Exports",
+    "advancement.integratedmekanism.tunnels.export_chemical.desc": "Export one specific chemical type using the Chemical Exporter.",
+
     "_comment": "------ On the Dynamics of Integration contents ------",
 
-    "info_book.integratedmekanism.section.main": "Terminals"
+    "info_book.integratedmekanism.manual": "Mekanism",
+
+    "info_book.integratedmekanism.manual.introduction": "Introduction",
+    "info_book.integratedmekanism.manual.introduction.text1": "&lIntegrated Mekanism&r is an extension to &lIntegrated Dynamics&r to that adds deep integration with the &lMekanism&r mod.",
+    "info_book.integratedmekanism.manual.introduction.text2": "This mod allows you to read properties of chemical-related machines, apply operators over them, transfer chemicals over networks, access chemicals using the &lStorage Terminal&r, and perform autocrafting using chemicals.",
+
+    "info_book.integratedmekanism.manual.logic": "Chemical Logic",
+
+    "info_book.integratedmekanism.manual.logic.value_type_chemical": "Chemical Value Type",
+    "info_book.integratedmekanism.manual.logic.value_type_chemical.text1": "This mod adds a dedicated value type to represent references to a &lMekanism&r chemical. For example &8Sodium&0, &8Oxygen&0, &8Dirty Gold Slurry&0, &8Biomass&0, ....",
+    "info_book.integratedmekanism.manual.logic.value_type_chemical.text2": "Chemicals are also supported in &8Recipes&0 and &8Ingredients&0. For chemical-based recipes, a more convenient entry in the &lLogic Programmer&r is available under the name Chemical Recipe. This has support for mods such as JEI.",
+    "info_book.integratedmekanism.manual.logic.value_type_chemical.text3": "Chemical values are also fully supported within mods such as &lIntegrated Scripting&r and &lIntegrated REST&r.",
+
+    "info_book.integratedmekanism.manual.logic.part_reader_chemical": "Chemical Reader",
+    "info_book.integratedmekanism.manual.logic.part_reader_chemical.text1": "A part that adds information about the chemical machine the part is facing.",
+
+    "info_book.integratedmekanism.manual.logic.operators": "Chemical Operators",
+    "info_book.integratedmekanism.manual.logic.operators.text1": "&8Chemical&0 values can be used within a variety of operators, for example to check if something is radioactive, or reading its conductivity.",
+
+    "info_book.integratedmekanism.manual.tunnels": "Chemical Tunnels",
+    "info_book.integratedmekanism.manual.tunnels.text1": "Just like you're used to transferring items, fluids, and energy using &lIntegrated Tunnels&r, you can transfer chemicals in the same way.",
+    "info_book.integratedmekanism.manual.tunnels.text2": "&lWARNING:&r The &lChemical Tanks&r from &lMekanism&r do not allow chemical interaction from all sides by default. So you may have to explicitly allow &lInput/Output&r for the connected side within the &lChemical Tank&r GUI.",
+    "info_book.integratedmekanism.manual.tunnels.text3": "The &lChemical Interface&r exposes chemical tanks to the network, and the &lChemical Importer&r and &lChemical Exporter&r respectively import to and export from them. For more advanced scenarios, you can use the &lWorld Chemical Importer&r, &lWorld Chemical Exporter&r, and &lFiltering Chemical Interface&r.",
+
+    "info_book.integratedmekanism.manual.terminals": "Chemical Terminals",
+    "info_book.integratedmekanism.manual.terminals.text1": "When at least one valid &lChemical Interface&r is attached to your network, the &lStorage Terminal&r will allow you to interact with all chemicals in your network, in the same way you are used to interacting with items, fluids, and energy.",
+
+    "info_book.integratedmekanism.manual.crafting": "Chemical Crafting",
+    "info_book.integratedmekanism.manual.crafting.text1": "Auto-crafting with chemicals works in exactly the same way as for items, fluids, and energy. You can create recipes within the &lLogic Programmer&r (Chemical Recipe), or read all available recipes in a machine using the &lMachine Reader&r. These recipes can be inserted in the &lCrafting Interface&r for autocrafting with at places such as the &lCrafting Writer&r or the &lStorage Terminal&r.",
+
+    "info_book.integratedmekanism.tutorials": "Mekanism Tutorials",
+
+    "info_book.integratedmekanism.tutorials.introduction": "Introduction",
+    "info_book.integratedmekanism.tutorials.introduction.text1": "This section contains several tutorials that help you to learn &lIntegrated Mekanism&r, the &lIntegrated Dynamics&r add-on that adds deep integration with the &lMekanism&r mod.",
+
+    "info_book.integratedmekanism.tutorials.reading": "Chemical Reading",
+    "info_book.integratedmekanism.tutorials.reading.text1": "Let's read some information within a &lChemical Tank&r! For this, we first need to craft a &lChemical Reader&r, and attach it to a &lCable&r so it faces a &lChemical Tank&r.",
+    "info_book.integratedmekanism.tutorials.reading.text2": "Next, try reading out whether or not the tank is empty using a &lVariable Card&r, and display it in a &lDisplay Panel&r.",
+    "info_book.integratedmekanism.tutorials.reading.text3": "Then, try reading the Chemical contents of the tank, and display it in a &lDisplay Panel&r.",
+    "info_book.integratedmekanism.tutorials.reading.text4": "Finally, apply the &lIs Radioactive&r operator within the &lLogic Programmer&r to this Chemical value, and read out the final value by placing the resulting &lVariable Card&r in a &lDisplay Panel&r. (don't forget to place all intermediary variables within a &lVariable Store&r!)",
+
+    "info_book.integratedmekanism.tutorials.tunnels": "Chemical Tunneling",
+    "info_book.integratedmekanism.tutorials.tunnels.text1": "Now, we're going to try moving some chemicals over our network. For this, we first need to craft a &lChemical Interface&r, and attach it to a &lCable&r so it faces a &lChemical Tank&r.",
+    "info_book.integratedmekanism.tutorials.tunnels.text2": "&lWARNING:&r The &lChemical Tanks&r from &lMekanism&r do not allow chemical interaction from all sides by default. So you may have to explicitly allow &lInput/Output&r for the connected side within the &lChemical Tank&r GUI.",
+    "info_book.integratedmekanism.tutorials.tunnels.text3": "Next, craft a &lChemical Importer&r and place it on a cable so it faces another &lChemical Tank&r, and import ALL chemicals.",
+    "info_book.integratedmekanism.tutorials.tunnels.text4": "Finally, craft a &lChemical Exporter&r and place it on a cable so it faces another &lChemical Tank&r, and export one specific chemical (e.g. Sodium).",
+    "info_book.integratedmekanism.tutorials.tunnels.text5": "There are multiple ways to create a &8Chemical&0 value. You can for example create one directly within the &lLogic Programmer&r, searching for \"Chemical\", and dragging and dropping a tank containing a chemical from your inventory or JEI."
 }

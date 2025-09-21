@@ -1,0 +1,28 @@
+{
+  "display": {
+    "icon": {
+      "item": "integratedmekanism:part_chemical_reader"
+    },
+    "title": {
+      "translate": "advancement.integratedmekanism.reading.reader"
+    },
+    "description": {
+      "translate": "advancement.integratedmekanism.reading.reader.desc"
+    }
+  },
+  "parent": "integratedmekanism:root",
+  "criteria": {
+    "criteria_0": {
+      "trigger": "cyclopscore:item_crafted",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "integratedmekanism:part_chemical_reader"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

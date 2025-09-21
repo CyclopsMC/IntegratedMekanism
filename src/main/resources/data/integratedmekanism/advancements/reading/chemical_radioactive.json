@@ -1,0 +1,27 @@
+{
+  "display": {
+    "icon": {
+      "item": "integrateddynamics:variable",
+      "nbt": "{typeName:\"integrateddynamics:itemstack\",partId:1,_type:\"integrateddynamics:valuetype\",value:\"minecraft:apple\",_id:1}"
+    },
+    "title": {
+      "translate": "advancement.integratedmekanism.reading.chemical_radioactive"
+    },
+    "description": {
+      "translate": "advancement.integratedmekanism.reading.chemical_radioactive.desc"
+    }
+  },
+  "parent": "integratedmekanism:reading/chemical_tank_chemical",
+  "criteria": {
+    "criteria_0": {
+      "trigger": "integrateddynamics:part_variable_driven",
+      "conditions": {
+        "parttype": "integrateddynamics:display_panel",
+        "variable": {
+          "type": "integrateddynamics:operator",
+          "operator": "integratedmekanism:chemicalstack_is_radioactive"
+        }
+      }
+    }
+  }
+}

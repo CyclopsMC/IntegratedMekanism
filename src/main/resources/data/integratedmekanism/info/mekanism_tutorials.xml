@@ -1,6 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<section name="info_book.mekanism.section.tutorials">
-    <section name="info_book.mekanism.tutorials.introduction">
-        <paragraph>info_book.mekanism.tutorials.introduction.text1</paragraph>
+<section name="info_book.integratedmekanism.tutorials">
+    <section name="info_book.integratedmekanism.tutorials.introduction">
+        <paragraph>info_book.integratedmekanism.tutorials.introduction.text1</paragraph>
+    </section>
+
+    <section name="info_book.integratedmekanism.tutorials.reading">
+        <paragraph>info_book.integratedmekanism.tutorials.reading.text1</paragraph>
+        <paragraph>info_book.integratedmekanism.tutorials.reading.text2</paragraph>
+        <paragraph>info_book.integratedmekanism.tutorials.reading.text3</paragraph>
+        <paragraph>info_book.integratedmekanism.tutorials.reading.text4</paragraph>
+        <appendix type="minecraft:crafting">integratedmekanism:crafting/part_chemical_reader</appendix>
+        <appendix type="integrateddynamics:aspect">integratedmekanism:read_boolean_chemical_empty</appendix>
+        <appendix type="integrateddynamics:aspect">integratedmekanism:read_chemicalstack_chemical</appendix>
+        <appendix type="integrateddynamics:operator">integratedmekanism:chemicalstack_is_radioactive</appendix>
+        <appendix type="advancement_rewards" id="integratedmekanism:reading">
+            <advancements>
+                <advancement id="integratedmekanism:reading/reader" />
+                <advancement id="integratedmekanism:reading/chemical_tank_empty" />
+                <advancement id="integratedmekanism:reading/chemical_tank_chemical" />
+                <advancement id="integratedmekanism:reading/chemical_radioactive" />
+            </advancements>
+            <rewards>
+                <reward type="item" amount="2">integratedmekanism:part_chemical_reader</reward>
+                <reward type="item" amount="32">integrateddynamics:variable</reward>
+            </rewards>
+        </appendix>
+    </section>
+
+    <section name="info_book.integratedmekanism.tutorials.tunnels">
+        <paragraph>info_book.integratedmekanism.tutorials.tunnels.text1</paragraph>
+        <paragraph>info_book.integratedmekanism.tutorials.tunnels.text2</paragraph>
+        <paragraph>info_book.integratedmekanism.tutorials.tunnels.text3</paragraph>
+        <paragraph>info_book.integratedmekanism.tutorials.tunnels.text4</paragraph>
+        <paragraph>info_book.integratedmekanism.tutorials.tunnels.text5</paragraph>
+        <appendix type="minecraft:crafting">integratedmekanism:crafting/part_interface_chemical</appendix>
+        <appendix type="minecraft:crafting">integratedmekanism:crafting/part_importer_chemical</appendix>
+        <appendix type="minecraft:crafting">integratedmekanism:crafting/part_exporter_chemical</appendix>
+        <appendix type="integrateddynamics:aspect">integratedmekanism:write_boolean_chemical_import</appendix>
+        <appendix type="integrateddynamics:aspect">integratedmekanism:write_chemicalstack_chemical_export</appendix>
+        <appendix type="advancement_rewards" id="integratedmekanism:tunnels">
+            <advancements>
+                <advancement id="integratedmekanism:tunnels/interface_chemical" />
+                <advancement id="integratedmekanism:tunnels/import_all_chemicals" />
+                <advancement id="integratedmekanism:tunnels/export_chemical" />
+            </advancements>
+            <rewards>
+                <reward type="item" amount="4">integratedmekanism:part_interface_chemical</reward>
+                <reward type="item" amount="2">integratedmekanism:part_importer_chemical</reward>
+                <reward type="item" amount="2">integratedmekanism:part_exporter_chemical</reward>
+            </rewards>
+        </appendix>
     </section>
 </section>

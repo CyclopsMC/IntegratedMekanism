@@ -1,0 +1,28 @@
+{
+  "display": {
+    "icon": {
+      "item": "integratedmekanism:part_interface_chemical"
+    },
+    "title": {
+      "translate": "advancement.integratedmekanism.tunnels.interface_chemical"
+    },
+    "description": {
+      "translate": "advancement.integratedmekanism.tunnels.interface_chemical.desc"
+    }
+  },
+  "parent": "integratedmekanism:root",
+  "criteria": {
+    "criteria_0": {
+      "trigger": "cyclopscore:item_crafted",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "integratedmekanism:part_interface_chemical"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

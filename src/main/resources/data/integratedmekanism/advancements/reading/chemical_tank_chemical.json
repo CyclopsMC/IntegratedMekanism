@@ -1,0 +1,27 @@
+{
+  "display": {
+    "icon": {
+      "item": "integrateddynamics:variable",
+      "nbt": "{_type:\"integrateddynamics:aspect\",aspectName:\"integratedmekanism:read_chemicalstack_chemical\",_id:1,partId:1}"
+    },
+    "title": {
+      "translate": "advancement.integratedmekanism.reading.chemical_tank_chemical"
+    },
+    "description": {
+      "translate": "advancement.integratedmekanism.reading.chemical_tank_chemical.desc"
+    }
+  },
+  "parent": "integratedmekanism:reading/reader",
+  "criteria": {
+    "criteria_0": {
+      "trigger": "integrateddynamics:part_variable_driven",
+      "conditions": {
+        "parttype": "integrateddynamics:display_panel",
+        "variable": {
+          "type": "integrateddynamics:aspect",
+          "aspect": "integratedmekanism:read_chemicalstack_chemical"
+        }
+      }
+    }
+  }
+}
