@@ -23,7 +23,7 @@ Compability mod between Mekanism and the Integrated Dynamics mods.
     modId="integrateddynamics"
     mandatory=true
     versionRange="[1.27.6,)"
-    ordering="NONE"
+    ordering="AFTER"
     side="BOTH"
 [[dependencies.integratedmekanism]]
     modId="commoncapabilities"
