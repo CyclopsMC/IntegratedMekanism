@@ -9,7 +9,7 @@ import net.minecraftforge.registries.ObjectHolder;
  */
 public class RegistryEntries {
 
-    @ObjectHolder(registryName = "item", value = "integratedmekanism:part_interface_chemical")
-    public static final Item CHEMICAL_PART_INTERFACE = null;
+    @ObjectHolder(registryName = "item", value = "integratedmekanism:part_chemical_reader")
+    public static final Item PART_CHEMICAL_READER = null;
 
 }

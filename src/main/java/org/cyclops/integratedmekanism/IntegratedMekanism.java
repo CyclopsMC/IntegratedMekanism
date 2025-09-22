@@ -131,7 +131,7 @@ public class IntegratedMekanism extends ModBaseVersionable<IntegratedMekanism> {
     @Override
     protected CreativeModeTab.Builder constructDefaultCreativeModeTab(CreativeModeTab.Builder builder) {
         return super.constructDefaultCreativeModeTab(builder)
-                .icon(() -> new ItemStack(RegistryEntries.CHEMICAL_PART_INTERFACE));
+                .icon(() -> new ItemStack(RegistryEntries.PART_CHEMICAL_READER));
     }
 
     @Override
