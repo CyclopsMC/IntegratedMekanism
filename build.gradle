@@ -348,6 +348,7 @@ curseforge {
                 optionalDependency 'integrated-crafting'
                 optionalDependency 'integrated-terminals'
                 optionalDependency 'integrated-scripting'
+                optionalDependency 'integrated-rest'
             }
         }
 
@@ -388,6 +389,7 @@ modrinth {
       optional.project "qwpACdla" // Integrated Crafting
       optional.project "HmLJoQ1K" // Integrated Terminals
       optional.project "uDJkuFRe" // Integrated Scripting
+      optional.project "ovubcV3F" // Integrated REST
     }
 }
 
