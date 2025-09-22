@@ -271,6 +271,7 @@ jar {
         ])
     }
 }
+jar.finalizedBy('reobfJar')
 
 javadoc {
     source = [sourceSets.main.allJava]
