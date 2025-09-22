@@ -28,6 +28,7 @@
     </section>
 
     <section name="info_book.integratedmekanism.tutorials.tunnels">
+        <tag type="mod">integratedtunnels</tag>
         <paragraph>info_book.integratedmekanism.tutorials.tunnels.text1</paragraph>
         <paragraph>info_book.integratedmekanism.tutorials.tunnels.text2</paragraph>
         <paragraph>info_book.integratedmekanism.tutorials.tunnels.text3</paragraph>
