@@ -1,10 +1,7 @@
 package org.cyclops.integratedmekanism.capability.recipehandler;
 
 import com.google.common.collect.Lists;
-import mekanism.api.chemical.Chemical;
-import mekanism.api.chemical.ChemicalStack;
-import mekanism.api.recipes.chemical.FluidChemicalToChemicalRecipe;
-import mekanism.api.recipes.ingredients.ChemicalStackIngredient;
+import mekanism.api.recipes.FluidChemicalToChemicalRecipe;
 import mekanism.common.recipe.IMekanismRecipeTypeProvider;
 import net.minecraft.world.level.Level;
 import org.cyclops.commoncapabilities.IngredientComponents;
@@ -22,9 +19,9 @@ import java.util.function.Supplier;
 /**
  * @author rubensworks
  */
-public class FluidChemicalToChemicalRecipeHandler<CHEMICAL extends Chemical<CHEMICAL>, STACK extends ChemicalStack<CHEMICAL>, INGREDIENT extends ChemicalStackIngredient<CHEMICAL, STACK>> extends MekanismRecipeHandler<FluidChemicalToChemicalRecipe<CHEMICAL, STACK, INGREDIENT>> {
+public class FluidChemicalToChemicalRecipeHandler extends MekanismRecipeHandler<FluidChemicalToChemicalRecipe> {
 
-    protected FluidChemicalToChemicalRecipeHandler(IMekanismRecipeTypeProvider<? extends FluidChemicalToChemicalRecipe<CHEMICAL, STACK, INGREDIENT>, ?> recipeType, Supplier<Level> levelSupplier) {
+    protected FluidChemicalToChemicalRecipeHandler(IMekanismRecipeTypeProvider<?, ? extends FluidChemicalToChemicalRecipe, ?> recipeType, Supplier<Level> levelSupplier) {
         super(recipeType, levelSupplier, Set.of(IngredientComponents.FLUIDSTACK, MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK), Set.of(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK));
     }
 
@@ -35,7 +32,7 @@ public class FluidChemicalToChemicalRecipeHandler<CHEMICAL extends Chemical<CHEM
     }
 
     @Override
-    protected void recipeToInputs(FluidChemicalToChemicalRecipe<CHEMICAL, STACK, INGREDIENT> recipe, Map<IngredientComponent<?, ?>, List<IPrototypedIngredientAlternatives<?, ?>>> inputs) {
+    protected void recipeToInputs(FluidChemicalToChemicalRecipe recipe, Map<IngredientComponent<?, ?>, List<IPrototypedIngredientAlternatives<?, ?>>> inputs) {
         inputs.put(IngredientComponents.FLUIDSTACK, List.of(
                 new PrototypedIngredientAlternativesList<>(getPrototypesFromFluidIngredient(recipe.getFluidInput()))
         ));
@@ -45,23 +42,23 @@ public class FluidChemicalToChemicalRecipeHandler<CHEMICAL extends Chemical<CHEM
     }
 
     @Override
-    protected void recipeToOutputs(FluidChemicalToChemicalRecipe<CHEMICAL, STACK, INGREDIENT> recipe, Map<IngredientComponent<?, ?>, List<?>> outputs) {
+    protected void recipeToOutputs(FluidChemicalToChemicalRecipe recipe, Map<IngredientComponent<?, ?>, List<?>> outputs) {
         outputs.put(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK, Lists.newArrayList(
                 recipe.getOutputDefinition().get(0)
         ));
     }
 
     @Override
-    protected void recipeToOutputsSimulated(FluidChemicalToChemicalRecipe<CHEMICAL, STACK, INGREDIENT> recipe, IMixedIngredients input, Map<IngredientComponent<?, ?>, List<?>> outputs) {
+    protected void recipeToOutputsSimulated(FluidChemicalToChemicalRecipe recipe, IMixedIngredients input, Map<IngredientComponent<?, ?>, List<?>> outputs) {
         outputs.put(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK, Lists.newArrayList(recipe.getOutput(
                 input.getInstances(IngredientComponents.FLUIDSTACK).get(0),
-                (STACK) input.getInstances(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK).get(0)
+                input.getInstances(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK).get(0)
         )));
     }
 
     @Override
-    protected boolean doesRecipeMatchInput(FluidChemicalToChemicalRecipe<CHEMICAL, STACK, INGREDIENT> recipe, IMixedIngredients input) {
+    protected boolean doesRecipeMatchInput(FluidChemicalToChemicalRecipe recipe, IMixedIngredients input) {
         return recipe.getFluidInput().test(input.getInstances(IngredientComponents.FLUIDSTACK).get(0))
-                && recipe.getChemicalInput().test((STACK) input.getInstances(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK).get(0));
+                && recipe.getChemicalInput().test(input.getInstances(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK).get(0));
     }
 }

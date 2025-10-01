@@ -2,9 +2,8 @@ package org.cyclops.integratedmekanism.ingredient;
 
 import mekanism.api.chemical.Chemical;
 import mekanism.api.chemical.ChemicalStack;
-import mekanism.api.chemical.gas.GasStack;
+import net.minecraft.core.DefaultedRegistry;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraftforge.registries.ForgeRegistry;
 import org.cyclops.commoncapabilities.api.ingredient.IIngredientMatcher;
 import org.cyclops.integratedmekanism.core.ChemicalHelpers;
 
@@ -12,7 +11,7 @@ import org.cyclops.integratedmekanism.core.ChemicalHelpers;
  * Matcher for ChemicalStacks.
  * @author rubensworks
  */
-public class IngredientMatcherChemicalStack implements IIngredientMatcher<ChemicalStack<?>, Integer> {
+public class IngredientMatcherChemicalStack implements IIngredientMatcher<ChemicalStack, Integer> {
 
     @Override
     public boolean isInstance(Object object) {
@@ -50,19 +49,19 @@ public class IngredientMatcherChemicalStack implements IIngredientMatcher<Chemic
     }
 
     @Override
-    public int hash(ChemicalStack<?> instance) {
+    public int hash(ChemicalStack instance) {
         if (instance.isEmpty()) {
             return 0;
         }
 
         int code = 1;
-        code = 31 * code + instance.getType().hashCode();
+        code = 31 * code + instance.getChemical().hashCode();
         code = 31 * code + Long.hashCode(instance.getAmount());
         return code;
     }
 
     @Override
-    public ChemicalStack<?> copy(ChemicalStack<?> instance) {
+    public ChemicalStack copy(ChemicalStack instance) {
         if (instance.isEmpty()) {
             return getEmptyInstance();
         }
@@ -70,38 +69,38 @@ public class IngredientMatcherChemicalStack implements IIngredientMatcher<Chemic
     }
 
     @Override
-    public long getQuantity(ChemicalStack<?> instance) {
+    public long getQuantity(ChemicalStack instance) {
         return instance.getAmount();
     }
 
     @Override
-    public boolean matches(ChemicalStack<?> a, ChemicalStack<?> b, Integer matchCondition) {
+    public boolean matches(ChemicalStack a, ChemicalStack b, Integer matchCondition) {
         return ChemicalMatch.areStacksEqual(a, b, matchCondition);
     }
 
     @Override
-    public ChemicalStack<?> getEmptyInstance() {
-        return GasStack.EMPTY;
+    public ChemicalStack getEmptyInstance() {
+        return ChemicalStack.EMPTY;
     }
 
     @Override
-    public boolean isEmpty(ChemicalStack<?> instance) {
+    public boolean isEmpty(ChemicalStack instance) {
         return instance.isEmpty();
     }
 
     @Override
-    public ChemicalStack<?> withQuantity(ChemicalStack<?> instance, long quantity) {
+    public ChemicalStack withQuantity(ChemicalStack instance, long quantity) {
         if (quantity == 0) {
             return getEmptyInstance();
         }
         if (instance.isEmpty()) {
-            Chemical someType = ChemicalHelpers.getStackRegistry(instance).getValues().iterator().next();
+            Chemical someType = ChemicalHelpers.getStackRegistry().iterator().next();
             return someType.getStack(quantity);
         }
         if (instance.getAmount() == quantity) {
             return instance;
         }
-        ChemicalStack<?> copy = instance.copy();
+        ChemicalStack copy = instance.copy();
         copy.setAmount(quantity);
         return copy;
     }
@@ -117,23 +116,23 @@ public class IngredientMatcherChemicalStack implements IIngredientMatcher<Chemic
     }
 
     @Override
-    public String localize(ChemicalStack<?> instance) {
+    public String localize(ChemicalStack instance) {
         return instance.getTextComponent().getString();
     }
 
     @Override
-    public MutableComponent getDisplayName(ChemicalStack<?> instance) {
+    public MutableComponent getDisplayName(ChemicalStack instance) {
         return instance.getTextComponent().plainCopy();
     }
 
     @Override
-    public String toString(ChemicalStack<? extends Chemical> instance) {
-        ForgeRegistry registry = ChemicalHelpers.getStackRegistry(instance);
-        return String.format("%s %s", registry.getKey(instance.getType()), instance.getAmount());
+    public String toString(ChemicalStack instance) {
+        DefaultedRegistry<Chemical> registry = ChemicalHelpers.getStackRegistry();
+        return String.format("%s %s", registry.getKey(instance.getChemical()), instance.getAmount());
     }
 
     @Override
-    public int compare(ChemicalStack<?> o1, ChemicalStack<?> o2) {
+    public int compare(ChemicalStack o1, ChemicalStack o2) {
         if (o1.isEmpty()) {
             if (o2.isEmpty()) {
                 return 0;
@@ -142,10 +141,10 @@ public class IngredientMatcherChemicalStack implements IIngredientMatcher<Chemic
             }
         } else if (o2.isEmpty()) {
             return 1;
-        } else if (o1.getType() == o2.getType()) {
+        } else if (o1.getChemical() == o2.getChemical()) {
             return (int) (o1.getAmount() - o2.getAmount());
         }
-        return o1.getType().getRegistryName().compareTo(o2.getType().getRegistryName());
+        return o1.getChemical().getRegistryName().compareTo(o2.getChemical().getRegistryName());
     }
 
 }

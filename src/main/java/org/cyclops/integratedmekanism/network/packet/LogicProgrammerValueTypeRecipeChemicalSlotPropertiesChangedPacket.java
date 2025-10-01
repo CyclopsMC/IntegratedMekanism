@@ -1,15 +1,19 @@
 package org.cyclops.integratedmekanism.network.packet;
 
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.cyclops.cyclopscore.network.CodecField;
 import org.cyclops.cyclopscore.network.PacketCodec;
 import org.cyclops.integrateddynamics.api.logicprogrammer.ILogicProgrammerElement;
 import org.cyclops.integrateddynamics.core.ingredient.ItemMatchProperties;
 import org.cyclops.integrateddynamics.inventory.container.ContainerLogicProgrammerBase;
+import org.cyclops.integratedmekanism.Reference;
 import org.cyclops.integratedmekanism.logicprogrammer.ValueTypeRecipeChemicalLPElement;
 
 /**
@@ -17,7 +21,10 @@ import org.cyclops.integratedmekanism.logicprogrammer.ValueTypeRecipeChemicalLPE
  * @author rubensworks
  *
  */
-public class LogicProgrammerValueTypeRecipeChemicalSlotPropertiesChangedPacket extends PacketCodec {
+public class LogicProgrammerValueTypeRecipeChemicalSlotPropertiesChangedPacket extends PacketCodec<LogicProgrammerValueTypeRecipeChemicalSlotPropertiesChangedPacket> {
+
+    public static final Type<LogicProgrammerValueTypeRecipeChemicalSlotPropertiesChangedPacket> ID = new Type<>(ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "lp_valuetype_recipe_chemical_slot_properties_changed"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, LogicProgrammerValueTypeRecipeChemicalSlotPropertiesChangedPacket> CODEC = getCodec(LogicProgrammerValueTypeRecipeChemicalSlotPropertiesChangedPacket::new);
 
     @CodecField
     private int slot;
@@ -31,10 +38,11 @@ public class LogicProgrammerValueTypeRecipeChemicalSlotPropertiesChangedPacket e
     private boolean reusable;
 
     public LogicProgrammerValueTypeRecipeChemicalSlotPropertiesChangedPacket() {
-
+        super(ID);
     }
 
     public LogicProgrammerValueTypeRecipeChemicalSlotPropertiesChangedPacket(int slot, boolean nbt, String tag, int tagQuantity, boolean reusable) {
+        super(ID);
         this.slot = slot;
         this.nbt = nbt;
         this.tag = tag;

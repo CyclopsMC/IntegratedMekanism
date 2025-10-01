@@ -1,15 +1,8 @@
 package org.cyclops.integratedmekanism.test;
 
 import mekanism.api.chemical.ChemicalStack;
-import mekanism.api.chemical.gas.GasStack;
-import mekanism.api.chemical.infuse.InfusionStack;
-import mekanism.api.chemical.pigment.PigmentStack;
-import mekanism.api.chemical.slurry.SlurryStack;
 import mekanism.api.text.EnumColor;
-import mekanism.common.registries.MekanismGases;
-import mekanism.common.registries.MekanismInfuseTypes;
-import mekanism.common.registries.MekanismPigments;
-import mekanism.common.registries.MekanismSlurries;
+import mekanism.common.registries.MekanismChemicals;
 import mekanism.common.resource.PrimaryResource;
 import org.cyclops.integrateddynamics.api.evaluate.EvaluationException;
 import org.cyclops.integrateddynamics.api.evaluate.variable.IValue;
@@ -44,15 +37,15 @@ public class TestChemicalStackOperators {
 
     @IntegrationBefore
     public void before() {
-        eHydrogen = new DummyVariableChemicalStack(ValueObjectTypeChemicalStack.ValueChemicalStack.of(new GasStack(MekanismGases.HYDROGEN, 1000)));
-        eHydrogen100 = new DummyVariableChemicalStack(ValueObjectTypeChemicalStack.ValueChemicalStack.of(new GasStack(MekanismGases.HYDROGEN, 100)));
-        eSteam = new DummyVariableChemicalStack(ValueObjectTypeChemicalStack.ValueChemicalStack.of(new GasStack(MekanismGases.STEAM, 1000)));
-        eGold = new DummyVariableChemicalStack(ValueObjectTypeChemicalStack.ValueChemicalStack.of(new InfusionStack(MekanismInfuseTypes.GOLD, 1000)));
-        ePlutonium = new DummyVariableChemicalStack(ValueObjectTypeChemicalStack.ValueChemicalStack.of(new GasStack(MekanismGases.PLUTONIUM, 1000)));
-        eSodium = new DummyVariableChemicalStack(ValueObjectTypeChemicalStack.ValueChemicalStack.of(new GasStack(MekanismGases.SODIUM, 1000)));
-        eSodiumSuperheated = new DummyVariableChemicalStack(ValueObjectTypeChemicalStack.ValueChemicalStack.of(new GasStack(MekanismGases.SUPERHEATED_SODIUM, 1000)));
-        eRed = new DummyVariableChemicalStack(ValueObjectTypeChemicalStack.ValueChemicalStack.of(new PigmentStack(MekanismPigments.PIGMENT_COLOR_LOOKUP.get(EnumColor.RED), 1000)));
-        eIron = new DummyVariableChemicalStack(ValueObjectTypeChemicalStack.ValueChemicalStack.of(new SlurryStack(MekanismSlurries.PROCESSED_RESOURCES.get(PrimaryResource.IRON).getCleanSlurry(), 1000)));
+        eHydrogen = new DummyVariableChemicalStack(ValueObjectTypeChemicalStack.ValueChemicalStack.of(new ChemicalStack(MekanismChemicals.HYDROGEN, 1000)));
+        eHydrogen100 = new DummyVariableChemicalStack(ValueObjectTypeChemicalStack.ValueChemicalStack.of(new ChemicalStack(MekanismChemicals.HYDROGEN, 100)));
+        eSteam = new DummyVariableChemicalStack(ValueObjectTypeChemicalStack.ValueChemicalStack.of(new ChemicalStack(MekanismChemicals.STEAM, 1000)));
+        eGold = new DummyVariableChemicalStack(ValueObjectTypeChemicalStack.ValueChemicalStack.of(new ChemicalStack(MekanismChemicals.GOLD, 1000)));
+        ePlutonium = new DummyVariableChemicalStack(ValueObjectTypeChemicalStack.ValueChemicalStack.of(new ChemicalStack(MekanismChemicals.PLUTONIUM, 1000)));
+        eSodium = new DummyVariableChemicalStack(ValueObjectTypeChemicalStack.ValueChemicalStack.of(new ChemicalStack(MekanismChemicals.SODIUM, 1000)));
+        eSodiumSuperheated = new DummyVariableChemicalStack(ValueObjectTypeChemicalStack.ValueChemicalStack.of(new ChemicalStack(MekanismChemicals.SUPERHEATED_SODIUM, 1000)));
+        eRed = new DummyVariableChemicalStack(ValueObjectTypeChemicalStack.ValueChemicalStack.of(new ChemicalStack(MekanismChemicals.PIGMENT_COLOR_LOOKUP.get(EnumColor.RED), 1000)));
+        eIron = new DummyVariableChemicalStack(ValueObjectTypeChemicalStack.ValueChemicalStack.of(new ChemicalStack(MekanismChemicals.PROCESSED_RESOURCES.get(PrimaryResource.IRON).getCleanSlurry(), 1000)));
         l100 = new DummyVariable<>(ValueTypes.LONG, ValueTypeLong.ValueLong.of(100));
         sWaterVapor = new DummyVariable<>(ValueTypes.STRING, ValueTypeString.ValueString.of("mekanism:water_vapor"));
     }
@@ -336,7 +329,7 @@ public class TestChemicalStackOperators {
         TestHelpers.assertEqual(((ValueObjectTypeChemicalStack.ValueChemicalStack) res2).getRawValue().isEmpty(), true, "cooledcoolantof(gold) = empty");
 
         IValue res3 = MekanismOperators.OBJECT_CHEMICALSTACK_COOLEDCOOLANTOF.evaluate(eSodium);
-        TestHelpers.assertEqual(((ValueObjectTypeChemicalStack.ValueChemicalStack) res3).getRawValue().isStackIdentical((ChemicalStack) new GasStack(MekanismGases.SUPERHEATED_SODIUM, 1000)), true, "cooledcoolantof(sodiumSuperheated) = true");
+        TestHelpers.assertEqual(((ValueObjectTypeChemicalStack.ValueChemicalStack) res3).getRawValue().equals(new ChemicalStack(MekanismChemicals.SUPERHEATED_SODIUM, 1000)), true, "cooledcoolantof(sodiumSuperheated) = true");
 
         IValue res4 = MekanismOperators.OBJECT_CHEMICALSTACK_COOLEDCOOLANTOF.evaluate(eSodiumSuperheated);
         TestHelpers.assertEqual(((ValueObjectTypeChemicalStack.ValueChemicalStack) res4).getRawValue().isEmpty(), true, "cooledcoolantof(sodiumSuperheated) = empty");
@@ -409,7 +402,7 @@ public class TestChemicalStackOperators {
         TestHelpers.assertEqual(((ValueObjectTypeChemicalStack.ValueChemicalStack) res3).getRawValue().isEmpty(), true, "heatedcoolantof(sodium) = empty");
 
         IValue res4 = MekanismOperators.OBJECT_CHEMICALSTACK_HEATEDCOOLANTOF.evaluate(eSodiumSuperheated);
-        TestHelpers.assertEqual(((ValueObjectTypeChemicalStack.ValueChemicalStack) res4).getRawValue().isStackIdentical((ChemicalStack) new GasStack(MekanismGases.SODIUM, 1000)), true, "heatedcoolantof(sodiumSuperheated) = sodium");
+        TestHelpers.assertEqual(((ValueObjectTypeChemicalStack.ValueChemicalStack) res4).getRawValue().equals(new ChemicalStack(MekanismChemicals.SODIUM, 1000)), true, "heatedcoolantof(sodiumSuperheated) = sodium");
     }
 
     @IntegrationTest(expected = EvaluationException.class)
@@ -533,146 +526,6 @@ public class TestChemicalStackOperators {
     }
 
     /**
-     * ----------------------------------- ISGAS -----------------------------------
-     */
-
-    @IntegrationTest
-    public void testIsGas() throws EvaluationException {
-        IValue res1 = MekanismOperators.OBJECT_CHEMICALSTACK_ISGAS.evaluate(eHydrogen);
-        Asserts.check(res1 instanceof ValueTypeBoolean.ValueBoolean, "result is a boolean");
-        TestHelpers.assertEqual(((ValueTypeBoolean.ValueBoolean) res1).getRawValue(), true, "isgas(hydrogen) = true");
-
-        IValue res2 = MekanismOperators.OBJECT_CHEMICALSTACK_ISGAS.evaluate(eGold);
-        TestHelpers.assertEqual(((ValueTypeBoolean.ValueBoolean) res2).getRawValue(), false, "isgas(gold) = false");
-
-        IValue res3 = MekanismOperators.OBJECT_CHEMICALSTACK_ISGAS.evaluate(eSodium);
-        TestHelpers.assertEqual(((ValueTypeBoolean.ValueBoolean) res3).getRawValue(), true, "isgas(sodium) = true");
-
-        IValue res4 = MekanismOperators.OBJECT_CHEMICALSTACK_ISGAS.evaluate(eSodiumSuperheated);
-        TestHelpers.assertEqual(((ValueTypeBoolean.ValueBoolean) res4).getRawValue(), true, "isgas(sodiumSuperheated) = true");
-    }
-
-    @IntegrationTest(expected = EvaluationException.class)
-    public void testInvalidInputSizeIsGasLarge() throws EvaluationException {
-        MekanismOperators.OBJECT_CHEMICALSTACK_ISGAS.evaluate(eHydrogen, eHydrogen);
-    }
-
-    @IntegrationTest(expected = EvaluationException.class)
-    public void testInvalidInputSizeIsGasSmall() throws EvaluationException {
-        MekanismOperators.OBJECT_CHEMICALSTACK_ISGAS.evaluate();
-    }
-
-    @IntegrationTest(expected = EvaluationException.class)
-    public void testInvalidInputTypeIsGas() throws EvaluationException {
-        MekanismOperators.OBJECT_CHEMICALSTACK_ISGAS.evaluate(DUMMY_VARIABLE);
-    }
-
-    /**
-     * ----------------------------------- ISINFUSED -----------------------------------
-     */
-
-    @IntegrationTest
-    public void testIsInfused() throws EvaluationException {
-        IValue res1 = MekanismOperators.OBJECT_CHEMICALSTACK_ISINFUSED.evaluate(eHydrogen);
-        Asserts.check(res1 instanceof ValueTypeBoolean.ValueBoolean, "result is a boolean");
-        TestHelpers.assertEqual(((ValueTypeBoolean.ValueBoolean) res1).getRawValue(), false, "isinfused(hydrogen) = false");
-
-        IValue res2 = MekanismOperators.OBJECT_CHEMICALSTACK_ISINFUSED.evaluate(eGold);
-        TestHelpers.assertEqual(((ValueTypeBoolean.ValueBoolean) res2).getRawValue(), true, "isinfused(gold) = true");
-
-        IValue res3 = MekanismOperators.OBJECT_CHEMICALSTACK_ISINFUSED.evaluate(eSodium);
-        TestHelpers.assertEqual(((ValueTypeBoolean.ValueBoolean) res3).getRawValue(), false, "isinfused(sodium) = false");
-
-        IValue res4 = MekanismOperators.OBJECT_CHEMICALSTACK_ISINFUSED.evaluate(eSodiumSuperheated);
-        TestHelpers.assertEqual(((ValueTypeBoolean.ValueBoolean) res4).getRawValue(), false, "isinfused(sodiumSuperheated) = false");
-    }
-
-    @IntegrationTest(expected = EvaluationException.class)
-    public void testInvalidInputSizeIsInfusedLarge() throws EvaluationException {
-        MekanismOperators.OBJECT_CHEMICALSTACK_ISINFUSED.evaluate(eHydrogen, eHydrogen);
-    }
-
-    @IntegrationTest(expected = EvaluationException.class)
-    public void testInvalidInputSizeIsInfusedSmall() throws EvaluationException {
-        MekanismOperators.OBJECT_CHEMICALSTACK_ISINFUSED.evaluate();
-    }
-
-    @IntegrationTest(expected = EvaluationException.class)
-    public void testInvalidInputTypeIsInfused() throws EvaluationException {
-        MekanismOperators.OBJECT_CHEMICALSTACK_ISINFUSED.evaluate(DUMMY_VARIABLE);
-    }
-
-    /**
-     * ----------------------------------- ISPIGMENT -----------------------------------
-     */
-
-    @IntegrationTest
-    public void testIsPigment() throws EvaluationException {
-        IValue res1 = MekanismOperators.OBJECT_CHEMICALSTACK_ISPIGMENT.evaluate(eHydrogen);
-        Asserts.check(res1 instanceof ValueTypeBoolean.ValueBoolean, "result is a boolean");
-        TestHelpers.assertEqual(((ValueTypeBoolean.ValueBoolean) res1).getRawValue(), false, "ispigment(hydrogen) = false");
-
-        IValue res2 = MekanismOperators.OBJECT_CHEMICALSTACK_ISPIGMENT.evaluate(eGold);
-        TestHelpers.assertEqual(((ValueTypeBoolean.ValueBoolean) res2).getRawValue(), false, "ispigment(gold) = false");
-
-        IValue res3 = MekanismOperators.OBJECT_CHEMICALSTACK_ISPIGMENT.evaluate(eSodium);
-        TestHelpers.assertEqual(((ValueTypeBoolean.ValueBoolean) res3).getRawValue(), false, "ispigment(sodium) = false");
-
-        IValue res4 = MekanismOperators.OBJECT_CHEMICALSTACK_ISPIGMENT.evaluate(eRed);
-        TestHelpers.assertEqual(((ValueTypeBoolean.ValueBoolean) res4).getRawValue(), true, "ispigment(red) = true");
-    }
-
-    @IntegrationTest(expected = EvaluationException.class)
-    public void testInvalidInputSizeIsPigmentLarge() throws EvaluationException {
-        MekanismOperators.OBJECT_CHEMICALSTACK_ISPIGMENT.evaluate(eHydrogen, eHydrogen);
-    }
-
-    @IntegrationTest(expected = EvaluationException.class)
-    public void testInvalidInputSizeIsPigmentSmall() throws EvaluationException {
-        MekanismOperators.OBJECT_CHEMICALSTACK_ISPIGMENT.evaluate();
-    }
-
-    @IntegrationTest(expected = EvaluationException.class)
-    public void testInvalidInputTypeIsPigment() throws EvaluationException {
-        MekanismOperators.OBJECT_CHEMICALSTACK_ISPIGMENT.evaluate(DUMMY_VARIABLE);
-    }
-
-    /**
-     * ----------------------------------- ISSLURRY -----------------------------------
-     */
-
-    @IntegrationTest
-    public void testIsSlurry() throws EvaluationException {
-        IValue res1 = MekanismOperators.OBJECT_CHEMICALSTACK_ISSLURRY.evaluate(eHydrogen);
-        Asserts.check(res1 instanceof ValueTypeBoolean.ValueBoolean, "result is a boolean");
-        TestHelpers.assertEqual(((ValueTypeBoolean.ValueBoolean) res1).getRawValue(), false, "isslurry(hydrogen) = false");
-
-        IValue res2 = MekanismOperators.OBJECT_CHEMICALSTACK_ISSLURRY.evaluate(eGold);
-        TestHelpers.assertEqual(((ValueTypeBoolean.ValueBoolean) res2).getRawValue(), false, "isslurry(gold) = false");
-
-        IValue res3 = MekanismOperators.OBJECT_CHEMICALSTACK_ISSLURRY.evaluate(eSodium);
-        TestHelpers.assertEqual(((ValueTypeBoolean.ValueBoolean) res3).getRawValue(), false, "isslurry(sodium) = false");
-
-        IValue res4 = MekanismOperators.OBJECT_CHEMICALSTACK_ISSLURRY.evaluate(eIron);
-        TestHelpers.assertEqual(((ValueTypeBoolean.ValueBoolean) res4).getRawValue(), true, "isslurry(iron) = true");
-    }
-
-    @IntegrationTest(expected = EvaluationException.class)
-    public void testInvalidInputSizeIsSlurryLarge() throws EvaluationException {
-        MekanismOperators.OBJECT_CHEMICALSTACK_ISSLURRY.evaluate(eHydrogen, eHydrogen);
-    }
-
-    @IntegrationTest(expected = EvaluationException.class)
-    public void testInvalidInputSizeIsSlurrySmall() throws EvaluationException {
-        MekanismOperators.OBJECT_CHEMICALSTACK_ISSLURRY.evaluate();
-    }
-
-    @IntegrationTest(expected = EvaluationException.class)
-    public void testInvalidInputTypeIsSlurry() throws EvaluationException {
-        MekanismOperators.OBJECT_CHEMICALSTACK_ISSLURRY.evaluate(DUMMY_VARIABLE);
-    }
-
-    /**
      * ----------------------------------- ISRAWCHEMICALEQUAL -----------------------------------
      */
 
@@ -738,8 +591,8 @@ public class TestChemicalStackOperators {
     public void testWithAmount() throws EvaluationException {
         IValue res1 = MekanismOperators.OBJECT_CHEMICALSTACK_WITH_AMOUNT.evaluate(eHydrogen, l100);
         Asserts.check(res1 instanceof ValueObjectTypeChemicalStack.ValueChemicalStack, "result is a chemical");
-        TestHelpers.assertEqual(((ValueObjectTypeChemicalStack.ValueChemicalStack) res1).getRawValue().isStackIdentical((ChemicalStack) new GasStack(MekanismGases.HYDROGEN, 100)), true, "withamount(hydrogen:1000, 100) = hydrogen:100");
-        TestHelpers.assertEqual(((ValueObjectTypeChemicalStack.ValueChemicalStack) res1).getRawValue().isStackIdentical((ChemicalStack) new GasStack(MekanismGases.HYDROGEN, 1000)), false, "withamount(hydrogen:1000, 100) != hydrogen:1000");
+        TestHelpers.assertEqual(((ValueObjectTypeChemicalStack.ValueChemicalStack) res1).getRawValue().equals(new ChemicalStack(MekanismChemicals.HYDROGEN, 100)), true, "withamount(hydrogen:1000, 100) = hydrogen:100");
+        TestHelpers.assertEqual(((ValueObjectTypeChemicalStack.ValueChemicalStack) res1).getRawValue().equals(new ChemicalStack(MekanismChemicals.HYDROGEN, 1000)), false, "withamount(hydrogen:1000, 100) != hydrogen:1000");
     }
 
     @IntegrationTest(expected = EvaluationException.class)
@@ -798,8 +651,8 @@ public class TestChemicalStackOperators {
         Asserts.check(res1 instanceof ValueTypeList.ValueList<?,?>, "result is a list");
         IValueTypeListProxy<ValueObjectTypeChemicalStack, ValueObjectTypeChemicalStack.ValueChemicalStack> list = ((ValueTypeList.ValueList<ValueObjectTypeChemicalStack, ValueObjectTypeChemicalStack.ValueChemicalStack>) res1).getRawValue();
         TestHelpers.assertEqual(list.getLength(), 2, "tagstacks(mekanism:water_vapor).length = 2");
-        TestHelpers.assertEqual(list.get(0).getRawValue().isStackIdentical((ChemicalStack) new GasStack(MekanismGases.WATER_VAPOR, 1000)), true, "tagstacks(mekanism:water_vapor)[0] = water_vapor");
-        TestHelpers.assertEqual(list.get(1).getRawValue().isStackIdentical((ChemicalStack) new GasStack(MekanismGases.STEAM, 1000)), true, "tagstacks(mekanism:water_vapor)[1] = steam");
+        TestHelpers.assertEqual(list.get(0).getRawValue().equals(new ChemicalStack(MekanismChemicals.WATER_VAPOR, 1000)), true, "tagstacks(mekanism:water_vapor)[0] = water_vapor");
+        TestHelpers.assertEqual(list.get(1).getRawValue().equals(new ChemicalStack(MekanismChemicals.STEAM, 1000)), true, "tagstacks(mekanism:water_vapor)[1] = steam");
 
         IValue res2 = MekanismOperators.OBJECT_CHEMICALSTACK_TAG_STACKS.evaluate(new DummyVariable<>(ValueTypes.STRING, ValueTypeString.ValueString.of("none")));
         TestHelpers.assertEqual(((ValueTypeList.ValueList<?, ?>) res2).getRawValue().getLength(), 0, "tagstacks(none) = empty");

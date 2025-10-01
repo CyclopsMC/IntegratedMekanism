@@ -3,17 +3,14 @@ package org.cyclops.integratedmekanism.operator;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import mekanism.api.chemical.Chemical;
 import mekanism.api.chemical.ChemicalStack;
-import mekanism.api.chemical.gas.GasStack;
-import mekanism.api.chemical.gas.attribute.GasAttributes;
-import mekanism.api.chemical.infuse.InfusionStack;
-import mekanism.api.chemical.pigment.PigmentStack;
-import mekanism.api.chemical.slurry.SlurryStack;
+import mekanism.api.datamaps.chemical.attribute.ChemicalFuel;
+import mekanism.api.datamaps.chemical.attribute.ChemicalRadioactivity;
+import mekanism.api.datamaps.chemical.attribute.IChemicalCoolant;
+import mekanism.common.registries.MekanismDataMapTypes;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringUtil;
-import net.minecraftforge.registries.tags.IReverseTag;
 import org.cyclops.commoncapabilities.api.ingredient.IMixedIngredients;
 import org.cyclops.commoncapabilities.api.ingredient.MixedIngredients;
 import org.cyclops.cyclopscore.helper.MinecraftHelpers;
@@ -81,9 +78,9 @@ public class MekanismOperators {
                 ValueObjectTypeItemStack.ValueItemStack a = variables.getValue(0, ValueTypes.OBJECT_ITEMSTACK);
                 return ValueObjectTypeChemicalStack.ValueChemicalStack.of(!a.getRawValue().isEmpty() ?
                         CapabilityHelpers.getChemicalHandler(a.getRawValue())
-                                .map(h -> h.getTanks() > 0 ? h.getChemicalInTank(0) : GasStack.EMPTY)
-                                .orElse(GasStack.EMPTY) :
-                        GasStack.EMPTY);
+                                .map(h -> h.getChemicalTanks() > 0 ? h.getChemicalInTank(0) : ChemicalStack.EMPTY)
+                                .orElse(ChemicalStack.EMPTY) :
+                        ChemicalStack.EMPTY);
             }).build());
 
     /**
@@ -96,7 +93,7 @@ public class MekanismOperators {
             .function(MekanismOperatorBuilders.FUNCTION_ITEMSTACK_TO_LONG.build(
                     itemStack -> !itemStack.isEmpty() ?
                             CapabilityHelpers.getChemicalHandler(itemStack)
-                                    .map(h -> h.getTanks() > 0 ? h.getTankCapacity(0) : 0)
+                                    .map(h -> h.getChemicalTanks() > 0 ? h.getChemicalTankCapacity(0) : 0)
                                     .orElse(0L):
                             0L
             )).build());
@@ -129,7 +126,7 @@ public class MekanismOperators {
     public static final IOperator OBJECT_CHEMICALSTACK_ISRADIOACTIVE = REGISTRY.register(MekanismOperatorBuilders.CHEMICALSTACK_1_SUFFIX_LONG
             .output(ValueTypes.BOOLEAN).symbolOperator("is_radioactive").interactName("isRadioactive")
             .function(MekanismOperatorBuilders.FUNCTION_CHEMICALSTACK_TO_BOOLEAN.build(
-                    chemicalStack -> Optional.ofNullable(chemicalStack.get(GasAttributes.Radiation.class)).map(a -> a.needsValidation() && a.getRadioactivity() > 0).orElse(false)
+                    chemicalStack -> Optional.ofNullable(chemicalStack.getData(MekanismDataMapTypes.INSTANCE.chemicalRadioactivity())).map(a -> a.needsValidation() && a.radioactivity() > 0).orElse(false)
             )).build());
 
     /**
@@ -138,7 +135,7 @@ public class MekanismOperators {
     public static final IOperator OBJECT_CHEMICALSTACK_RADIOACTIVITY = REGISTRY.register(MekanismOperatorBuilders.CHEMICALSTACK_1_SUFFIX_LONG
             .output(ValueTypes.DOUBLE).symbolOperatorInteract("radioactivity")
             .function(MekanismOperatorBuilders.FUNCTION_CHEMICALSTACK_TO_DOUBLE.build(
-                    chemicalStack -> Optional.ofNullable(chemicalStack.get(GasAttributes.Radiation.class)).map(GasAttributes.Radiation::getRadioactivity).orElse(0D)
+                    chemicalStack -> Optional.ofNullable(chemicalStack.getData(MekanismDataMapTypes.INSTANCE.chemicalRadioactivity())).map(ChemicalRadioactivity::radioactivity).orElse(0D)
             )).build());
 
     /**
@@ -147,7 +144,7 @@ public class MekanismOperators {
     public static final IOperator OBJECT_CHEMICALSTACK_ISCOOLANT = REGISTRY.register(MekanismOperatorBuilders.CHEMICALSTACK_1_SUFFIX_LONG
             .output(ValueTypes.BOOLEAN).symbolOperator("is_coolant").interactName("isCoolant")
             .function(MekanismOperatorBuilders.FUNCTION_CHEMICALSTACK_TO_BOOLEAN.build(
-                    chemicalStack -> chemicalStack.get(GasAttributes.CooledCoolant.class) != null || chemicalStack.get(GasAttributes.HeatedCoolant.class) != null
+                    chemicalStack -> chemicalStack.getData(MekanismDataMapTypes.INSTANCE.cooledChemicalCoolant()) != null || chemicalStack.getData(MekanismDataMapTypes.INSTANCE.heatedChemicalCoolant()) != null
             )).build());
 
     /**
@@ -156,9 +153,9 @@ public class MekanismOperators {
     public static final IOperator OBJECT_CHEMICALSTACK_THERMALENTHALPY = REGISTRY.register(MekanismOperatorBuilders.CHEMICALSTACK_1_SUFFIX_LONG
             .output(ValueTypes.DOUBLE).symbolOperator("thermal_enthalpy").interactName("thermalEnthalpy")
             .function(MekanismOperatorBuilders.FUNCTION_CHEMICALSTACK_TO_DOUBLE.build(
-                    chemicalStack -> Optional.<GasAttributes.Coolant>ofNullable(chemicalStack.get(GasAttributes.CooledCoolant.class))
-                            .or(() -> Optional.ofNullable(chemicalStack.get(GasAttributes.HeatedCoolant.class)))
-                            .map(GasAttributes.Coolant::getThermalEnthalpy)
+                    chemicalStack -> Optional.<IChemicalCoolant>ofNullable(chemicalStack.getData(MekanismDataMapTypes.INSTANCE.cooledChemicalCoolant()))
+                            .or(() -> Optional.ofNullable(chemicalStack.getData(MekanismDataMapTypes.INSTANCE.heatedChemicalCoolant())))
+                            .map(IChemicalCoolant::thermalEnthalpy)
                             .orElse(0D)
             )).build());
 
@@ -168,9 +165,9 @@ public class MekanismOperators {
     public static final IOperator OBJECT_CHEMICALSTACK_CONDUCTIVITY = REGISTRY.register(MekanismOperatorBuilders.CHEMICALSTACK_1_SUFFIX_LONG
             .output(ValueTypes.DOUBLE).symbolOperatorInteract("conductivity")
             .function(MekanismOperatorBuilders.FUNCTION_CHEMICALSTACK_TO_DOUBLE.build(
-                    chemicalStack -> Optional.<GasAttributes.Coolant>ofNullable(chemicalStack.get(GasAttributes.CooledCoolant.class))
-                            .or(() -> Optional.ofNullable(chemicalStack.get(GasAttributes.HeatedCoolant.class)))
-                            .map(GasAttributes.Coolant::getConductivity)
+                    chemicalStack -> Optional.<IChemicalCoolant>ofNullable(chemicalStack.getData(MekanismDataMapTypes.INSTANCE.cooledChemicalCoolant()))
+                            .or(() -> Optional.ofNullable(chemicalStack.getData(MekanismDataMapTypes.INSTANCE.heatedChemicalCoolant())))
+                            .map(IChemicalCoolant::conductivity)
                             .orElse(0D)
             )).build());
 
@@ -180,7 +177,7 @@ public class MekanismOperators {
     public static final IOperator OBJECT_CHEMICALSTACK_ISCOOLEDCOOLANT = REGISTRY.register(MekanismOperatorBuilders.CHEMICALSTACK_1_SUFFIX_LONG
             .output(ValueTypes.BOOLEAN).symbolOperator("is_cooled_coolant").interactName("isCooledCoolant")
             .function(MekanismOperatorBuilders.FUNCTION_CHEMICALSTACK_TO_BOOLEAN.build(
-                    chemicalStack -> chemicalStack.get(GasAttributes.CooledCoolant.class) != null
+                    chemicalStack -> chemicalStack.getData(MekanismDataMapTypes.INSTANCE.cooledChemicalCoolant()) != null
             )).build());
 
     /**
@@ -189,10 +186,9 @@ public class MekanismOperators {
     public static final IOperator OBJECT_CHEMICALSTACK_COOLEDCOOLANTOF = REGISTRY.register(MekanismOperatorBuilders.CHEMICALSTACK_1_SUFFIX_LONG
             .output(MekanismValueTypes.OBJECT_CHEMICALSTACK).symbolOperator("cooled_coolant_of").interactName("cooledCoolantOf")
             .function(MekanismOperatorBuilders.FUNCTION_CHEMICALSTACK_TO_CHEMICALSTACK.build(
-                    chemicalStack -> Optional.ofNullable(chemicalStack.get(GasAttributes.CooledCoolant.class))
-                            .map(GasAttributes.CooledCoolant::getHeatedGas)
-                            .map(gas -> new GasStack(gas, chemicalStack.getAmount()))
-                            .orElse(GasStack.EMPTY)
+                    chemicalStack -> Optional.ofNullable(chemicalStack.getData(MekanismDataMapTypes.INSTANCE.cooledChemicalCoolant()))
+                            .map(coolant -> coolant.heat(chemicalStack.getAmount()))
+                            .orElse(ChemicalStack.EMPTY)
             )).build());
 
     /**
@@ -201,7 +197,7 @@ public class MekanismOperators {
     public static final IOperator OBJECT_CHEMICALSTACK_ISHEATEDCOOLANT = REGISTRY.register(MekanismOperatorBuilders.CHEMICALSTACK_1_SUFFIX_LONG
             .output(ValueTypes.BOOLEAN).symbolOperator("is_heated_coolant").interactName("isHeatedCoolant")
             .function(MekanismOperatorBuilders.FUNCTION_CHEMICALSTACK_TO_BOOLEAN.build(
-                    chemicalStack -> chemicalStack.get(GasAttributes.HeatedCoolant.class) != null
+                    chemicalStack -> chemicalStack.getData(MekanismDataMapTypes.INSTANCE.heatedChemicalCoolant()) != null
             )).build());
 
     /**
@@ -210,10 +206,9 @@ public class MekanismOperators {
     public static final IOperator OBJECT_CHEMICALSTACK_HEATEDCOOLANTOF = REGISTRY.register(MekanismOperatorBuilders.CHEMICALSTACK_1_SUFFIX_LONG
             .output(MekanismValueTypes.OBJECT_CHEMICALSTACK).symbolOperator("heated_coolant_of").interactName("heatedCoolantOf")
             .function(MekanismOperatorBuilders.FUNCTION_CHEMICALSTACK_TO_CHEMICALSTACK.build(
-                    chemicalStack -> Optional.ofNullable(chemicalStack.get(GasAttributes.HeatedCoolant.class))
-                            .map(GasAttributes.HeatedCoolant::getCooledGas)
-                            .map(gas -> new GasStack(gas, chemicalStack.getAmount()))
-                            .orElse(GasStack.EMPTY)
+                    chemicalStack -> Optional.ofNullable(chemicalStack.getData(MekanismDataMapTypes.INSTANCE.heatedChemicalCoolant()))
+                            .map(coolant -> coolant.cool(chemicalStack.getAmount()))
+                            .orElse(ChemicalStack.EMPTY)
             )).build());
 
     /**
@@ -222,7 +217,7 @@ public class MekanismOperators {
     public static final IOperator OBJECT_CHEMICALSTACK_ISFUEL = REGISTRY.register(MekanismOperatorBuilders.CHEMICALSTACK_1_SUFFIX_LONG
             .output(ValueTypes.BOOLEAN).symbolOperator("is_fuel").interactName("isFuel")
             .function(MekanismOperatorBuilders.FUNCTION_CHEMICALSTACK_TO_BOOLEAN.build(
-                    chemicalStack -> chemicalStack.get(GasAttributes.Fuel.class) != null
+                    chemicalStack -> chemicalStack.getData(MekanismDataMapTypes.INSTANCE.chemicalFuel()) != null
             )).build());
 
     /**
@@ -231,8 +226,8 @@ public class MekanismOperators {
     public static final IOperator OBJECT_CHEMICALSTACK_BURN_TICKS = REGISTRY.register(MekanismOperatorBuilders.CHEMICALSTACK_1_SUFFIX_LONG
             .output(ValueTypes.INTEGER).symbolOperator("burn_ticks").interactName("burnTicks")
             .function(MekanismOperatorBuilders.FUNCTION_CHEMICALSTACK_TO_INT.build(
-                    chemicalStack -> Optional.ofNullable(chemicalStack.get(GasAttributes.Fuel.class))
-                            .map(GasAttributes.Fuel::getBurnTicks)
+                    chemicalStack -> Optional.ofNullable(chemicalStack.getData(MekanismDataMapTypes.INSTANCE.chemicalFuel()))
+                            .map(ChemicalFuel::burnTicks)
                             .orElse(0)
             )).build());
 
@@ -242,45 +237,9 @@ public class MekanismOperators {
     public static final IOperator OBJECT_CHEMICALSTACK_ENERGY_PER_TICK = REGISTRY.register(MekanismOperatorBuilders.CHEMICALSTACK_1_SUFFIX_LONG
             .output(ValueTypes.LONG).symbolOperator("energy_per_tick").interactName("energyPerTick")
             .function(MekanismOperatorBuilders.FUNCTION_CHEMICALSTACK_TO_LONG.build(
-                    chemicalStack -> Optional.ofNullable(chemicalStack.get(GasAttributes.Fuel.class))
-                            .map(f -> f.getEnergyPerTick().longValue())
+                    chemicalStack -> Optional.ofNullable(chemicalStack.getData(MekanismDataMapTypes.INSTANCE.chemicalFuel()))
+                            .map(ChemicalFuel::energyPerTick)
                             .orElse(0L)
-            )).build());
-
-    /**
-     * If the chemicalstack is a gas
-     */
-    public static final IOperator OBJECT_CHEMICALSTACK_ISGAS = REGISTRY.register(MekanismOperatorBuilders.CHEMICALSTACK_1_SUFFIX_LONG
-            .output(ValueTypes.BOOLEAN).symbolOperator("is_gas").interactName("isGas")
-            .function(MekanismOperatorBuilders.FUNCTION_CHEMICALSTACK_TO_BOOLEAN.build(
-                    chemicalStack -> chemicalStack instanceof GasStack
-            )).build());
-
-    /**
-     * If the chemicalstack is an infusion
-     */
-    public static final IOperator OBJECT_CHEMICALSTACK_ISINFUSED = REGISTRY.register(MekanismOperatorBuilders.CHEMICALSTACK_1_SUFFIX_LONG
-            .output(ValueTypes.BOOLEAN).symbolOperator("is_infusion").interactName("isInfusion")
-            .function(MekanismOperatorBuilders.FUNCTION_CHEMICALSTACK_TO_BOOLEAN.build(
-                    chemicalStack -> chemicalStack instanceof InfusionStack
-            )).build());
-
-    /**
-     * If the chemicalstack is a pigment
-     */
-    public static final IOperator OBJECT_CHEMICALSTACK_ISPIGMENT = REGISTRY.register(MekanismOperatorBuilders.CHEMICALSTACK_1_SUFFIX_LONG
-            .output(ValueTypes.BOOLEAN).symbolOperator("is_pigment").interactName("isPigment")
-            .function(MekanismOperatorBuilders.FUNCTION_CHEMICALSTACK_TO_BOOLEAN.build(
-                    chemicalStack -> chemicalStack instanceof PigmentStack
-            )).build());
-
-    /**
-     * If the chemicalstack is a slurry
-     */
-    public static final IOperator OBJECT_CHEMICALSTACK_ISSLURRY = REGISTRY.register(MekanismOperatorBuilders.CHEMICALSTACK_1_SUFFIX_LONG
-            .output(ValueTypes.BOOLEAN).symbolOperator("is_slurry").interactName("isSlurry")
-            .function(MekanismOperatorBuilders.FUNCTION_CHEMICALSTACK_TO_BOOLEAN.build(
-                    chemicalStack -> chemicalStack instanceof SlurryStack
             )).build());
 
     /**
@@ -291,7 +250,7 @@ public class MekanismOperators {
             .function(variables -> {
                 ValueObjectTypeChemicalStack.ValueChemicalStack valueChemicalStack0 = variables.getValue(0, MekanismValueTypes.OBJECT_CHEMICALSTACK);
                 ValueObjectTypeChemicalStack.ValueChemicalStack valueChemicalStack1 = variables.getValue(1, MekanismValueTypes.OBJECT_CHEMICALSTACK);
-                return ValueTypeBoolean.ValueBoolean.of(valueChemicalStack0.getRawValue().isTypeEqual((ChemicalStack) valueChemicalStack1.getRawValue()));
+                return ValueTypeBoolean.ValueBoolean.of(valueChemicalStack0.getRawValue().is(valueChemicalStack1.getRawValue().getChemical()));
             }).build());
 
     /**
@@ -302,7 +261,7 @@ public class MekanismOperators {
             .function(new IterativeFunction(Lists.newArrayList(
                     (OperatorBase.SafeVariablesGetter variables) -> {
                         ValueObjectTypeChemicalStack.ValueChemicalStack a = variables.getValue(0, MekanismValueTypes.OBJECT_CHEMICALSTACK);
-                        return ChemicalHelpers.getStackRegistry(a.getRawValue()).getKey(a.getRawValue().getType());
+                        return ChemicalHelpers.getStackRegistry().getKey(a.getRawValue().getChemical());
                     },
                     OperatorBuilders.PROPAGATOR_RESOURCELOCATION_MODNAME
             ))).build());
@@ -316,7 +275,7 @@ public class MekanismOperators {
             .function(variables -> {
                 ValueObjectTypeChemicalStack.ValueChemicalStack valueChemicalStack = variables.getValue(0, MekanismValueTypes.OBJECT_CHEMICALSTACK);
                 ValueTypeLong.ValueLong valueLong = variables.getValue(1, ValueTypes.LONG);
-                ChemicalStack<?> chemicalStack = valueChemicalStack.getRawValue().copy();
+                ChemicalStack chemicalStack = valueChemicalStack.getRawValue().copy();
                 chemicalStack.setAmount(valueLong.getRawValue());
                 return ValueObjectTypeChemicalStack.ValueChemicalStack.of(chemicalStack);
             }).build());
@@ -331,11 +290,9 @@ public class MekanismOperators {
                 ValueObjectTypeChemicalStack.ValueChemicalStack a = variables.getValue(0, MekanismValueTypes.OBJECT_CHEMICALSTACK);
                 ImmutableList.Builder<ValueTypeString.ValueString> builder = ImmutableList.builder();
                 if(!a.getRawValue().isEmpty()) {
-                    Optional<IReverseTag<Chemical>> optionalReverseTag = ChemicalHelpers.getStackRegistry(a.getRawValue()).tags().getReverseTag(a.getRawValue().getType());
-                    optionalReverseTag
-                            .ifPresent(reverseTag -> reverseTag.getTagKeys()
-                                    .forEach(owningTag -> builder.add(ValueTypeString.ValueString
-                                            .of(owningTag.location().toString()))));
+                    ChemicalHelpers.getStackRegistry()
+                            .getTags()
+                            .forEach((owningTag) -> builder.add(ValueTypeString.ValueString.of(owningTag.getFirst().location().toString())));
                 }
                 return ValueTypeList.ValueList.ofList(ValueTypes.STRING, builder.build());
             }).build());

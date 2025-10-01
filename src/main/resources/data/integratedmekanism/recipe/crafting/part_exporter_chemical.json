@@ -5,10 +5,10 @@
       "item": "integratedmekanism:part_interface_chemical"
     },
     {
-      "item": "integrateddynamics:variable_transformer_input"
+      "item": "integrateddynamics:variable_transformer_output"
     }
   ],
   "result": {
-    "item": "integratedmekanism:part_importer_chemical"
+    "id": "integratedmekanism:part_exporter_chemical"
   }
 }

@@ -2,12 +2,12 @@ package org.cyclops.integratedmekanism.modcompat.jei;
 
 import com.google.common.collect.Lists;
 import mekanism.api.chemical.ChemicalStack;
-import mekanism.client.jei.MekanismJEI;
+import mekanism.client.recipe_viewer.jei.MekanismJEI;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import net.minecraft.client.Minecraft;
@@ -16,7 +16,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 import org.cyclops.integrateddynamics.api.logicprogrammer.ILogicProgrammerElement;
 import org.cyclops.integrateddynamics.core.ingredient.ItemMatchProperties;
 import org.cyclops.integrateddynamics.inventory.container.ContainerLogicProgrammerBase;
@@ -55,10 +55,10 @@ public class LogicProgrammerTransferHandlerRecipeChemical<T extends ContainerLog
     protected IRecipeTransferError handleRecipeChemicalElement(ValueTypeRecipeChemicalLPElement element, T container, IRecipeSlotsView recipeLayout, boolean doTransfer) {
         List<ItemMatchProperties> itemInputs = Lists.newArrayList();
         List<FluidStack> fluidInputs = Lists.newArrayList();
-        List<ChemicalStack<?>> chemicalInputs = Lists.newArrayList();
+        List<ChemicalStack> chemicalInputs = Lists.newArrayList();
         List<ItemStack> itemOutputs = Lists.newArrayList();
         List<FluidStack> fluidOutputs = Lists.newArrayList();
-        List<ChemicalStack<?>> chemicalOutputs = Lists.newArrayList();
+        List<ChemicalStack> chemicalOutputs = Lists.newArrayList();
 
         for (IRecipeSlotView slotView : recipeLayout.getSlotViews()) {
             if (slotView.isEmpty()) {
@@ -78,19 +78,19 @@ public class LogicProgrammerTransferHandlerRecipeChemical<T extends ContainerLog
                     } else if (slotView.getRole() == RecipeIngredientRole.OUTPUT) {
                         itemOutputs.add(((ItemStack) typedIngredient.getIngredient()).copy());
                     }
-                } else if (typedIngredient.getType() == ForgeTypes.FLUID_STACK) {
+                } else if (typedIngredient.getType() == NeoForgeTypes.FLUID_STACK) {
                     // Collect fluids
                     if (slotView.getRole() == RecipeIngredientRole.INPUT) {
                         fluidInputs.add(((FluidStack) typedIngredient.getIngredient()).copy());
                     } else if (slotView.getRole() == RecipeIngredientRole.OUTPUT) {
                         fluidOutputs.add(((FluidStack) typedIngredient.getIngredient()).copy());
                     }
-                } else if (typedIngredient.getType() == MekanismJEI.TYPE_GAS || typedIngredient.getType() == MekanismJEI.TYPE_INFUSION || typedIngredient.getType() == MekanismJEI.TYPE_PIGMENT || typedIngredient.getType() == MekanismJEI.TYPE_SLURRY) {
+                } else if (typedIngredient.getType() == MekanismJEI.TYPE_CHEMICAL) {
                     // Collect fluids
                     if (slotView.getRole() == RecipeIngredientRole.INPUT) {
-                        chemicalInputs.add(((ChemicalStack<?>) typedIngredient.getIngredient()).copy());
+                        chemicalInputs.add(((ChemicalStack) typedIngredient.getIngredient()).copy());
                     } else if (slotView.getRole() == RecipeIngredientRole.OUTPUT) {
-                        chemicalOutputs.add(((ChemicalStack<?>) typedIngredient.getIngredient()).copy());
+                        chemicalOutputs.add(((ChemicalStack) typedIngredient.getIngredient()).copy());
                     }
                 }
             }

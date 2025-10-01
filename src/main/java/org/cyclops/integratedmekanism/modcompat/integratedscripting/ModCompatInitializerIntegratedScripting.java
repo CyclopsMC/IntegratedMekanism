@@ -1,6 +1,7 @@
 package org.cyclops.integratedmekanism.modcompat.integratedscripting;
 
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import org.cyclops.cyclopscore.init.IModBase;
+import org.cyclops.cyclopscore.init.ModBase;
 import org.cyclops.cyclopscore.modcompat.ICompatInitializer;
 import org.cyclops.integrateddynamics.command.CommandTest;
 import org.cyclops.integratedmekanism.modcompat.integratedscripting.translation.MekanismValueTranslators;
@@ -15,7 +16,12 @@ import java.util.List;
 public class ModCompatInitializerIntegratedScripting implements ICompatInitializer {
     @Override
     public void initialize() {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onValueTranslatorRegister);
+
+    }
+
+    @Override
+    public void initialize(IModBase mod) {
+        ((ModBase<?>) mod).getModEventBus().addListener(this::onValueTranslatorRegister);
     }
 
     public void onValueTranslatorRegister(ValueTranslatorRegisterEvent event) {

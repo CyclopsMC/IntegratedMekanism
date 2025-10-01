@@ -2,15 +2,17 @@ package org.cyclops.integratedmekanism.ingredient;
 
 import mekanism.api.chemical.ChemicalStack;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import org.cyclops.commoncapabilities.api.ingredient.IngredientComponent;
 import org.cyclops.commoncapabilities.api.ingredient.capability.IngredientComponentCapabilityAttacherAdapter;
 import org.cyclops.commoncapabilities.api.ingredient.capability.IngredientComponentCapabilityAttacherManager;
 import org.cyclops.cyclopscore.modcompat.capabilities.DefaultCapabilityProvider;
-import org.cyclops.integrateddynamics.Reference;
-import org.cyclops.integrateddynamics.capability.ingredient.IngredientComponentValueHandlerConfig;
-import org.cyclops.integrateddynamics.capability.network.PositionedAddonsNetworkIngredientsHandlerConfig;
-import org.cyclops.integratedmekanism.network.ChemicalNetworkConfig;
+import org.cyclops.integrateddynamics.Capabilities;
+import org.cyclops.integrateddynamics.api.ingredient.capability.IIngredientComponentValueHandler;
+import org.cyclops.integrateddynamics.api.ingredient.capability.IPositionedAddonsNetworkIngredientsHandler;
+import org.cyclops.integratedmekanism.value.ValueObjectTypeChemicalStack;
+
+import java.util.Optional;
 
 /**
  * @author rubensworks
@@ -23,22 +25,18 @@ public class IngredientComponentCapabilitiesMekanism {
         IngredientComponentCapabilityAttacherManager attacherManager = new IngredientComponentCapabilityAttacherManager();
 
         // Value handler
-        ResourceLocation capabilityIngredientComponentValueHandler = new ResourceLocation(Reference.MOD_ID, "ingredient_component_value_handler");
-        attacherManager.addAttacher(new IngredientComponentCapabilityAttacherAdapter<ChemicalStack<?>, Integer>(INGREDIENT_CHEMICALSTACK_ID, capabilityIngredientComponentValueHandler) {
+        attacherManager.addAttacher(new IngredientComponentCapabilityAttacherAdapter<ChemicalStack, Integer>(INGREDIENT_CHEMICALSTACK_ID, Capabilities.IngredientComponentValueHandler.INGREDIENT) {
             @Override
-            public ICapabilityProvider createCapabilityProvider(IngredientComponent<ChemicalStack<?>, Integer> ingredientComponent) {
-                return new DefaultCapabilityProvider<>(() -> IngredientComponentValueHandlerConfig.CAPABILITY,
-                        new IngredientComponentValueHandlerChemicalStack(ingredientComponent));
+            public ICapabilityProvider<IngredientComponent<?, ?>, Void, IIngredientComponentValueHandler<ValueObjectTypeChemicalStack, ValueObjectTypeChemicalStack.ValueChemicalStack, ChemicalStack, Integer>> createCapabilityProvider(IngredientComponent<ChemicalStack, Integer> ingredientComponent) {
+                return new DefaultCapabilityProvider<>(new IngredientComponentValueHandlerChemicalStack(ingredientComponent));
             }
         });
 
         // Network handler
-        ResourceLocation networkHandler = new ResourceLocation(Reference.MOD_ID, "network_handler");
-        attacherManager.addAttacher(new IngredientComponentCapabilityAttacherAdapter<ChemicalStack<?>, Integer>(INGREDIENT_CHEMICALSTACK_ID, networkHandler) {
+        attacherManager.addAttacher(new IngredientComponentCapabilityAttacherAdapter<ChemicalStack, Integer>(INGREDIENT_CHEMICALSTACK_ID, Capabilities.PositionedAddonsNetworkIngredientsHandler.INGREDIENT) {
             @Override
-            public ICapabilityProvider createCapabilityProvider(IngredientComponent<ChemicalStack<?>, Integer> ingredientComponent) {
-                return new DefaultCapabilityProvider<>(() -> PositionedAddonsNetworkIngredientsHandlerConfig.CAPABILITY,
-                        (network) -> network.getCapability(ChemicalNetworkConfig.CAPABILITY));
+            public ICapabilityProvider<IngredientComponent<ChemicalStack, Integer>, Void, IPositionedAddonsNetworkIngredientsHandler<ChemicalStack, Integer>> createCapabilityProvider(IngredientComponent<ChemicalStack, Integer> ingredientComponent) {
+                return new DefaultCapabilityProvider<>((network) -> (Optional) network.getCapability(org.cyclops.integratedmekanism.Capabilities.ChemicalNetwork.NETWORK));
             }
         });
     }

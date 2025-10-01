@@ -1,15 +1,20 @@
 package org.cyclops.integratedmekanism.network.packet;
 
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.tuple.Pair;
 import org.cyclops.cyclopscore.network.CodecField;
 import org.cyclops.cyclopscore.network.PacketCodec;
 import org.cyclops.integrateddynamics.api.logicprogrammer.ILogicProgrammerElement;
 import org.cyclops.integrateddynamics.inventory.container.ContainerLogicProgrammerBase;
+import org.cyclops.integratedmekanism.Reference;
 import org.cyclops.integratedmekanism.logicprogrammer.ValueTypeRecipeChemicalLPElement;
 
 /**
@@ -17,7 +22,10 @@ import org.cyclops.integratedmekanism.logicprogrammer.ValueTypeRecipeChemicalLPE
  * @author rubensworks
  *
  */
-public class LogicProgrammerValueTypeRecipeChemicalValueChangedPacket extends PacketCodec {
+public class LogicProgrammerValueTypeRecipeChemicalValueChangedPacket extends PacketCodec<LogicProgrammerValueTypeRecipeChemicalValueChangedPacket> {
+
+    public static final CustomPacketPayload.Type<LogicProgrammerValueTypeRecipeChemicalValueChangedPacket> ID = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "lp_valuetype_recipe_chemical_value_changed"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, LogicProgrammerValueTypeRecipeChemicalValueChangedPacket> CODEC = getCodec(LogicProgrammerValueTypeRecipeChemicalValueChangedPacket::new);
 
     @CodecField
     private String value;
@@ -27,10 +35,11 @@ public class LogicProgrammerValueTypeRecipeChemicalValueChangedPacket extends Pa
     private int slot;
 
     public LogicProgrammerValueTypeRecipeChemicalValueChangedPacket() {
-
+        super(ID);
     }
 
     public LogicProgrammerValueTypeRecipeChemicalValueChangedPacket(String value, Type type, int slot) {
+        super(ID);
         this.value = value;
         this.type = type.ordinal();
         this.slot = slot;

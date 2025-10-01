@@ -2,7 +2,6 @@ package org.cyclops.integratedmekanism.modcompat.integratedtunnels.aspect;
 
 import com.google.common.collect.Iterators;
 import mekanism.api.chemical.ChemicalStack;
-import mekanism.api.chemical.gas.GasStack;
 import net.minecraft.resources.ResourceLocation;
 import org.cyclops.commoncapabilities.api.ingredient.storage.IIngredientComponentStorage;
 import org.cyclops.integrateddynamics.api.part.aspect.IAspectRead;
@@ -54,12 +53,12 @@ public class MekanismTunnelsAspects {
             public static final IAspectRead<ValueTypeInteger.ValueInteger, ValueTypeInteger>
                     INTEGER_INTERFACES = MekanismTunnelsAspectReadBuilders.Network.Chemical.BUILDER_INTEGER
                     .handle(MekanismTunnelsAspectReadBuilders.Network.Chemical.PROP_GET_CHANNELINDEX)
-                    .handle(channel -> Iterators.size(channel.getPositions(GasStack.EMPTY, ChemicalMatch.ANY)))
+                    .handle(channel -> Iterators.size(channel.getPositions(ChemicalStack.EMPTY, ChemicalMatch.ANY)))
                     .handle(AspectReadBuilders.PROP_GET_INTEGER, "interfaces")
                     .buildRead();
             static {
                 Operators.REGISTRY.registerSerializer(new PositionedOperator.Serializer(
-                        PositionedOperatorIngredientIndexChemical.class, new ResourceLocation(Reference.MOD_ID, "positioned_ingredient_index_chemical")));
+                        PositionedOperatorIngredientIndexChemical.class, ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "positioned_ingredient_index_chemical")));
             }
         }
 

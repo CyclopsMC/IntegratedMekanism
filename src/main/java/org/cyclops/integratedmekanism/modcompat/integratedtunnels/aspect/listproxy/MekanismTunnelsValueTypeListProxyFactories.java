@@ -16,7 +16,7 @@ public class MekanismTunnelsValueTypeListProxyFactories {
     public static void load() {
         if (POSITIONED_CHEMICAL_NETWORK == null) {
             POSITIONED_CHEMICAL_NETWORK = ValueTypeListProxyFactories.REGISTRY.register(new ValueTypeListProxyNBTFactory<>(
-                    new ResourceLocation(Reference.MOD_ID, "positioned_chemical_network"),
+                    ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "positioned_chemical_network"),
                     ValueTypeListProxyPositionedChemicalNetwork.class));
         }
     }

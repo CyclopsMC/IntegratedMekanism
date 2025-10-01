@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
 /**
  * @author rubensworks
  */
-public class IngredientPredicateChemicalStackList extends IngredientPredicate<ChemicalStack<?>, Integer> {
+public class IngredientPredicateChemicalStackList extends IngredientPredicate<ChemicalStack, Integer> {
     private final boolean blacklist;
     private final IValueTypeListProxy<ValueObjectTypeChemicalStack, ValueObjectTypeChemicalStack.ValueChemicalStack> chemicalStacks;
     private final boolean checkChemical;

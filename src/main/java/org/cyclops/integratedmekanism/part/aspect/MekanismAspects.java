@@ -20,9 +20,9 @@ public class MekanismAspects {
             public static final IAspectRead<ValueTypeBoolean.ValueBoolean, ValueTypeBoolean> BOOLEAN_FULL =
                     MekanismAspectReadBuilders.Chemical.BUILDER_BOOLEAN.handle(tankInfo -> {
                         boolean allFull = true;
-                        for (int i = 0; i < tankInfo.getTanks(); i++) {
-                            if (tankInfo.getChemicalInTank(i).isEmpty() && tankInfo.getTankCapacity(i) > 0
-                                    || (!tankInfo.getChemicalInTank(i).isEmpty() && tankInfo.getChemicalInTank(i).getAmount() < tankInfo.getTankCapacity(i))) {
+                        for (int i = 0; i < tankInfo.getChemicalTanks(); i++) {
+                            if (tankInfo.getChemicalInTank(i).isEmpty() && tankInfo.getChemicalTankCapacity(i) > 0
+                                    || (!tankInfo.getChemicalInTank(i).isEmpty() && tankInfo.getChemicalInTank(i).getAmount() < tankInfo.getChemicalTankCapacity(i))) {
                                 allFull = false;
                             }
                         }
@@ -30,9 +30,9 @@ public class MekanismAspects {
                     }).handle(AspectReadBuilders.PROP_GET_BOOLEAN, "full").buildRead();
             public static final IAspectRead<ValueTypeBoolean.ValueBoolean, ValueTypeBoolean> BOOLEAN_EMPTY =
                     MekanismAspectReadBuilders.Chemical.BUILDER_BOOLEAN.handle(tankInfo -> {
-                        for (int i = 0; i < tankInfo.getTanks(); i++) {
-                            if (!tankInfo.getChemicalInTank(i).isEmpty() && tankInfo.getTankCapacity(i) > 0
-                                    || (!tankInfo.getChemicalInTank(i).isEmpty() && tankInfo.getChemicalInTank(i).getAmount() < tankInfo.getTankCapacity(i))) {
+                        for (int i = 0; i < tankInfo.getChemicalTanks(); i++) {
+                            if (!tankInfo.getChemicalInTank(i).isEmpty() && tankInfo.getChemicalTankCapacity(i) > 0
+                                    || (!tankInfo.getChemicalInTank(i).isEmpty() && tankInfo.getChemicalInTank(i).getAmount() < tankInfo.getChemicalTankCapacity(i))) {
                                 return false;
                             }
                         }
@@ -41,7 +41,7 @@ public class MekanismAspects {
             public static final IAspectRead<ValueTypeBoolean.ValueBoolean, ValueTypeBoolean> BOOLEAN_NONEMPTY =
                     MekanismAspectReadBuilders.Chemical.BUILDER_BOOLEAN.handle(tankInfo -> {
                         boolean hasChemical = false;
-                        for (int i = 0; i < tankInfo.getTanks(); i++) {
+                        for (int i = 0; i < tankInfo.getChemicalTanks(); i++) {
                             if (!tankInfo.getChemicalInTank(i).isEmpty() && tankInfo.getChemicalInTank(i).getAmount() > 0) {
                                 hasChemical = true;
                             }
@@ -50,7 +50,7 @@ public class MekanismAspects {
                     }).handle(AspectReadBuilders.PROP_GET_BOOLEAN, "nonempty").buildRead();
             public static final IAspectRead<ValueTypeBoolean.ValueBoolean, ValueTypeBoolean> BOOLEAN_APPLICABLE =
                     MekanismAspectReadBuilders.Chemical.BUILDER_BOOLEAN.handle(
-                            tankInfo -> tankInfo.getTanks() > 0
+                            tankInfo -> tankInfo.getChemicalTanks() > 0
                     ).handle(AspectReadBuilders.PROP_GET_BOOLEAN, "applicable").buildRead();
 
             public static final IAspectRead<ValueTypeLong.ValueLong, ValueTypeLong> LONG_AMOUNT =
@@ -60,26 +60,26 @@ public class MekanismAspects {
             public static final IAspectRead<ValueTypeLong.ValueLong, ValueTypeLong> LONG_AMOUNTTOTAL =
                     MekanismAspectReadBuilders.Chemical.BUILDER_LONG.handle(tankInfo -> {
                         long amount = 0;
-                        for (int i = 0; i < tankInfo.getTanks(); i++) {
+                        for (int i = 0; i < tankInfo.getChemicalTanks(); i++) {
                             amount += tankInfo.getChemicalInTank(i).getAmount();
                         }
                         return amount;
                     }).handle(AspectReadBuilders.PROP_GET_LONG, "totalamount").buildRead();
             public static final IAspectRead<ValueTypeLong.ValueLong, ValueTypeLong> LONG_CAPACITY =
                     MekanismAspectReadBuilders.Chemical.BUILDER_LONG_ACTIVATABLE.handle(
-                            tankInfo -> tankInfo != null ? tankInfo.getLeft().getTankCapacity(tankInfo.getRight()) : 0
+                            tankInfo -> tankInfo != null ? tankInfo.getLeft().getChemicalTankCapacity(tankInfo.getRight()) : 0
                     ).handle(AspectReadBuilders.PROP_GET_LONG, "capacity").buildRead();
             public static final IAspectRead<ValueTypeLong.ValueLong, ValueTypeLong> LONG_CAPACITYTOTAL =
                     MekanismAspectReadBuilders.Chemical.BUILDER_LONG.handle(tankInfo -> {
                         long capacity = 0;
-                        for (int i = 0; i < tankInfo.getTanks(); i++) {
-                            capacity += tankInfo.getTankCapacity(i);
+                        for (int i = 0; i < tankInfo.getChemicalTanks(); i++) {
+                            capacity += tankInfo.getChemicalTankCapacity(i);
                         }
                         return capacity;
                     }).handle(AspectReadBuilders.PROP_GET_LONG, "totalcapacity").buildRead();
             public static final IAspectRead<ValueTypeInteger.ValueInteger, ValueTypeInteger> INTEGER_TANKS =
                     MekanismAspectReadBuilders.Chemical.BUILDER_INTEGER.handle(
-                            IChemicalHandler::getTanks
+                            IChemicalHandler::getChemicalTanks
                     ).handle(AspectReadBuilders.PROP_GET_INTEGER, "tanks").buildRead();
 
             public static final IAspectRead<ValueTypeDouble.ValueDouble, ValueTypeDouble> DOUBLE_FILLRATIO =
@@ -88,7 +88,7 @@ public class MekanismAspects {
                             return 0D;
                         }
                         double amount = tankInfo.getLeft().getChemicalInTank(tankInfo.getRight()).getAmount();
-                        return amount / (double) tankInfo.getLeft().getTankCapacity(tankInfo.getRight());
+                        return amount / (double) tankInfo.getLeft().getChemicalTankCapacity(tankInfo.getRight());
                     }).handle(AspectReadBuilders.PROP_GET_DOUBLE, "fillratio").buildRead();
 
             public static final IAspectRead<ValueTypeList.ValueList, ValueTypeList> LIST_TANKCHEMICALS =

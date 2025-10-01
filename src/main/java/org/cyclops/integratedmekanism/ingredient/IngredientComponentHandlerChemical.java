@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @author rubensworks
  */
-public class IngredientComponentHandlerChemical implements IIngredientComponentHandler<ValueObjectTypeChemicalStack, ValueObjectTypeChemicalStack.ValueChemicalStack, ChemicalStack<?>, Integer> {
+public class IngredientComponentHandlerChemical implements IIngredientComponentHandler<ValueObjectTypeChemicalStack, ValueObjectTypeChemicalStack.ValueChemicalStack, ChemicalStack, Integer> {
 
     @Override
     public ValueObjectTypeChemicalStack getValueType() {
@@ -18,17 +18,17 @@ public class IngredientComponentHandlerChemical implements IIngredientComponentH
     }
 
     @Override
-    public IngredientComponent<ChemicalStack<?>, Integer> getComponent() {
+    public IngredientComponent<ChemicalStack, Integer> getComponent() {
         return MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK;
     }
 
     @Override
-    public ValueObjectTypeChemicalStack.ValueChemicalStack toValue(@Nullable ChemicalStack<?> chemicalStack) {
+    public ValueObjectTypeChemicalStack.ValueChemicalStack toValue(@Nullable ChemicalStack chemicalStack) {
         return ValueObjectTypeChemicalStack.ValueChemicalStack.of(chemicalStack);
     }
 
     @Override
-    public @Nullable ChemicalStack<?> toInstance(ValueObjectTypeChemicalStack.ValueChemicalStack valueChemicalStack) {
+    public @Nullable ChemicalStack toInstance(ValueObjectTypeChemicalStack.ValueChemicalStack valueChemicalStack) {
         return valueChemicalStack.getRawValue();
     }
 }

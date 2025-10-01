@@ -1,7 +1,9 @@
 package org.cyclops.integratedmekanism;
 
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.registries.ObjectHolder;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 /**
  * Referenced registry entries.
@@ -9,7 +11,6 @@ import net.minecraftforge.registries.ObjectHolder;
  */
 public class RegistryEntries {
 
-    @ObjectHolder(registryName = "item", value = "integratedmekanism:part_chemical_reader")
-    public static final Item PART_CHEMICAL_READER = null;
+    public static final DeferredHolder<Item, Item> PART_CHEMICAL_READER = DeferredHolder.create(Registries.ITEM, ResourceLocation.parse("integratedmekanism:part_chemical_reader"));
 
 }

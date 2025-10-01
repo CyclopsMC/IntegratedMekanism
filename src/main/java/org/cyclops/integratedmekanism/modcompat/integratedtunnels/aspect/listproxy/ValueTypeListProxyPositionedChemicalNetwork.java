@@ -2,8 +2,8 @@ package org.cyclops.integratedmekanism.modcompat.integratedtunnels.aspect.listpr
 
 import com.google.common.collect.Iterators;
 import mekanism.api.chemical.ChemicalStack;
-import mekanism.api.chemical.gas.GasStack;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import org.cyclops.cyclopscore.datastructure.DimPos;
 import org.cyclops.cyclopscore.ingredient.collection.IIngredientCollectionLike;
@@ -11,7 +11,7 @@ import org.cyclops.cyclopscore.persist.nbt.INBTProvider;
 import org.cyclops.cyclopscore.persist.nbt.NBTClassType;
 import org.cyclops.integrateddynamics.api.ingredient.IIngredientPositionsIndex;
 import org.cyclops.integrateddynamics.core.evaluate.variable.ValueTypeListProxyPositioned;
-import org.cyclops.integratedmekanism.network.ChemicalNetworkConfig;
+import org.cyclops.integratedmekanism.Capabilities;
 import org.cyclops.integratedmekanism.value.MekanismValueTypes;
 import org.cyclops.integratedmekanism.value.ValueObjectTypeChemicalStack;
 import org.cyclops.integratedtunnels.part.aspect.TunnelAspectReadBuilders;
@@ -35,18 +35,18 @@ public class ValueTypeListProxyPositionedChemicalNetwork extends ValueTypeListPr
         this(null, null, 0);
     }
 
-    public void writeGeneratedFieldsToNBT(CompoundTag tag) {
-        super.writeGeneratedFieldsToNBT(tag);
-        NBTClassType.writeNbt(Integer.class, "channel", this.channel, tag);
+    public void writeGeneratedFieldsToNBT(CompoundTag tag, HolderLookup.Provider holderLookupProvider) {
+        super.writeGeneratedFieldsToNBT(tag, holderLookupProvider);
+        NBTClassType.writeNbt(Integer.class, "channel", this.channel, tag, holderLookupProvider);
     }
 
-    public void readGeneratedFieldsFromNBT(CompoundTag tag) {
-        super.readGeneratedFieldsFromNBT(tag);
-        this.channel = NBTClassType.readNbt(Integer.class, "channel", tag);
+    public void readGeneratedFieldsFromNBT(CompoundTag tag, HolderLookup.Provider holderLookupProvider) {
+        super.readGeneratedFieldsFromNBT(tag, holderLookupProvider);
+        this.channel = NBTClassType.readNbt(Integer.class, "channel", tag, holderLookupProvider);
     }
 
-    protected Optional<IIngredientPositionsIndex<ChemicalStack<?>, Integer>> getChannelIndex() {
-        return TunnelAspectReadBuilders.Network.getChannelIndex(ChemicalNetworkConfig.CAPABILITY, getPos(), getSide(), channel);
+    protected Optional<IIngredientPositionsIndex<ChemicalStack, Integer>> getChannelIndex() {
+        return TunnelAspectReadBuilders.Network.getChannelIndex(Capabilities.ChemicalNetwork.NETWORK, getPos(), getSide(), channel);
     }
 
     @Override
@@ -59,8 +59,8 @@ public class ValueTypeListProxyPositionedChemicalNetwork extends ValueTypeListPr
     @Override
     public ValueObjectTypeChemicalStack.ValueChemicalStack get(int index) {
         return ValueObjectTypeChemicalStack.ValueChemicalStack.of(getChannelIndex()
-                .map(store -> Iterators.get(store.iterator(), index, GasStack.EMPTY))
-                .orElse((ChemicalStack) GasStack.EMPTY));
+                .map(store -> Iterators.get(store.iterator(), index, ChemicalStack.EMPTY))
+                .orElse((ChemicalStack) ChemicalStack.EMPTY));
     }
 
     @Override

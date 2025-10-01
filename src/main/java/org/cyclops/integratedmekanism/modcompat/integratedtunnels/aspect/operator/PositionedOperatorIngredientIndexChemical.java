@@ -2,14 +2,14 @@ package org.cyclops.integratedmekanism.modcompat.integratedtunnels.aspect.operat
 
 import mekanism.api.chemical.ChemicalStack;
 import net.minecraft.core.Direction;
-import net.minecraftforge.common.capabilities.Capability;
 import org.cyclops.cyclopscore.datastructure.DimPos;
 import org.cyclops.integrateddynamics.api.evaluate.EvaluationException;
 import org.cyclops.integrateddynamics.api.evaluate.variable.IValue;
 import org.cyclops.integrateddynamics.api.network.IPositionedAddonsNetworkIngredients;
+import org.cyclops.integrateddynamics.api.network.NetworkCapability;
 import org.cyclops.integrateddynamics.core.evaluate.variable.ValueTypeLong;
 import org.cyclops.integrateddynamics.core.evaluate.variable.ValueTypes;
-import org.cyclops.integratedmekanism.network.ChemicalNetworkConfig;
+import org.cyclops.integratedmekanism.Capabilities;
 import org.cyclops.integratedmekanism.value.MekanismValueTypes;
 import org.cyclops.integratedmekanism.value.ValueObjectTypeChemicalStack;
 import org.cyclops.integratedtunnels.part.aspect.operator.PositionedOperatorIngredientIndex;
@@ -17,7 +17,7 @@ import org.cyclops.integratedtunnels.part.aspect.operator.PositionedOperatorIngr
 /**
  * @author rubensworks
  */
-public class PositionedOperatorIngredientIndexChemical extends PositionedOperatorIngredientIndex<ChemicalStack<?>, Integer> {
+public class PositionedOperatorIngredientIndexChemical extends PositionedOperatorIngredientIndex<ChemicalStack, Integer> {
 
     public PositionedOperatorIngredientIndexChemical() {
         this(null, Direction.NORTH, -1);
@@ -28,11 +28,11 @@ public class PositionedOperatorIngredientIndexChemical extends PositionedOperato
     }
 
     @Override
-    protected Capability<? extends IPositionedAddonsNetworkIngredients<ChemicalStack<?>, Integer>> getNetworkCapability() {
-        return ChemicalNetworkConfig.CAPABILITY;
+    protected NetworkCapability<? extends IPositionedAddonsNetworkIngredients<ChemicalStack, Integer>> getNetworkCapability() {
+        return Capabilities.ChemicalNetwork.NETWORK;
     }
 
-    public static class Function extends PositionedOperatorIngredientIndex.Function<ChemicalStack<?>, Integer> {
+    public static class Function extends PositionedOperatorIngredientIndex.Function<ChemicalStack, Integer> {
         @Override
         public IValue evaluate(SafeVariablesGetter variables) throws EvaluationException {
             ValueObjectTypeChemicalStack.ValueChemicalStack chemicalStack = variables.getValue(0, MekanismValueTypes.OBJECT_CHEMICALSTACK);

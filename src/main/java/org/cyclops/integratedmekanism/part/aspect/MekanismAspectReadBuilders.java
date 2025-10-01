@@ -3,8 +3,10 @@ package org.cyclops.integratedmekanism.part.aspect;
 import com.google.common.collect.ImmutableList;
 import mekanism.api.chemical.ChemicalStack;
 import mekanism.api.chemical.IChemicalHandler;
-import mekanism.api.chemical.gas.GasStack;
+import mekanism.common.capabilities.Capabilities;
 import org.apache.commons.lang3.tuple.Pair;
+import org.cyclops.cyclopscore.helper.IModHelpersNeoForge;
+import org.cyclops.integrateddynamics.api.part.PartPos;
 import org.cyclops.integrateddynamics.api.part.PartTarget;
 import org.cyclops.integrateddynamics.api.part.aspect.property.IAspectProperties;
 import org.cyclops.integrateddynamics.api.part.aspect.property.IAspectPropertyTypeInstance;
@@ -15,7 +17,6 @@ import org.cyclops.integrateddynamics.core.part.aspect.property.AspectProperties
 import org.cyclops.integrateddynamics.core.part.aspect.property.AspectPropertyTypeInstance;
 import org.cyclops.integrateddynamics.part.aspect.read.AspectReadBuilders;
 import org.cyclops.integratedmekanism.Reference;
-import org.cyclops.integratedmekanism.core.CapabilityHelpers;
 import org.cyclops.integratedmekanism.core.EmptyChemicalHandler;
 import org.cyclops.integratedmekanism.part.aspect.listproxy.ValueTypeListProxyPositionedChemicalTankCapacities;
 import org.cyclops.integratedmekanism.part.aspect.listproxy.ValueTypeListProxyPositionedChemicalTankChemicalStacks;
@@ -32,7 +33,7 @@ public class MekanismAspectReadBuilders {
             BUILDER_OBJECT_CHEMICALSTACK = AspectBuilder.forReadType(MekanismValueTypes.OBJECT_CHEMICALSTACK).byMod(Reference.MOD_ID);
 
     // --------------- Value type propagators ---------------
-    public static final IAspectValuePropagator<ChemicalStack<?>, ValueObjectTypeChemicalStack.ValueChemicalStack>
+    public static final IAspectValuePropagator<ChemicalStack, ValueObjectTypeChemicalStack.ValueChemicalStack>
             PROP_GET_CHEMICALSTACK = ValueObjectTypeChemicalStack.ValueChemicalStack::of;
 
     // --------------- Value type builders ---------------
@@ -48,22 +49,24 @@ public class MekanismAspectReadBuilders {
             PROPERTIES.setValue(PROP_TANKID, ValueTypeInteger.ValueInteger.of(0)); // Not required in this case, but we do this here just as an example on how to set default values.
         }
 
-        public static final IAspectValuePropagator<Pair<PartTarget, IAspectProperties>, IChemicalHandler<?, ?>> PROP_GET = input -> {
-            return CapabilityHelpers.getFirstOf(input.getLeft().getTarget(), CapabilityHelpers.CHEMICAL_CAPABILITIES)
+        public static final IAspectValuePropagator<Pair<PartTarget, IAspectProperties>, IChemicalHandler> PROP_GET = input -> {
+            PartPos target = input.getLeft().getTarget();
+            return IModHelpersNeoForge.get().getCapabilityHelpers().getCapability(target.getPos(), target.getSide(), Capabilities.CHEMICAL.block())
                     .orElse(EmptyChemicalHandler.INSTANCE);
         };
-        public static final IAspectValuePropagator<Pair<PartTarget, IAspectProperties>, Pair<IChemicalHandler<?, ?>, Integer>> PROP_GET_ACTIVATABLE = input -> {
-            IChemicalHandler<?, ?> chemicalHandler = CapabilityHelpers.getFirstOf(input.getLeft().getTarget(), CapabilityHelpers.CHEMICAL_CAPABILITIES).orElse(null);
+        public static final IAspectValuePropagator<Pair<PartTarget, IAspectProperties>, Pair<IChemicalHandler, Integer>> PROP_GET_ACTIVATABLE = input -> {
+            PartPos target = input.getLeft().getTarget();
+            IChemicalHandler chemicalHandler = IModHelpersNeoForge.get().getCapabilityHelpers().getCapability(target.getPos(), target.getSide(), Capabilities.CHEMICAL.block()).orElse(null);
             if(chemicalHandler != null) {
                 int i = input.getRight().getValue(PROP_TANKID).getRawValue();
-                if(i < chemicalHandler.getTanks()) {
+                if(i < chemicalHandler.getChemicalTanks()) {
                     return Pair.of(chemicalHandler, i);
                 }
             }
             return null;
         };
-        public static final IAspectValuePropagator<Pair<IChemicalHandler<?, ?>, Integer>, ChemicalStack<?>>
-                PROP_GET_CHEMICALSTACK = tankInfo -> tankInfo != null ? tankInfo.getLeft().getChemicalInTank(tankInfo.getRight()) : GasStack.EMPTY;
+        public static final IAspectValuePropagator<Pair<IChemicalHandler, Integer>, ChemicalStack>
+                PROP_GET_CHEMICALSTACK = tankInfo -> tankInfo != null ? tankInfo.getLeft().getChemicalInTank(tankInfo.getRight()) : ChemicalStack.EMPTY;
 
         public static final IAspectValuePropagator<Pair<PartTarget, IAspectProperties>, ValueTypeList.ValueList>
                 PROP_GET_LIST_CHEMICALSTACKS = input -> ValueTypeList.ValueList.ofFactory(new ValueTypeListProxyPositionedChemicalTankChemicalStacks(
@@ -74,15 +77,15 @@ public class MekanismAspectReadBuilders {
                 input.getLeft().getTarget().getPos(), input.getLeft().getTarget().getSide()
         ));
 
-        public static final AspectBuilder<ValueTypeBoolean.ValueBoolean, ValueTypeBoolean, IChemicalHandler<?, ?>>
+        public static final AspectBuilder<ValueTypeBoolean.ValueBoolean, ValueTypeBoolean, IChemicalHandler>
                 BUILDER_BOOLEAN = AspectReadBuilders.BUILDER_BOOLEAN.byMod(Reference.MOD_ID).handle(PROP_GET, "chemical");
-        public static final AspectBuilder<ValueTypeInteger.ValueInteger, ValueTypeInteger, IChemicalHandler<?, ?>>
+        public static final AspectBuilder<ValueTypeInteger.ValueInteger, ValueTypeInteger, IChemicalHandler>
                 BUILDER_INTEGER = AspectReadBuilders.BUILDER_INTEGER.byMod(Reference.MOD_ID).handle(PROP_GET, "chemical");
-        public static final AspectBuilder<ValueTypeLong.ValueLong, ValueTypeLong, IChemicalHandler<?, ?>>
+        public static final AspectBuilder<ValueTypeLong.ValueLong, ValueTypeLong, IChemicalHandler>
                 BUILDER_LONG = AspectReadBuilders.BUILDER_LONG.byMod(Reference.MOD_ID).handle(PROP_GET, "chemical");
-        public static final AspectBuilder<ValueTypeLong.ValueLong, ValueTypeLong, Pair<IChemicalHandler<?, ?>, Integer>>
+        public static final AspectBuilder<ValueTypeLong.ValueLong, ValueTypeLong, Pair<IChemicalHandler, Integer>>
                 BUILDER_LONG_ACTIVATABLE = AspectReadBuilders.BUILDER_LONG.byMod(Reference.MOD_ID).handle(PROP_GET_ACTIVATABLE, "chemical").withProperties(PROPERTIES);
-        public static final AspectBuilder<ValueTypeDouble.ValueDouble, ValueTypeDouble, Pair<IChemicalHandler<?, ?>, Integer>>
+        public static final AspectBuilder<ValueTypeDouble.ValueDouble, ValueTypeDouble, Pair<IChemicalHandler, Integer>>
                 BUILDER_DOUBLE_ACTIVATABLE = AspectReadBuilders.BUILDER_DOUBLE.byMod(Reference.MOD_ID).handle(PROP_GET_ACTIVATABLE, "chemical").withProperties(PROPERTIES);
 
     }

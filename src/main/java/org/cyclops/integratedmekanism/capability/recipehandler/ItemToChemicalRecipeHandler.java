@@ -1,9 +1,7 @@
 package org.cyclops.integratedmekanism.capability.recipehandler;
 
 import com.google.common.collect.Lists;
-import mekanism.api.chemical.Chemical;
-import mekanism.api.chemical.ChemicalStack;
-import mekanism.api.recipes.chemical.ItemStackToChemicalRecipe;
+import mekanism.api.recipes.ItemStackToChemicalRecipe;
 import mekanism.common.recipe.IMekanismRecipeTypeProvider;
 import net.minecraft.world.level.Level;
 import org.cyclops.commoncapabilities.IngredientComponents;
@@ -21,9 +19,9 @@ import java.util.function.Supplier;
 /**
  * @author rubensworks
  */
-public class ItemToChemicalRecipeHandler<CHEMICAL extends Chemical<CHEMICAL>, STACK extends ChemicalStack<CHEMICAL>> extends MekanismRecipeHandler<ItemStackToChemicalRecipe<CHEMICAL, STACK>> {
+public class ItemToChemicalRecipeHandler extends MekanismRecipeHandler<ItemStackToChemicalRecipe> {
 
-    protected ItemToChemicalRecipeHandler(IMekanismRecipeTypeProvider<? extends ItemStackToChemicalRecipe<CHEMICAL, STACK>, ?> recipeType, Supplier<Level> levelSupplier) {
+    protected ItemToChemicalRecipeHandler(IMekanismRecipeTypeProvider<?, ? extends ItemStackToChemicalRecipe, ?> recipeType, Supplier<Level> levelSupplier) {
         super(recipeType, levelSupplier, Set.of(IngredientComponents.ITEMSTACK), Set.of(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK));
     }
 
@@ -33,28 +31,28 @@ public class ItemToChemicalRecipeHandler<CHEMICAL extends Chemical<CHEMICAL>, ST
     }
 
     @Override
-    protected void recipeToInputs(ItemStackToChemicalRecipe<CHEMICAL, STACK> recipe, Map<IngredientComponent<?, ?>, List<IPrototypedIngredientAlternatives<?, ?>>> inputs) {
+    protected void recipeToInputs(ItemStackToChemicalRecipe recipe, Map<IngredientComponent<?, ?>, List<IPrototypedIngredientAlternatives<?, ?>>> inputs) {
         inputs.put(IngredientComponents.ITEMSTACK, List.of(
                 new PrototypedIngredientAlternativesList<>(getPrototypesFromItemIngredient(recipe.getInput()))
         ));
     }
 
     @Override
-    protected void recipeToOutputs(ItemStackToChemicalRecipe<CHEMICAL, STACK> recipe, Map<IngredientComponent<?, ?>, List<?>> outputs) {
+    protected void recipeToOutputs(ItemStackToChemicalRecipe recipe, Map<IngredientComponent<?, ?>, List<?>> outputs) {
         outputs.put(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK, Lists.newArrayList(
                 recipe.getOutputDefinition().get(0)
         ));
     }
 
     @Override
-    protected void recipeToOutputsSimulated(ItemStackToChemicalRecipe<CHEMICAL, STACK> recipe, IMixedIngredients input, Map<IngredientComponent<?, ?>, List<?>> outputs) {
+    protected void recipeToOutputsSimulated(ItemStackToChemicalRecipe recipe, IMixedIngredients input, Map<IngredientComponent<?, ?>, List<?>> outputs) {
         outputs.put(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK, Lists.newArrayList(
                 recipe.getOutput(input.getInstances(IngredientComponents.ITEMSTACK).get(0))
         ));
     }
 
     @Override
-    protected boolean doesRecipeMatchInput(ItemStackToChemicalRecipe<CHEMICAL, STACK> recipe, IMixedIngredients input) {
+    protected boolean doesRecipeMatchInput(ItemStackToChemicalRecipe recipe, IMixedIngredients input) {
         return recipe.getInput().test(input.getInstances(IngredientComponents.ITEMSTACK).get(0));
     }
 }

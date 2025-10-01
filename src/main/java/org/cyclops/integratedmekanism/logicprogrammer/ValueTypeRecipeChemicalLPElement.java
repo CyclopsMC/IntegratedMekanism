@@ -3,7 +3,6 @@ package org.cyclops.integratedmekanism.logicprogrammer;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import mekanism.api.chemical.ChemicalStack;
-import mekanism.api.chemical.gas.GasStack;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.NonNullList;
@@ -15,9 +14,9 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.fluids.FluidStack;
 import org.apache.commons.lang3.tuple.Pair;
 import org.cyclops.commoncapabilities.api.capability.fluidhandler.FluidMatch;
 import org.cyclops.commoncapabilities.api.capability.recipehandler.IPrototypedIngredientAlternatives;
@@ -250,18 +249,18 @@ public class ValueTypeRecipeChemicalLPElement implements IValueTypeLogicProgramm
         }
     }
 
-    protected static ChemicalStack<?> getChemical(ItemStack itemStack) {
+    protected static ChemicalStack getChemical(ItemStack itemStack) {
         return CapabilityHelpers.getChemicalHandler(itemStack)
                 .map(handler -> {
-                    int tanks = handler.getTanks();
+                    int tanks = handler.getChemicalTanks();
                     for (int i = 0; i < tanks; i++) {
                         if (!handler.getChemicalInTank(i).isEmpty()) {
                             return handler.getChemicalInTank(i);
                         }
                     }
-                    return GasStack.EMPTY;
+                    return ChemicalStack.EMPTY;
                 })
-                .orElse(GasStack.EMPTY);
+                .orElse(ChemicalStack.EMPTY);
     }
 
     protected static int getChemicalAmount(ItemStack itemStack) {
@@ -294,8 +293,8 @@ public class ValueTypeRecipeChemicalLPElement implements IValueTypeLogicProgramm
     }
 
     // For JEI recipe transfer handler
-    public boolean isValidForRecipeGrid(List<ItemMatchProperties> itemInputs, List<FluidStack> fluidInputs, List<ChemicalStack<?>> chemicalInputs,
-                                        List<ItemStack> itemOutputs, List<FluidStack> fluidOutputs, List<ChemicalStack<?>> chemicalOutputs) {
+    public boolean isValidForRecipeGrid(List<ItemMatchProperties> itemInputs, List<FluidStack> fluidInputs, List<ChemicalStack> chemicalInputs,
+                                        List<ItemStack> itemOutputs, List<FluidStack> fluidOutputs, List<ChemicalStack> chemicalOutputs) {
         return itemInputs.size() <= SLOTS_PER_TYPE
                 && fluidInputs.size() <= SLOTS_PER_TYPE
                 && chemicalInputs.size() <= SLOTS_PER_TYPE
@@ -316,8 +315,8 @@ public class ValueTypeRecipeChemicalLPElement implements IValueTypeLogicProgramm
 
     // For JEI recipe transfer handler
     public void setRecipeGrid(ContainerLogicProgrammerBase container,
-                              List<ItemMatchProperties> itemInputs, List<FluidStack> fluidInputs, List<ChemicalStack<?>> chemicalInputs,
-                              List<ItemStack> itemOutputs, List<FluidStack> fluidOutputs, List<ChemicalStack<?>> chemicalOutputs) {
+                              List<ItemMatchProperties> itemInputs, List<FluidStack> fluidInputs, List<ChemicalStack> chemicalInputs,
+                              List<ItemStack> itemOutputs, List<FluidStack> fluidOutputs, List<ChemicalStack> chemicalOutputs) {
         int slot = 0;
 
         // Fill input item slots
@@ -345,7 +344,7 @@ public class ValueTypeRecipeChemicalLPElement implements IValueTypeLogicProgramm
 
         // Fill input chemical slots
         for (int i = 0; i < SLOTS_PER_TYPE; i++) {
-            ChemicalStack<?> input = GasStack.EMPTY;
+            ChemicalStack input = ChemicalStack.EMPTY;
             if (i < chemicalInputs.size()) {
                 input = chemicalInputs.get(i);
             }
@@ -381,7 +380,7 @@ public class ValueTypeRecipeChemicalLPElement implements IValueTypeLogicProgramm
 
         // Fill output chemical slot
         for (int i = 0; i < SLOTS_PER_TYPE; i++) {
-            ChemicalStack<?> output = GasStack.EMPTY;
+            ChemicalStack output = ChemicalStack.EMPTY;
             if (i < chemicalOutputs.size()) {
                 output = chemicalOutputs.get(i);
             }
@@ -432,7 +431,7 @@ public class ValueTypeRecipeChemicalLPElement implements IValueTypeLogicProgramm
     public ItemStack writeElement(Player player, ItemStack itemStack) {
         IVariableFacadeHandlerRegistry registry = IntegratedDynamics._instance.getRegistryManager().getRegistry(IVariableFacadeHandlerRegistry.class);
         return registry.writeVariableFacadeItem(!player.level().isClientSide(), itemStack, ValueTypes.REGISTRY,
-                new ValueTypeLPElementBase.ValueTypeVariableFacadeFactory(getValueType(), getValue()), player.level(), player, RegistryEntries.BLOCK_LOGIC_PROGRAMMER.defaultBlockState());
+                new ValueTypeLPElementBase.ValueTypeVariableFacadeFactory(getValueType(), getValue()), player.level(), player, RegistryEntries.BLOCK_LOGIC_PROGRAMMER.value().defaultBlockState());
     }
 
     @Override
@@ -525,7 +524,7 @@ public class ValueTypeRecipeChemicalLPElement implements IValueTypeLogicProgramm
         for (ItemMatchProperties inputStack : inputStacks) {
             if (inputStack.getItemTag() != null) {
                 try {
-                    new ResourceLocation(inputStack.getItemTag());
+                    ResourceLocation.parse(inputStack.getItemTag());
                 } catch (ResourceLocationException e) {
                     return Component.translatable(L10NValues.VALUETYPE_ERROR_INVALIDINPUT, inputStack.getItemTag());
                 }
@@ -614,13 +613,13 @@ public class ValueTypeRecipeChemicalLPElement implements IValueTypeLogicProgramm
                 .toList();
     }
 
-    protected List<ChemicalStack<?>> convertChemicalStacks(List<Pair<ItemStack, String>> chemicalPairs) {
+    protected List<ChemicalStack> convertChemicalStacks(List<Pair<ItemStack, String>> chemicalPairs) {
         return IntStream.range(0, ValueTypeRecipeChemicalLPElement.SLOTS_PER_TYPE)
-                .<ChemicalStack<?>>mapToObj(i -> {
+                .<ChemicalStack>mapToObj(i -> {
                     if (i >= chemicalPairs.size()) {
-                        return GasStack.EMPTY;
+                        return ChemicalStack.EMPTY;
                     }
-                    ChemicalStack<?> chemicalStack = getChemical(chemicalPairs.get(i).getLeft());
+                    ChemicalStack chemicalStack = getChemical(chemicalPairs.get(i).getLeft());
                     if (!chemicalStack.isEmpty()) {
                         chemicalStack.setAmount(Integer.parseInt(chemicalPairs.get(i).getRight()));
                     }
@@ -640,16 +639,16 @@ public class ValueTypeRecipeChemicalLPElement implements IValueTypeLogicProgramm
 
         // Define actual stacks
         List<FluidStack> fluidStacks = convertFluidStacks(fluidPairs);
-        List<ChemicalStack<?>> chemicalStacks = convertChemicalStacks(chemicalPairs);
+        List<ChemicalStack> chemicalStacks = convertChemicalStacks(chemicalPairs);
 
         Map<IngredientComponent<?, ?>, List<IPrototypedIngredientAlternatives<?, ?>>> inputs = Maps.newIdentityHashMap();
         List<IPrototypedIngredientAlternatives<ItemStack, Integer>> items = itemStacks.stream()
                 .map(ItemMatchProperties::createPrototypedIngredient)
                 .collect(Collectors.toList());
         List<PrototypedIngredientAlternativesList<FluidStack, Integer>> fluids = fluidStacks.stream()
-                .map(fluidStack -> new PrototypedIngredientAlternativesList<>(Collections.singletonList(new PrototypedIngredient<>(IngredientComponent.FLUIDSTACK, fluidStack, FluidMatch.FLUID | FluidMatch.TAG))))
+                .map(fluidStack -> new PrototypedIngredientAlternativesList<>(Collections.singletonList(new PrototypedIngredient<>(IngredientComponent.FLUIDSTACK, fluidStack, FluidMatch.FLUID | FluidMatch.DATA))))
                 .toList();
-        List<PrototypedIngredientAlternativesList<ChemicalStack<?>, Integer>> chemicals = chemicalStacks.stream()
+        List<PrototypedIngredientAlternativesList<ChemicalStack, Integer>> chemicals = chemicalStacks.stream()
                 .map(chemicalStack -> new PrototypedIngredientAlternativesList<>(Collections.singletonList(new PrototypedIngredient<>(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK, chemicalStack, ChemicalMatch.TYPE))))
                 .toList();
         if (!items.isEmpty()) {
@@ -675,7 +674,7 @@ public class ValueTypeRecipeChemicalLPElement implements IValueTypeLogicProgramm
 
         // Define actual stacks
         List<FluidStack> fluidStacks = convertFluidStacks(fluidPairs);
-        List<ChemicalStack<?>> chemicalStacks = convertChemicalStacks(chemicalPairs);
+        List<ChemicalStack> chemicalStacks = convertChemicalStacks(chemicalPairs);
 
         Map<IngredientComponent<?, ?>, List<?>> outputs = Maps.newIdentityHashMap();
         if (!itemStacks.isEmpty()) {

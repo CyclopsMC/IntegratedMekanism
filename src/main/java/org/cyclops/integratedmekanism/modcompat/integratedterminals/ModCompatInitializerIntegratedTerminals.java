@@ -1,18 +1,18 @@
 package org.cyclops.integratedmekanism.modcompat.integratedterminals;
 
 import mekanism.api.chemical.ChemicalStack;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.NewRegistryEvent;
+import net.neoforged.neoforge.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.registries.NewRegistryEvent;
 import org.cyclops.commoncapabilities.api.ingredient.IngredientComponent;
 import org.cyclops.commoncapabilities.api.ingredient.capability.IngredientComponentCapabilityAttacherAdapter;
 import org.cyclops.commoncapabilities.api.ingredient.capability.IngredientComponentCapabilityAttacherManager;
+import org.cyclops.cyclopscore.init.IModBase;
+import org.cyclops.cyclopscore.init.ModBase;
 import org.cyclops.cyclopscore.modcompat.ICompatInitializer;
 import org.cyclops.cyclopscore.modcompat.capabilities.DefaultCapabilityProvider;
-import org.cyclops.integratedmekanism.Reference;
 import org.cyclops.integratedmekanism.ingredient.IngredientComponentCapabilitiesMekanism;
-import org.cyclops.integratedterminals.capability.ingredient.IngredientComponentTerminalStorageHandlerConfig;
+import org.cyclops.integratedterminals.Capabilities;
+import org.cyclops.integratedterminals.api.ingredient.IIngredientComponentTerminalStorageHandler;
 
 /**
  * @author rubensworks
@@ -20,19 +20,22 @@ import org.cyclops.integratedterminals.capability.ingredient.IngredientComponent
 public class ModCompatInitializerIntegratedTerminals implements ICompatInitializer {
     @Override
     public void initialize() {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onRegistriesCreate);
+
+    }
+
+    @Override
+    public void initialize(IModBase mod) {
+        ((ModBase<?>) mod).getModEventBus().addListener(this::onRegistriesCreate);
     }
 
     public void onRegistriesCreate(NewRegistryEvent event) {
         IngredientComponentCapabilityAttacherManager attacherManager = new IngredientComponentCapabilityAttacherManager();
 
         // Views
-        ResourceLocation capabilityIngredientComponentViewHandler = new ResourceLocation(Reference.MOD_ID, "view_handler");
-        attacherManager.addAttacher(new IngredientComponentCapabilityAttacherAdapter<ChemicalStack<?>, Integer>(IngredientComponentCapabilitiesMekanism.INGREDIENT_CHEMICALSTACK_ID, capabilityIngredientComponentViewHandler) {
+        attacherManager.addAttacher(new IngredientComponentCapabilityAttacherAdapter<ChemicalStack, Integer>(IngredientComponentCapabilitiesMekanism.INGREDIENT_CHEMICALSTACK_ID, Capabilities.IngredientComponentTerminalStorageHandler.INGREDIENT) {
             @Override
-            public ICapabilityProvider createCapabilityProvider(IngredientComponent<ChemicalStack<?>, Integer> ingredientComponent) {
-                return new DefaultCapabilityProvider<>(() -> IngredientComponentTerminalStorageHandlerConfig.CAPABILITY,
-                        new IngredientComponentTerminalStorageHandlerChemicalStack(ingredientComponent));
+            public ICapabilityProvider<IngredientComponent<?, ?>, Void, IIngredientComponentTerminalStorageHandler<ChemicalStack, Integer>> createCapabilityProvider(IngredientComponent<ChemicalStack, Integer> ingredientComponent) {
+                return new DefaultCapabilityProvider<>(new IngredientComponentTerminalStorageHandlerChemicalStack(ingredientComponent));
             }
         });
     }

@@ -76,13 +76,13 @@ public class DummyValueType implements IValueType<DummyValueType.DummyValue> {
     }
 
     @Override
-    public boolean correspondsTo(IValueType valueType) {
-        return false;
+    public Tag serialize(ValueDeseralizationContext valueDeseralizationContext, DummyValue dummyValue) {
+        return EndTag.INSTANCE;
     }
 
     @Override
-    public Tag serialize(DummyValue value) {
-        return EndTag.INSTANCE;
+    public boolean correspondsTo(IValueType valueType) {
+        return false;
     }
 
     @Override

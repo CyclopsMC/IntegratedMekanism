@@ -2,9 +2,7 @@ package org.cyclops.integratedmekanism.capability.recipehandler;
 
 import com.google.common.collect.Lists;
 import mekanism.api.chemical.ChemicalStack;
-import mekanism.api.chemical.gas.GasStack;
 import mekanism.api.recipes.ChemicalDissolutionRecipe;
-import mekanism.api.recipes.ingredients.ChemicalStackIngredient;
 import mekanism.common.recipe.MekanismRecipeType;
 import net.minecraft.world.level.Level;
 import org.cyclops.commoncapabilities.IngredientComponents;
@@ -40,31 +38,31 @@ public class ChemicalDissolutionRecipeHandler extends MekanismRecipeHandler<Chem
                 new PrototypedIngredientAlternativesList<>(getPrototypesFromItemIngredient(recipe.getItemInput()))
         ));
         inputs.put(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK, List.of(
-                new PrototypedIngredientAlternativesList<>(getPrototypesFromChemicalIngredient(recipe.getGasInput()))
+                new PrototypedIngredientAlternativesList<>(getPrototypesFromChemicalIngredient(recipe.getChemicalInput()))
         ));
     }
 
     @Override
     protected void recipeToOutputs(ChemicalDissolutionRecipe recipe, Map<IngredientComponent<?, ?>, List<?>> outputs) {
         outputs.put(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK, Lists.newArrayList(
-                recipe.getOutputDefinition().get(0).getChemicalStack()
+                recipe.getOutputDefinition().get(0)
         ));
     }
 
     @Override
     protected void recipeToOutputsSimulated(ChemicalDissolutionRecipe recipe, IMixedIngredients input, Map<IngredientComponent<?, ?>, List<?>> outputs) {
-        ChemicalStack<?> chemicalStack = input.getInstances(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK).get(0);
+        ChemicalStack chemicalStack = input.getInstances(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK).get(0);
         outputs.put(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK, Lists.newArrayList(
                 recipe.getOutput(
                         input.getInstances(IngredientComponents.ITEMSTACK).get(0),
-                        chemicalStack instanceof GasStack gasStack ? gasStack : GasStack.EMPTY
-                ).getChemicalStack()
+                        chemicalStack
+                )
         ));
     }
 
     @Override
     protected boolean doesRecipeMatchInput(ChemicalDissolutionRecipe recipe, IMixedIngredients input) {
         return recipe.getItemInput().test(input.getInstances(IngredientComponents.ITEMSTACK).get(0))
-                && ((ChemicalStackIngredient) recipe.getGasInput()).test(input.getInstances(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK).get(0));
+                && recipe.getChemicalInput().test(input.getInstances(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK).get(0));
     }
 }

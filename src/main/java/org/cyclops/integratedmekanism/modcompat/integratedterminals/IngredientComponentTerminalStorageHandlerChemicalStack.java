@@ -2,19 +2,14 @@ package org.cyclops.integratedmekanism.modcompat.integratedterminals;
 
 import com.google.common.collect.Lists;
 import mekanism.api.Action;
+import mekanism.api.MekanismAPI;
 import mekanism.api.chemical.Chemical;
 import mekanism.api.chemical.ChemicalStack;
 import mekanism.api.chemical.IChemicalHandler;
-import mekanism.api.chemical.gas.GasStack;
-import mekanism.api.chemical.gas.IGasHandler;
-import mekanism.api.chemical.infuse.IInfusionHandler;
-import mekanism.api.chemical.pigment.IPigmentHandler;
-import mekanism.api.chemical.slurry.ISlurryHandler;
 import mekanism.client.gui.GuiUtils;
 import mekanism.client.render.MekanismRenderer;
 import mekanism.common.capabilities.Capabilities;
 import mekanism.common.registries.MekanismBlocks;
-import mekanism.common.util.ChemicalUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -25,10 +20,11 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.registries.ForgeRegistry;
+import net.minecraft.world.item.TooltipFlag;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.cyclops.commoncapabilities.api.ingredient.IngredientComponent;
 import org.cyclops.commoncapabilities.api.ingredient.storage.IIngredientComponentStorage;
 import org.cyclops.cyclopscore.client.gui.GuiGraphicsExtended;
@@ -56,16 +52,16 @@ import java.util.function.Predicate;
 /**
  * @author rubensworks
  */
-public class IngredientComponentTerminalStorageHandlerChemicalStack implements IIngredientComponentTerminalStorageHandler<ChemicalStack<?>, Integer>  {
+public class IngredientComponentTerminalStorageHandlerChemicalStack implements IIngredientComponentTerminalStorageHandler<ChemicalStack, Integer>  {
 
-    private final IngredientComponent<ChemicalStack<?>, Integer> ingredientComponent;
+    private final IngredientComponent<ChemicalStack, Integer> ingredientComponent;
 
-    public IngredientComponentTerminalStorageHandlerChemicalStack(IngredientComponent<ChemicalStack<?>, Integer> ingredientComponent) {
+    public IngredientComponentTerminalStorageHandlerChemicalStack(IngredientComponent<ChemicalStack, Integer> ingredientComponent) {
         this.ingredientComponent = ingredientComponent;
     }
 
     @Override
-    public IngredientComponent<ChemicalStack<?>, Integer> getComponent() {
+    public IngredientComponent<ChemicalStack, Integer> getComponent() {
         return ingredientComponent;
     }
 
@@ -76,14 +72,14 @@ public class IngredientComponentTerminalStorageHandlerChemicalStack implements I
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void drawInstance(GuiGraphics guiGraphics, ChemicalStack<?> instance, long maxQuantity, @javax.annotation.Nullable String label, AbstractContainerScreen gui,
+    public void drawInstance(GuiGraphics guiGraphics, ChemicalStack instance, long maxQuantity, @javax.annotation.Nullable String label, AbstractContainerScreen gui,
                              ContainerScreenTerminalStorage.DrawLayer layer, float partialTick, int x, int y,
                              int mouseX, int mouseY, @javax.annotation.Nullable List<Component> additionalTooltipLines) {
         if (instance != null) {
             if (layer == ContainerScreenTerminalStorage.DrawLayer.BACKGROUND) {
                 // Draw chemical
-                Chemical<?> chemical = instance.getType();
-                MekanismRenderer.color(guiGraphics, chemical);
+                Chemical chemical = instance.getChemical();
+                MekanismRenderer.color(guiGraphics, instance);
                 GuiUtils.drawTiledSprite(guiGraphics, x, y, GuiHelpers.SLOT_SIZE_INNER, GuiHelpers.SLOT_SIZE_INNER, GuiHelpers.SLOT_SIZE_INNER, MekanismRenderer.getSprite(chemical.getIcon()), 16, 16, 100, GuiUtils.TilingDirection.UP_RIGHT);
                 MekanismRenderer.resetColor(guiGraphics);
 
@@ -95,7 +91,7 @@ public class IngredientComponentTerminalStorageHandlerChemicalStack implements I
                     List<Component> lines = Lists.newArrayList();
                     lines.add(((MutableComponent) instance.getTextComponent())
                             .withStyle(Style.EMPTY.withColor(instance.getChemicalColorRepresentation())));
-                    ChemicalUtil.addChemicalDataToTooltip(lines, instance.getType(), false);
+                    instance.appendHoverText(Item.TooltipContext.EMPTY, lines, TooltipFlag.NORMAL);
                     addQuantityTooltip(lines, instance);
                     if (additionalTooltipLines != null) {
                         lines.addAll(additionalTooltipLines);
@@ -107,7 +103,7 @@ public class IngredientComponentTerminalStorageHandlerChemicalStack implements I
     }
 
     @Override
-    public String formatQuantity(ChemicalStack<?> instance) {
+    public String formatQuantity(ChemicalStack instance) {
         // Same as fluids
         return L10NHelpers.localize("gui.integratedterminals.terminal_storage.tooltip.fluid.amount",
                 String.format(Locale.ROOT, "%,d", instance.getAmount()));
@@ -115,23 +111,20 @@ public class IngredientComponentTerminalStorageHandlerChemicalStack implements I
 
     @Override
     public boolean isInstance(ItemStack itemStack) {
-        return itemStack.getCapability(Capabilities.GAS_HANDLER).isPresent()
-                || itemStack.getCapability(Capabilities.INFUSION_HANDLER).isPresent()
-                || itemStack.getCapability(Capabilities.PIGMENT_HANDLER).isPresent()
-                || itemStack.getCapability(Capabilities.SLURRY_HANDLER).isPresent();
+        return itemStack.getCapability(Capabilities.CHEMICAL.item()) != null;
     }
 
     @Override
-    public ChemicalStack<?> getInstance(ItemStack itemStack) {
+    public ChemicalStack getInstance(ItemStack itemStack) {
         return CapabilityHelpers.getChemicalHandler(itemStack)
-                .map(handler -> handler.getTanks() > 0 ? handler.getChemicalInTank(0) : handler.getEmptyStack())
-                .orElse(GasStack.EMPTY);
+                .map(handler -> handler.getChemicalTanks() > 0 ? handler.getChemicalInTank(0) : ChemicalStack.EMPTY)
+                .orElse(ChemicalStack.EMPTY);
     }
 
     @Override
     public long getMaxQuantity(ItemStack itemStack) {
         return CapabilityHelpers.getChemicalHandler(itemStack)
-                .map(handler -> handler.getTanks() > 0 ? handler.getTankCapacity(0) : 0)
+                .map(handler -> handler.getChemicalTanks() > 0 ? handler.getChemicalTankCapacity(0) : 0)
                 .orElse(0L);
     }
 
@@ -146,42 +139,24 @@ public class IngredientComponentTerminalStorageHandlerChemicalStack implements I
     }
 
     @Override
-    public int throwIntoWorld(IIngredientComponentStorage<ChemicalStack<?>, Integer> storage, ChemicalStack<?> chemicalStack, Player player) {
+    public int throwIntoWorld(IIngredientComponentStorage<ChemicalStack, Integer> storage, ChemicalStack chemicalStack, Player player) {
         return 0; // Dropping chemicals in the world is not supported
     }
 
-    protected IIngredientComponentStorage<ChemicalStack<?>, Integer> getChemicalStorage(IngredientComponent<ChemicalStack<?>, Integer> component,
-                                                                                        IChemicalHandler<?, ?> chemicalHandler) {
-        if (chemicalHandler instanceof IGasHandler gasHandler) {
-            return component
-                    .getStorageWrapperHandler(Capabilities.GAS_HANDLER)
-                    .wrapComponentStorage(gasHandler);
-        }
-        if (chemicalHandler instanceof IInfusionHandler infusionHandler) {
-            return component
-                    .getStorageWrapperHandler(Capabilities.INFUSION_HANDLER)
-                    .wrapComponentStorage(infusionHandler);
-        }
-        if (chemicalHandler instanceof IPigmentHandler pigmentHandler) {
-            return component
-                    .getStorageWrapperHandler(Capabilities.PIGMENT_HANDLER)
-                    .wrapComponentStorage(pigmentHandler);
-        }
-        if (chemicalHandler instanceof ISlurryHandler slurryHandler) {
-            return component
-                    .getStorageWrapperHandler(Capabilities.SLURRY_HANDLER)
-                    .wrapComponentStorage(slurryHandler);
-        }
-        throw new UnsupportedOperationException("Unknown chemical handler " + chemicalHandler);
+    protected IIngredientComponentStorage<ChemicalStack, Integer> getChemicalStorage(IngredientComponent<ChemicalStack, Integer> component,
+                                                                                        IChemicalHandler chemicalHandler) {
+        return component
+                .getStorageWrapperHandler(Capabilities.CHEMICAL.item())
+                .wrapComponentStorage(chemicalHandler);
     }
 
     @Override
-    public ChemicalStack<?> insertIntoContainer(IIngredientComponentStorage<ChemicalStack<?>, Integer> storage, AbstractContainerMenu container, int containerSlot, ChemicalStack<?> maxInstance, @Nullable Player player, boolean transferFullSelection) {
+    public ChemicalStack insertIntoContainer(IIngredientComponentStorage<ChemicalStack, Integer> storage, AbstractContainerMenu container, int containerSlot, ChemicalStack maxInstance, @Nullable Player player, boolean transferFullSelection) {
         ItemStack stack = container.getSlot(containerSlot).getItem();
         return CapabilityHelpers.getChemicalHandler(stack)
-                .<ChemicalStack<?>>map(chemicalHandler -> {
-                    IIngredientComponentStorage<ChemicalStack<?>, Integer> itemStorage = getChemicalStorage(storage.getComponent(), chemicalHandler);
-                    ChemicalStack<?> moved = GasStack.EMPTY;
+                .<ChemicalStack>map(chemicalHandler -> {
+                    IIngredientComponentStorage<ChemicalStack, Integer> itemStorage = getChemicalStorage(storage.getComponent(), chemicalHandler);
+                    ChemicalStack moved = ChemicalStack.EMPTY;
                     try {
                         moved = IngredientStorageHelpers.moveIngredientsIterative(storage, itemStorage, maxInstance,
                                 ingredientComponent.getMatcher().getExactMatchNoQuantityCondition(), false);
@@ -191,15 +166,15 @@ public class IngredientComponentTerminalStorageHandlerChemicalStack implements I
                     container.broadcastChanges();
                     return moved;
                 })
-                .orElse(GasStack.EMPTY);
+                .orElse(ChemicalStack.EMPTY);
     }
 
     @Override
-    public void extractActiveStackFromPlayerInventory(IIngredientComponentStorage<ChemicalStack<?>, Integer> storage, AbstractContainerMenu container, Inventory playerInventory, long moveQuantityPlayerSlot) {
+    public void extractActiveStackFromPlayerInventory(IIngredientComponentStorage<ChemicalStack, Integer> storage, AbstractContainerMenu container, Inventory playerInventory, long moveQuantityPlayerSlot) {
         ItemStack playerStack = container.getCarried();
         CapabilityHelpers.getChemicalHandler(playerStack)
                 .ifPresent(chemicalHandler -> {
-                    IIngredientComponentStorage<ChemicalStack<?>, Integer> itemStorage = getChemicalStorage(storage.getComponent(), chemicalHandler);
+                    IIngredientComponentStorage<ChemicalStack, Integer> itemStorage = getChemicalStorage(storage.getComponent(), chemicalHandler);
                     try {
                         IngredientStorageHelpers.moveIngredientsIterative(itemStorage, storage, moveQuantityPlayerSlot, false);
                     } catch (InconsistentIngredientInsertionException e) {
@@ -209,13 +184,13 @@ public class IngredientComponentTerminalStorageHandlerChemicalStack implements I
     }
 
     @Override
-    public void extractMaxFromContainerSlot(IIngredientComponentStorage<ChemicalStack<?>, Integer> storage, AbstractContainerMenu container, int containerSlot, Inventory playerInventory, int limit) {
+    public void extractMaxFromContainerSlot(IIngredientComponentStorage<ChemicalStack, Integer> storage, AbstractContainerMenu container, int containerSlot, Inventory playerInventory, int limit) {
         Slot slot = container.getSlot(containerSlot);
         if (slot.mayPickup(playerInventory.player)) {
             ItemStack toMoveStack = slot.getItem();
             CapabilityHelpers.getChemicalHandler(toMoveStack)
                     .ifPresent(chemicalHandler -> {
-                        IIngredientComponentStorage<ChemicalStack<?>, Integer> itemStorage = getChemicalStorage(storage.getComponent(), chemicalHandler);
+                        IIngredientComponentStorage<ChemicalStack, Integer> itemStorage = getChemicalStorage(storage.getComponent(), chemicalHandler);
                         try {
                             IngredientStorageHelpers.moveIngredientsIterative(itemStorage, storage, limit == -1 ? Long.MAX_VALUE : limit, false);
                         } catch (InconsistentIngredientInsertionException e) {
@@ -229,7 +204,7 @@ public class IngredientComponentTerminalStorageHandlerChemicalStack implements I
     public long getActivePlayerStackQuantity(Inventory playerInventory, AbstractContainerMenu container) {
         ItemStack toMoveStack = container.getCarried();
         return CapabilityHelpers.getChemicalHandler(toMoveStack)
-                .map(chemicalHandler -> chemicalHandler.getTanks() > 0 ? chemicalHandler.getChemicalInTank(0).getAmount() : 0L)
+                .map(chemicalHandler -> chemicalHandler.getChemicalTanks() > 0 ? chemicalHandler.getChemicalInTank(0).getAmount() : 0L)
                 .orElse(0L);
     }
 
@@ -251,25 +226,20 @@ public class IngredientComponentTerminalStorageHandlerChemicalStack implements I
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public Predicate<ChemicalStack<?>> getInstanceFilterPredicate(SearchMode searchMode, String query) {
+    public Predicate<ChemicalStack> getInstanceFilterPredicate(SearchMode searchMode, String query) {
         return switch (searchMode) {
-            case MOD -> i -> ChemicalHelpers.getStackRegistry(i).getKey(i.getType()).getNamespace()
+            case MOD -> i -> ChemicalHelpers.getStackRegistry().getKey(i.getChemical()).getNamespace()
                     .toLowerCase(Locale.ENGLISH).matches(".*" + query + ".*");
             case TOOLTIP -> i -> false; // Chemicals have no tooltip
-            case TAG -> i -> {
-                ForgeRegistry<Chemical> registry = ChemicalHelpers.getStackRegistry(i);
-                return registry.tags().getReverseTag(i.getType())
-                        .map(reverseTag -> reverseTag.getTagKeys()
-                                .filter(tag -> tag.location().toString().toLowerCase(Locale.ENGLISH).matches(".*" + query + ".*"))
-                                .anyMatch(tag -> !registry.tags().getTag(tag).isEmpty()))
-                        .orElse(false);
-            };
+            case TAG -> i -> i.getChemical().getAsHolder().tags()
+                    .filter(tag -> tag.location().toString().toLowerCase(Locale.ENGLISH).matches(".*" + query + ".*"))
+                    .anyMatch(tag -> !MekanismAPI.CHEMICAL_REGISTRY.getTag(tag).isEmpty());
             case DEFAULT -> i -> i != null && i.getTextComponent().getString().toLowerCase(Locale.ENGLISH).matches(".*" + query + ".*");
         };
     }
 
     @Override
-    public Collection<IIngredientInstanceSorter<ChemicalStack<?>>> getInstanceSorters() {
+    public Collection<IIngredientInstanceSorter<ChemicalStack>> getInstanceSorters() {
         return Lists.newArrayList(
                 new ChemicalStackNameSorter(),
                 new ChemicalStackIdSorter(),

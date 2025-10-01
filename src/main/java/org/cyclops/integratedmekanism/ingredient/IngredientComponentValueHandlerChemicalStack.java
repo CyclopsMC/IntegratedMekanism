@@ -11,11 +11,11 @@ import org.jetbrains.annotations.Nullable;
  * @author rubensworks
  */
 public class IngredientComponentValueHandlerChemicalStack implements IIngredientComponentValueHandler<ValueObjectTypeChemicalStack,
-        ValueObjectTypeChemicalStack.ValueChemicalStack, ChemicalStack<?>, Integer> {
+        ValueObjectTypeChemicalStack.ValueChemicalStack, ChemicalStack, Integer> {
 
-    private final IngredientComponent<ChemicalStack<?>, Integer> ingredientComponent;
+    private final IngredientComponent<ChemicalStack, Integer> ingredientComponent;
 
-    public IngredientComponentValueHandlerChemicalStack(IngredientComponent<ChemicalStack<?>, Integer> ingredientComponent) {
+    public IngredientComponentValueHandlerChemicalStack(IngredientComponent<ChemicalStack, Integer> ingredientComponent) {
         this.ingredientComponent = ingredientComponent;
     }
 
@@ -25,17 +25,17 @@ public class IngredientComponentValueHandlerChemicalStack implements IIngredient
     }
 
     @Override
-    public IngredientComponent<ChemicalStack<?>, Integer> getComponent() {
+    public IngredientComponent<ChemicalStack, Integer> getComponent() {
         return this.ingredientComponent;
     }
 
     @Override
-    public ValueObjectTypeChemicalStack.ValueChemicalStack toValue(@Nullable ChemicalStack<?> chemicalStack) {
+    public ValueObjectTypeChemicalStack.ValueChemicalStack toValue(@Nullable ChemicalStack chemicalStack) {
         return ValueObjectTypeChemicalStack.ValueChemicalStack.of(chemicalStack);
     }
 
     @Override
-    public @Nullable ChemicalStack<?> toInstance(ValueObjectTypeChemicalStack.ValueChemicalStack valueChemicalStack) {
+    public @Nullable ChemicalStack toInstance(ValueObjectTypeChemicalStack.ValueChemicalStack valueChemicalStack) {
         return valueChemicalStack.getRawValue();
     }
 }

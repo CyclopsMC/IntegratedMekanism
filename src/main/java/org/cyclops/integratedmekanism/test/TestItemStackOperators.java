@@ -2,12 +2,10 @@ package org.cyclops.integratedmekanism.test;
 
 import mekanism.api.Action;
 import mekanism.api.chemical.ChemicalStack;
-import mekanism.api.chemical.gas.GasStack;
-import mekanism.api.chemical.infuse.InfusionStack;
+import mekanism.api.chemical.IChemicalHandler;
 import mekanism.common.capabilities.Capabilities;
 import mekanism.common.registries.MekanismBlocks;
-import mekanism.common.registries.MekanismGases;
-import mekanism.common.registries.MekanismInfuseTypes;
+import mekanism.common.registries.MekanismChemicals;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.cyclops.integrateddynamics.api.evaluate.EvaluationException;
@@ -42,11 +40,11 @@ public class TestItemStackOperators {
         iHoe = new DummyVariableItemStack(ValueObjectTypeItemStack.ValueItemStack.of(new ItemStack(Items.DIAMOND_HOE)));
         iTankEmpty = new DummyVariableItemStack(ValueObjectTypeItemStack.ValueItemStack.of(new ItemStack(MekanismBlocks.BASIC_CHEMICAL_TANK)));
         iTankHydrogen = new DummyVariableItemStack(ValueObjectTypeItemStack.ValueItemStack.of(new ItemStack(MekanismBlocks.BASIC_CHEMICAL_TANK)));
-        iTankHydrogen.getValue().getRawValue().getCapability(Capabilities.GAS_HANDLER)
-                .ifPresent(h -> h.insertChemical(new GasStack(MekanismGases.HYDROGEN, 1000), Action.EXECUTE));
+        IChemicalHandler h1 = iTankHydrogen.getValue().getRawValue().getCapability(Capabilities.CHEMICAL.item());
+        h1.insertChemical(new ChemicalStack(MekanismChemicals.HYDROGEN, 1000), Action.EXECUTE);
         iTankGold = new DummyVariableItemStack(ValueObjectTypeItemStack.ValueItemStack.of(new ItemStack(MekanismBlocks.BASIC_CHEMICAL_TANK)));
-        iTankGold.getValue().getRawValue().getCapability(Capabilities.INFUSION_HANDLER)
-                .ifPresent(h -> h.insertChemical(new InfusionStack(MekanismInfuseTypes.GOLD, 100), Action.EXECUTE));
+        IChemicalHandler h2 = iTankGold.getValue().getRawValue().getCapability(Capabilities.CHEMICAL.item());
+        h2.insertChemical(new ChemicalStack(MekanismChemicals.GOLD, 100), Action.EXECUTE);
     }
 
     /**
@@ -92,11 +90,11 @@ public class TestItemStackOperators {
         TestHelpers.assertEqual(((ValueObjectTypeChemicalStack.ValueChemicalStack) res1).getRawValue().isEmpty(), true, "chemicalstack(hoe) = null");
 
         IValue res2 = MekanismOperators.OBJECT_ITEMSTACK_CHEMICALSTACK.evaluate(iTankHydrogen);
-        TestHelpers.assertEqual(((ValueObjectTypeChemicalStack.ValueChemicalStack) res2).getRawValue().isStackIdentical((ChemicalStack) new GasStack(MekanismGases.HYDROGEN, ChemicalHelpers.BUCKET_VOLUME)), true, "chemicalstack(tankhydrogen) = hydrogen:1000");
-        TestHelpers.assertEqual(((ValueObjectTypeChemicalStack.ValueChemicalStack) res2).getRawValue().isStackIdentical((ChemicalStack) new InfusionStack(MekanismInfuseTypes.GOLD, ChemicalHelpers.BUCKET_VOLUME)), false, "chemicalstack(tankhydrogen) != gold:1000");
+        TestHelpers.assertEqual(((ValueObjectTypeChemicalStack.ValueChemicalStack) res2).getRawValue().equals(new ChemicalStack(MekanismChemicals.HYDROGEN, ChemicalHelpers.BUCKET_VOLUME)), true, "chemicalstack(tankhydrogen) = hydrogen:1000");
+        TestHelpers.assertEqual(((ValueObjectTypeChemicalStack.ValueChemicalStack) res2).getRawValue().equals(new ChemicalStack(MekanismChemicals.GOLD, ChemicalHelpers.BUCKET_VOLUME)), false, "chemicalstack(tankhydrogen) != gold:1000");
 
         IValue res3 = MekanismOperators.OBJECT_ITEMSTACK_CHEMICALSTACK.evaluate(iTankGold);
-        TestHelpers.assertEqual(((ValueObjectTypeChemicalStack.ValueChemicalStack) res3).getRawValue().isStackIdentical((ChemicalStack) new InfusionStack(MekanismInfuseTypes.GOLD, 100)), true, "chemicalstack(tankgold) = gold:100");
+        TestHelpers.assertEqual(((ValueObjectTypeChemicalStack.ValueChemicalStack) res3).getRawValue().equals(new ChemicalStack(MekanismChemicals.GOLD, 100)), true, "chemicalstack(tankgold) = gold:100");
 
         IValue res4 = MekanismOperators.OBJECT_ITEMSTACK_CHEMICALSTACK.evaluate(iTankEmpty);
         TestHelpers.assertEqual(((ValueObjectTypeChemicalStack.ValueChemicalStack) res4).getRawValue().isEmpty(), true, "chemicalstack(empty) = empty");

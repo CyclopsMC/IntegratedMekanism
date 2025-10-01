@@ -2,10 +2,7 @@ package org.cyclops.integratedmekanism.value;
 
 import mekanism.api.Action;
 import mekanism.api.chemical.ChemicalStack;
-import mekanism.api.chemical.gas.GasStack;
-import mekanism.api.chemical.infuse.InfusionStack;
-import mekanism.api.chemical.pigment.PigmentStack;
-import mekanism.api.chemical.slurry.SlurryStack;
+import mekanism.api.chemical.IChemicalHandler;
 import mekanism.common.capabilities.Capabilities;
 import mekanism.common.registries.MekanismBlocks;
 import net.minecraft.nbt.CompoundTag;
@@ -48,24 +45,24 @@ public class ValueObjectTypeChemicalStack extends ValueObjectTypeBase<ValueObjec
 
     @Override
     public ValueChemicalStack getDefault() {
-        return ValueChemicalStack.of(GasStack.EMPTY);
+        return ValueChemicalStack.of(ChemicalStack.EMPTY);
     }
 
     @Override
     public MutableComponent toCompactString(ValueChemicalStack value) {
-        ChemicalStack<?> chemicalStack = value.getRawValue();
+        ChemicalStack chemicalStack = value.getRawValue();
         return !chemicalStack.isEmpty() ? ((MutableComponent) chemicalStack.getTextComponent()).append(String.format(" (%s mB)", chemicalStack.getAmount())) : Component.literal("");
     }
 
     @Override
-    public Tag serialize(ValueChemicalStack value) {
-        return MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK.getSerializer().serializeInstance(value.chemicalStack);
+    public Tag serialize(ValueDeseralizationContext valueDeseralizationContext, ValueChemicalStack value) {
+        return MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK.getSerializer().serializeInstance(valueDeseralizationContext.holderLookupProvider(), value.chemicalStack);
     }
 
     @Override
     public ValueChemicalStack deserialize(ValueDeseralizationContext valueDeseralizationContext, Tag value) {
         if (value instanceof CompoundTag) {
-            return ValueChemicalStack.of(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK.getSerializer().deserializeInstance(value));
+            return ValueChemicalStack.of(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK.getSerializer().deserializeInstance(valueDeseralizationContext.holderLookupProvider(), value));
         } else {
             return null;
         }
@@ -100,8 +97,9 @@ public class ValueObjectTypeChemicalStack extends ValueObjectTypeBase<ValueObjec
             @Override
             public ValueObjectTypeChemicalStack.ValueChemicalStack getValue(ItemStack itemStack) {
                 return ValueObjectTypeChemicalStack.ValueChemicalStack.of(CapabilityHelpers.getChemicalHandler(itemStack)
-                        .map(handler -> handler.getTanks() > 0 ? handler.getChemicalInTank(0) : handler.getEmptyStack())
-                        .orElse(GasStack.EMPTY));
+                        .filter(handler -> handler.getChemicalTanks() > 0)
+                        .map(handler -> handler.getChemicalInTank(0))
+                        .orElse(ChemicalStack.EMPTY));
             }
 
             @Override
@@ -111,51 +109,42 @@ public class ValueObjectTypeChemicalStack extends ValueObjectTypeBase<ValueObjec
         });
     }
 
-    public static ItemStack valueToItemStack(ChemicalStack<?> chemicalStackRaw) {
+    public static ItemStack valueToItemStack(ChemicalStack chemicalStack) {
         ItemStack itemStack = new ItemStack(MekanismBlocks.BASIC_CHEMICAL_TANK);
-        if (chemicalStackRaw instanceof GasStack chemicalStack) {
-            itemStack.getCapability(Capabilities.GAS_HANDLER)
-                    .ifPresent(handler ->  handler.insertChemical(chemicalStack, Action.EXECUTE));
-        } else if (chemicalStackRaw instanceof InfusionStack chemicalStack) {
-            itemStack.getCapability(Capabilities.INFUSION_HANDLER)
-                    .ifPresent(handler ->  handler.insertChemical(chemicalStack, Action.EXECUTE));
-        } else if (chemicalStackRaw instanceof PigmentStack chemicalStack) {
-            itemStack.getCapability(Capabilities.PIGMENT_HANDLER)
-                    .ifPresent(handler ->  handler.insertChemical(chemicalStack, Action.EXECUTE));
-        } else if (chemicalStackRaw instanceof SlurryStack chemicalStack) {
-            itemStack.getCapability(Capabilities.SLURRY_HANDLER)
-                    .ifPresent(handler ->  handler.insertChemical(chemicalStack, Action.EXECUTE));
+        IChemicalHandler handler = itemStack.getCapability(Capabilities.CHEMICAL.item());
+        if (handler != null) {
+            handler.insertChemical(chemicalStack, Action.EXECUTE);
         }
         return itemStack;
     }
 
     @Override
     public String getUniqueName(ValueChemicalStack value) {
-        ChemicalStack<?> chemicalStack = value.getRawValue();
+        ChemicalStack chemicalStack = value.getRawValue();
         return !chemicalStack.isEmpty() ?
-                String.format("%s %s", ChemicalHelpers.getStackRegistry(chemicalStack).getKey(chemicalStack.getType()), chemicalStack.getAmount()) : "";
+                String.format("%s %s", ChemicalHelpers.getStackRegistry().getKey(chemicalStack.getChemical()), chemicalStack.getAmount()) : "";
     }
 
     public static class ValueChemicalStack extends ValueBase {
 
-        private final ChemicalStack<?> chemicalStack;
+        private final ChemicalStack chemicalStack;
 
-        private ValueChemicalStack(ChemicalStack<?> itemStack) {
+        private ValueChemicalStack(ChemicalStack itemStack) {
             super(MekanismValueTypes.OBJECT_CHEMICALSTACK);
             this.chemicalStack = Objects.requireNonNull(itemStack, "Attempted to create a ValueChemicalStack for a null ChemicalStack.");
         }
 
-        public static ValueChemicalStack of(ChemicalStack<?> itemStack) {
+        public static ValueChemicalStack of(ChemicalStack itemStack) {
             return new ValueChemicalStack(itemStack);
         }
 
-        public ChemicalStack<?> getRawValue() {
+        public ChemicalStack getRawValue() {
             return chemicalStack;
         }
 
         @Override
         public boolean equals(Object o) {
-            return o instanceof ValueChemicalStack && this.getRawValue().isStackIdentical((ChemicalStack) ((ValueChemicalStack) o).getRawValue());
+            return o instanceof ValueChemicalStack && this.getRawValue().equals(((ValueChemicalStack) o).getRawValue());
         }
 
         @Override

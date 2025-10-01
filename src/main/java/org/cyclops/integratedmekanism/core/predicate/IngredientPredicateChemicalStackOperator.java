@@ -19,7 +19,7 @@ import javax.annotation.Nullable;
 /**
  * @author rubensworks
  */
-public class IngredientPredicateChemicalStackOperator extends IngredientPredicate<ChemicalStack<?>, Integer> {
+public class IngredientPredicateChemicalStackOperator extends IngredientPredicate<ChemicalStack, Integer> {
     private final IOperator predicate;
     private final PartTarget partTarget;
 

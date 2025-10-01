@@ -3,31 +3,30 @@ package org.cyclops.integratedmekanism.modcompat.integratedtunnels.part;
 import com.google.common.collect.Lists;
 import mekanism.api.chemical.IChemicalHandler;
 import mekanism.common.capabilities.Capabilities;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
+import net.minecraft.core.Direction;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 import org.cyclops.cyclopscore.init.ModBase;
 import org.cyclops.integrateddynamics.api.network.INetwork;
 import org.cyclops.integrateddynamics.api.network.IPartNetwork;
-import org.cyclops.integrateddynamics.api.part.PartPos;
+import org.cyclops.integrateddynamics.api.network.NetworkCapability;
+import org.cyclops.integrateddynamics.api.part.PartCapability;
 import org.cyclops.integrateddynamics.api.part.PartTarget;
 import org.cyclops.integrateddynamics.api.part.aspect.IAspect;
 import org.cyclops.integrateddynamics.core.part.aspect.AspectRegistry;
 import org.cyclops.integrateddynamics.part.aspect.Aspects;
 import org.cyclops.integratedmekanism.GeneralConfig;
 import org.cyclops.integratedmekanism.IntegratedMekanism;
-import org.cyclops.integratedmekanism.core.CapabilityHelpers;
-import org.cyclops.integratedmekanism.network.ChemicalNetworkConfig;
-import org.cyclops.integratedmekanism.network.IChemicalNetwork;
 import org.cyclops.integratedmekanism.modcompat.integratedtunnels.aspect.MekanismTunnelsAspects;
+import org.cyclops.integratedmekanism.network.IChemicalNetwork;
 import org.cyclops.integratedtunnels.core.part.PartTypeInterfacePositionedAddonFiltering;
 
-import java.util.List;
+import java.util.Optional;
 
 /**
  * Interface for filtering fluid handlers.
  * @author rubensworks
  */
-public class PartTypeInterfaceFilteringChemical extends PartTypeInterfacePositionedAddonFiltering<IChemicalNetwork, IChemicalHandler<?, ?>, PartTypeInterfaceFilteringChemical, PartTypeInterfaceFilteringChemical.State> {
+public class PartTypeInterfaceFilteringChemical extends PartTypeInterfacePositionedAddonFiltering<IChemicalNetwork, IChemicalHandler, PartTypeInterfaceFilteringChemical, PartTypeInterfaceFilteringChemical.State> {
     public PartTypeInterfaceFilteringChemical(String name) {
         super(name);
         AspectRegistry.getInstance().register(this, Lists.<IAspect>newArrayList(
@@ -44,18 +43,18 @@ public class PartTypeInterfaceFilteringChemical extends PartTypeInterfacePositio
     }
 
     @Override
-    public Capability<IChemicalNetwork> getNetworkCapability() {
-        return ChemicalNetworkConfig.CAPABILITY;
+    public NetworkCapability<IChemicalNetwork> getNetworkCapability() {
+        return org.cyclops.integratedmekanism.Capabilities.ChemicalNetwork.NETWORK;
     }
 
     @Override
-    public Capability<IChemicalHandler<?, ?>> getTargetCapability() {
-        throw new UnsupportedOperationException(); // This should never be called. We override the method instead.
+    public PartCapability<IChemicalHandler> getPartCapability() {
+        return org.cyclops.integratedmekanism.Capabilities.ChemicalHandler.PART;
     }
 
     @Override
-    public LazyOptional<IChemicalHandler<?, ?>> getTargetCapabilityInstance(PartPos pos) {
-        return CapabilityHelpers.getFirstOf(pos, List.of(Capabilities.GAS_HANDLER, Capabilities.INFUSION_HANDLER, Capabilities.PIGMENT_HANDLER, Capabilities.SLURRY_HANDLER));
+    public BlockCapability<IChemicalHandler, Direction> getBlockCapability() {
+        return Capabilities.CHEMICAL.block();
     }
 
     @Override
@@ -68,39 +67,25 @@ public class PartTypeInterfaceFilteringChemical extends PartTypeInterfacePositio
         return GeneralConfig.interfaceChemicalBaseConsumption;
     }
 
-    public static class State extends PartTypeInterfacePositionedAddonFiltering.State<IChemicalNetwork, IChemicalHandler<?, ?>, PartTypeInterfaceFilteringChemical, PartTypeInterfaceFilteringChemical.State> {
+    public static class State extends PartTypeInterfacePositionedAddonFiltering.State<IChemicalNetwork, IChemicalHandler, PartTypeInterfaceFilteringChemical, PartTypeInterfaceFilteringChemical.State> {
 
         public State(int inventorySize) {
             super(inventorySize);
         }
 
         @Override
-        public Capability<IChemicalHandler<?, ?>> getTargetCapability() {
-            throw new UnsupportedOperationException(); // This should never be called. We override the method instead.
+        public PartCapability<IChemicalHandler> getTargetCapability() {
+            return org.cyclops.integratedmekanism.Capabilities.ChemicalHandler.PART;
         }
 
         @Override
-        public IChemicalHandler<?, ?> getCapabilityInstance() {
-            throw new UnsupportedOperationException(); // This should never be called. We override the method instead.
+        public IChemicalHandler getCapabilityInstance() {
+            return new ChemicalHandlerPartState(this);
         }
 
         @Override
-        public <T2> LazyOptional<T2> getCapability(Capability<T2> capability, INetwork network, IPartNetwork partNetwork, PartTarget target) {
-            if (isNetworkAndPositionValid()) {
-                if (capability == Capabilities.GAS_HANDLER) {
-                    return LazyOptional.of(() -> new ChemicalHandlerPartState<>(this, Capabilities.GAS_HANDLER)).cast();
-                }
-                if (capability == Capabilities.INFUSION_HANDLER) {
-                    return LazyOptional.of(() -> new ChemicalHandlerPartState<>(this, Capabilities.INFUSION_HANDLER)).cast();
-                }
-                if (capability == Capabilities.PIGMENT_HANDLER) {
-                    return LazyOptional.of(() -> new ChemicalHandlerPartState<>(this, Capabilities.PIGMENT_HANDLER)).cast();
-                }
-                if (capability == Capabilities.SLURRY_HANDLER) {
-                    return LazyOptional.of(() -> new ChemicalHandlerPartState<>(this, Capabilities.SLURRY_HANDLER)).cast();
-                }
-            }
-            return LazyOptional.empty();
+        public <T> Optional<T> getCapability(PartTypeInterfaceFilteringChemical partType, PartCapability<T> capability, INetwork network, IPartNetwork partNetwork, PartTarget target) {
+            return this.isNetworkAndPositionValid() && capability == getTargetCapability() ? Optional.of((T) this.getCapabilityInstance()) : super.getCapability(partType, capability, network, partNetwork, target);
         }
     }
 }

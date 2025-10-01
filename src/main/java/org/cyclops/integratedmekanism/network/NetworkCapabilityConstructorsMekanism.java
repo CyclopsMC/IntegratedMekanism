@@ -1,15 +1,10 @@
 package org.cyclops.integratedmekanism.network;
 
-import mekanism.api.chemical.gas.IGasHandler;
-import mekanism.api.chemical.infuse.IInfusionHandler;
-import mekanism.api.chemical.pigment.IPigmentHandler;
-import mekanism.api.chemical.slurry.ISlurryHandler;
+import mekanism.api.chemical.IChemicalHandler;
 import mekanism.common.capabilities.Capabilities;
-import net.minecraft.resources.ResourceLocation;
 import org.cyclops.cyclopscore.modcompat.capabilities.DefaultCapabilityProvider;
 import org.cyclops.integrateddynamics.api.network.AttachCapabilitiesEventNetwork;
 import org.cyclops.integrateddynamics.api.network.IPositionedAddonsNetworkIngredients;
-import org.cyclops.integratedmekanism.Reference;
 import org.cyclops.integratedmekanism.ingredient.MekanismIngredientComponents;
 
 /**
@@ -19,22 +14,11 @@ public class NetworkCapabilityConstructorsMekanism {
 
     public void onNetworkLoad(AttachCapabilitiesEventNetwork event) {
         ChemicalNetwork chemicalNetwork = new ChemicalNetwork(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK);
-        event.addCapability(new ResourceLocation(Reference.MOD_ID, "chemical_network"),
-                new DefaultCapabilityProvider<>(() -> ChemicalNetworkConfig.CAPABILITY, chemicalNetwork));
-
-        IGasHandler channelGas = chemicalNetwork.getChannelExternal(Capabilities.GAS_HANDLER, IPositionedAddonsNetworkIngredients.DEFAULT_CHANNEL);
-        event.addCapability(new ResourceLocation(Reference.MOD_ID, "gas_storage_network"),
-                new DefaultCapabilityProvider<>(() -> Capabilities.GAS_HANDLER, channelGas));
-        IInfusionHandler channelInfusion = chemicalNetwork.getChannelExternal(Capabilities.INFUSION_HANDLER, IPositionedAddonsNetworkIngredients.DEFAULT_CHANNEL);
-        event.addCapability(new ResourceLocation(Reference.MOD_ID, "infusion_storage_network"),
-                new DefaultCapabilityProvider<>(() -> Capabilities.INFUSION_HANDLER, channelInfusion));
-        IPigmentHandler channelPigment = chemicalNetwork.getChannelExternal(Capabilities.PIGMENT_HANDLER, IPositionedAddonsNetworkIngredients.DEFAULT_CHANNEL);
-        event.addCapability(new ResourceLocation(Reference.MOD_ID, "pigment_storage_network"),
-                new DefaultCapabilityProvider<>(() -> Capabilities.PIGMENT_HANDLER, channelPigment));
-        ISlurryHandler channelSlurry = chemicalNetwork.getChannelExternal(Capabilities.SLURRY_HANDLER, IPositionedAddonsNetworkIngredients.DEFAULT_CHANNEL);
-        event.addCapability(new ResourceLocation(Reference.MOD_ID, "slurry_storage_network"),
-                new DefaultCapabilityProvider<>(() -> Capabilities.SLURRY_HANDLER, channelSlurry));
-
+        IChemicalHandler channel = chemicalNetwork.getChannelExternal(Capabilities.CHEMICAL.block(), IPositionedAddonsNetworkIngredients.DEFAULT_CHANNEL);
+        event.register(org.cyclops.integratedmekanism.Capabilities.ChemicalNetwork.NETWORK,
+                new DefaultCapabilityProvider<>(chemicalNetwork));
+        event.register(org.cyclops.integratedmekanism.Capabilities.ChemicalHandler.NETWORK,
+                new DefaultCapabilityProvider<>(channel));
         event.addFullNetworkListener(chemicalNetwork);
     }
 

@@ -17,8 +17,8 @@ public class MekanismValueTypeListProxyFactories {
 
     public static void load() {
         if (POSITIONED_CHEMICAL_TANK_CAPACITIES == null) {
-            POSITIONED_CHEMICAL_TANK_CAPACITIES = ValueTypeListProxyFactories.REGISTRY.register(new ValueTypeListProxyNBTFactory<>(new ResourceLocation(Reference.MOD_ID, "positioned_chemical_tank_capacities"), ValueTypeListProxyPositionedChemicalTankCapacities.class));
-            POSITIONED_CHEMICAL_TANK_CHEMICAL_STACKS = ValueTypeListProxyFactories.REGISTRY.register(new ValueTypeListProxyNBTFactory<>(new ResourceLocation(Reference.MOD_ID, "positioned_chemical_tank_chemicalstacks"), ValueTypeListProxyPositionedChemicalTankChemicalStacks.class));
+            POSITIONED_CHEMICAL_TANK_CAPACITIES = ValueTypeListProxyFactories.REGISTRY.register(new ValueTypeListProxyNBTFactory<>(ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "positioned_chemical_tank_capacities"), ValueTypeListProxyPositionedChemicalTankCapacities.class));
+            POSITIONED_CHEMICAL_TANK_CHEMICAL_STACKS = ValueTypeListProxyFactories.REGISTRY.register(new ValueTypeListProxyNBTFactory<>(ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "positioned_chemical_tank_chemicalstacks"), ValueTypeListProxyPositionedChemicalTankChemicalStacks.class));
         }
     }
 

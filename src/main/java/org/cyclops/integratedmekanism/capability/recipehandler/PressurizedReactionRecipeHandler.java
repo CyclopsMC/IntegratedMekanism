@@ -2,7 +2,6 @@ package org.cyclops.integratedmekanism.capability.recipehandler;
 
 import com.google.common.collect.Lists;
 import mekanism.api.chemical.ChemicalStack;
-import mekanism.api.chemical.gas.GasStack;
 import mekanism.api.recipes.PressurizedReactionRecipe;
 import mekanism.api.recipes.ingredients.ChemicalStackIngredient;
 import mekanism.common.recipe.MekanismRecipeType;
@@ -44,7 +43,7 @@ public class PressurizedReactionRecipeHandler extends MekanismRecipeHandler<Pres
                 new PrototypedIngredientAlternativesList<>(getPrototypesFromFluidIngredient(recipe.getInputFluid()))
         ));
         inputs.put(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK, List.of(
-                new PrototypedIngredientAlternativesList<>(getPrototypesFromChemicalIngredient(recipe.getInputGas()))
+                new PrototypedIngredientAlternativesList<>(getPrototypesFromChemicalIngredient(recipe.getInputChemical()))
         ));
     }
 
@@ -56,26 +55,26 @@ public class PressurizedReactionRecipeHandler extends MekanismRecipeHandler<Pres
                     out.item()
             ));
         }
-        if (!out.gas().isEmpty()) {
+        if (!out.chemical().isEmpty()) {
             outputs.put(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK, Lists.newArrayList(
-                    out.gas()
+                    out.chemical()
             ));
         }
     }
 
     @Override
     protected void recipeToOutputsSimulated(PressurizedReactionRecipe recipe, IMixedIngredients input, Map<IngredientComponent<?, ?>, List<?>> outputs) {
-        ChemicalStack<?> chemicalStack = input.getInstances(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK).get(0);
+        ChemicalStack chemicalStack = input.getInstances(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK).get(0);
         PressurizedReactionRecipe.PressurizedReactionRecipeOutput out = recipe.getOutput(
                 input.getInstances(IngredientComponents.ITEMSTACK).get(0),
                 input.getInstances(IngredientComponents.FLUIDSTACK).get(0),
-                chemicalStack instanceof GasStack gasStack ? gasStack : GasStack.EMPTY
+                chemicalStack
         );
         outputs.put(IngredientComponents.ITEMSTACK, Lists.newArrayList(
                 out.item()
         ));
         outputs.put(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK, Lists.newArrayList(
-                out.gas()
+                out.chemical()
         ));
     }
 
@@ -83,6 +82,6 @@ public class PressurizedReactionRecipeHandler extends MekanismRecipeHandler<Pres
     protected boolean doesRecipeMatchInput(PressurizedReactionRecipe recipe, IMixedIngredients input) {
         return recipe.getInputSolid().test(input.getInstances(IngredientComponents.ITEMSTACK).get(0))
                 && recipe.getInputFluid().test(input.getInstances(IngredientComponents.FLUIDSTACK).get(0))
-                && ((ChemicalStackIngredient) recipe.getInputGas()).test(input.getInstances(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK).get(0));
+                && ((ChemicalStackIngredient) recipe.getInputChemical()).test(input.getInstances(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK).get(0));
     }
 }

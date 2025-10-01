@@ -1,10 +1,10 @@
 package org.cyclops.integratedmekanism.capability.recipehandler;
 
 import com.google.common.collect.Lists;
-import mekanism.api.chemical.gas.GasStack;
 import mekanism.api.recipes.RotaryRecipe;
 import mekanism.api.recipes.ingredients.ChemicalStackIngredient;
 import mekanism.common.recipe.MekanismRecipeType;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import org.cyclops.commoncapabilities.IngredientComponents;
 import org.cyclops.commoncapabilities.api.capability.recipehandler.IPrototypedIngredientAlternatives;
@@ -14,7 +14,10 @@ import org.cyclops.commoncapabilities.api.ingredient.IMixedIngredients;
 import org.cyclops.commoncapabilities.api.ingredient.IngredientComponent;
 import org.cyclops.integratedmekanism.ingredient.MekanismIngredientComponents;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -22,7 +25,7 @@ import java.util.function.Supplier;
  */
 public class RotaryRecipeHandler extends MekanismRecipeHandler<RotaryRecipe> {
 
-    private boolean fluidToGas;
+    private boolean fluidToChemical;
 
     protected RotaryRecipeHandler(Supplier<Level> levelSupplier) {
         super(MekanismRecipeType.ROTARY, levelSupplier, Set.of(IngredientComponents.FLUIDSTACK, MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK), Set.of(IngredientComponents.FLUIDSTACK, MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK));
@@ -37,40 +40,40 @@ public class RotaryRecipeHandler extends MekanismRecipeHandler<RotaryRecipe> {
     @Override
     public Collection<IRecipeDefinition> getRecipesUncached() {
         Collection<IRecipeDefinition> list = Lists.newArrayList();
-        this.fluidToGas = true;
+        this.fluidToChemical = true;
         list.addAll(super.getRecipes());
-        this.fluidToGas = false;
+        this.fluidToChemical = false;
         list.addAll(super.getRecipes());
         return list;
     }
 
     @Override
-    protected boolean isValid(RotaryRecipe recipe) {
-        return super.isValid(recipe) && (this.fluidToGas ? recipe.hasFluidToGas() : recipe.hasGasToFluid());
+    protected boolean isValid(RecipeHolder<? extends RotaryRecipe> recipeHolder) {
+        return super.isValid(recipeHolder) && (this.fluidToChemical ? recipeHolder.value().hasFluidToChemical() : recipeHolder.value().hasChemicalToFluid());
     }
 
     @Override
     protected void recipeToInputs(RotaryRecipe recipe, Map<IngredientComponent<?, ?>, List<IPrototypedIngredientAlternatives<?, ?>>> inputs) {
-        if (recipe.hasFluidToGas() && this.fluidToGas) {
+        if (recipe.hasFluidToChemical() && this.fluidToChemical) {
             inputs.put(IngredientComponents.FLUIDSTACK, List.of(
                     new PrototypedIngredientAlternativesList<>(getPrototypesFromFluidIngredient(recipe.getFluidInput()))
             ));
         }
-        if (recipe.hasGasToFluid() && !this.fluidToGas) {
+        if (recipe.hasChemicalToFluid() && !this.fluidToChemical) {
             inputs.put(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK, List.of(
-                    new PrototypedIngredientAlternativesList<>(getPrototypesFromChemicalIngredient(recipe.getGasInput()))
+                    new PrototypedIngredientAlternativesList<>(getPrototypesFromChemicalIngredient(recipe.getChemicalInput()))
             ));
         }
     }
 
     @Override
     protected void recipeToOutputs(RotaryRecipe recipe, Map<IngredientComponent<?, ?>, List<?>> outputs) {
-        if (recipe.hasFluidToGas() && this.fluidToGas) {
+        if (recipe.hasFluidToChemical() && this.fluidToChemical) {
             outputs.put(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK, Lists.newArrayList(
-                    recipe.getGasOutputDefinition().get(0)
+                    recipe.getChemicalOutputDefinition().get(0)
             ));
         }
-        if (recipe.hasGasToFluid() && !this.fluidToGas) {
+        if (recipe.hasChemicalToFluid() && !this.fluidToChemical) {
             outputs.put(IngredientComponents.FLUIDSTACK, Lists.newArrayList(
                     recipe.getFluidOutputDefinition().get(0)
             ));
@@ -79,14 +82,14 @@ public class RotaryRecipeHandler extends MekanismRecipeHandler<RotaryRecipe> {
 
     @Override
     protected void recipeToOutputsSimulated(RotaryRecipe recipe, IMixedIngredients input, Map<IngredientComponent<?, ?>, List<?>> outputs) {
-        if (recipe.hasFluidToGas() && this.fluidToGas) {
+        if (recipe.hasFluidToChemical() && this.fluidToChemical) {
             outputs.put(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK, Lists.newArrayList(
-                    recipe.getGasOutput(input.getInstances(IngredientComponents.FLUIDSTACK).get(0))
+                    recipe.getChemicalOutput(input.getInstances(IngredientComponents.FLUIDSTACK).get(0))
             ));
         }
-        if (recipe.hasGasToFluid() && !this.fluidToGas) {
+        if (recipe.hasChemicalToFluid() && !this.fluidToChemical) {
             outputs.put(IngredientComponents.FLUIDSTACK, Lists.newArrayList(
-                    recipe.getFluidOutput(input.getInstances(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK).get(0) instanceof GasStack gasStack ? gasStack : GasStack.EMPTY)
+                    recipe.getFluidOutput(input.getInstances(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK).get(0))
             ));
         }
     }
@@ -94,6 +97,6 @@ public class RotaryRecipeHandler extends MekanismRecipeHandler<RotaryRecipe> {
     @Override
     protected boolean doesRecipeMatchInput(RotaryRecipe recipe, IMixedIngredients input) {
         return recipe.getFluidInput().test(input.getFirstNonEmpty(IngredientComponents.FLUIDSTACK))
-                || ((ChemicalStackIngredient) recipe.getGasInput()).test(input.getFirstNonEmpty(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK));
+                || ((ChemicalStackIngredient) recipe.getChemicalInput()).test(input.getFirstNonEmpty(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK));
     }
 }

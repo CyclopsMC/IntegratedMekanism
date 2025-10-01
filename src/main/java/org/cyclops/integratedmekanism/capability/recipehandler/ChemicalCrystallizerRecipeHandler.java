@@ -1,9 +1,7 @@
 package org.cyclops.integratedmekanism.capability.recipehandler;
 
 import com.google.common.collect.Lists;
-import mekanism.api.chemical.merged.BoxedChemicalStack;
 import mekanism.api.recipes.ChemicalCrystallizerRecipe;
-import mekanism.api.recipes.ingredients.ChemicalStackIngredient;
 import mekanism.common.recipe.MekanismRecipeType;
 import net.minecraft.world.level.Level;
 import org.cyclops.commoncapabilities.IngredientComponents;
@@ -49,12 +47,12 @@ public class ChemicalCrystallizerRecipeHandler extends MekanismRecipeHandler<Che
     @Override
     protected void recipeToOutputsSimulated(ChemicalCrystallizerRecipe recipe, IMixedIngredients input, Map<IngredientComponent<?, ?>, List<?>> outputs) {
         outputs.put(IngredientComponents.ITEMSTACK, Lists.newArrayList(
-                recipe.getOutput(BoxedChemicalStack.box(input.getInstances(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK).get(0)))
+                recipe.getOutput(input.getInstances(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK).get(0))
         ));
     }
 
     @Override
     protected boolean doesRecipeMatchInput(ChemicalCrystallizerRecipe recipe, IMixedIngredients input) {
-        return ((ChemicalStackIngredient) recipe.getInput()).test(input.getInstances(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK).get(0));
+        return recipe.getInput().test(input.getInstances(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK).get(0));
     }
 }

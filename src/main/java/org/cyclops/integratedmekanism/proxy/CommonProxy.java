@@ -26,9 +26,9 @@ public class CommonProxy extends CommonProxyComponent {
         super.registerPacketHandlers(packetHandler);
 
         // Register packets.
-        packetHandler.register(LogicProgrammerValueTypeRecipeChemicalValueChangedPacket.class);
-        packetHandler.register(LogicProgrammerValueTypeRecipeChemicalSlotPropertiesChangedPacket.class);
-        packetHandler.register(CPacketValueTypeRecipeChemicalLPElementSetRecipe.class);
+        packetHandler.register(LogicProgrammerValueTypeRecipeChemicalValueChangedPacket.class, LogicProgrammerValueTypeRecipeChemicalValueChangedPacket.ID, LogicProgrammerValueTypeRecipeChemicalValueChangedPacket.CODEC);
+        packetHandler.register(LogicProgrammerValueTypeRecipeChemicalSlotPropertiesChangedPacket.class, LogicProgrammerValueTypeRecipeChemicalSlotPropertiesChangedPacket.ID, LogicProgrammerValueTypeRecipeChemicalSlotPropertiesChangedPacket.CODEC);
+        packetHandler.register(CPacketValueTypeRecipeChemicalLPElementSetRecipe.class, CPacketValueTypeRecipeChemicalLPElementSetRecipe.ID, CPacketValueTypeRecipeChemicalLPElementSetRecipe.CODEC);
 
         IntegratedDynamics.clog("Registered packet handler.");
     }

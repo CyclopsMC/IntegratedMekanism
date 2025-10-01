@@ -3,8 +3,7 @@ package org.cyclops.integratedmekanism.test;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import mekanism.api.chemical.ChemicalStack;
-import mekanism.api.chemical.gas.GasStack;
-import mekanism.common.registries.MekanismGases;
+import mekanism.common.registries.MekanismChemicals;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -61,22 +60,22 @@ public class TestIngredientsOperators {
 
         iChemicals = new DummyVariableIngredients(ValueObjectTypeIngredients.ValueIngredients.of(
                 MixedIngredients.ofInstances(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK, Lists.newArrayList(
-                        new GasStack(MekanismGases.STEAM, 1000),
-                        new GasStack(MekanismGases.HYDROGEN, 123))
+                        new ChemicalStack(MekanismChemicals.STEAM, 1000),
+                        new ChemicalStack(MekanismChemicals.HYDROGEN, 123))
                 )));
         lChemicals = new DummyVariable<>(ValueTypes.LIST, ValueTypeList.ValueList.ofAll(
-                ValueObjectTypeChemicalStack.ValueChemicalStack.of(new GasStack(MekanismGases.STEAM, 1000)),
-                ValueObjectTypeChemicalStack.ValueChemicalStack.of(new GasStack(MekanismGases.HYDROGEN, 123))
+                ValueObjectTypeChemicalStack.ValueChemicalStack.of(new ChemicalStack(MekanismChemicals.STEAM, 1000)),
+                ValueObjectTypeChemicalStack.ValueChemicalStack.of(new ChemicalStack(MekanismChemicals.HYDROGEN, 123))
         ));
 
         Map<IngredientComponent<?, ?>, List<?>> ingredients = Maps.newIdentityHashMap();
         ingredients.put(IngredientComponent.ENERGY, Lists.newArrayList(777L));
-        ingredients.put(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK, Lists.newArrayList(new GasStack(MekanismGases.HYDROGEN, 125)));
+        ingredients.put(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK, Lists.newArrayList(new ChemicalStack(MekanismChemicals.HYDROGEN, 125)));
         ingredients.put(IngredientComponent.ITEMSTACK, Lists.newArrayList(new ItemStack(Items.OAK_BOAT), new ItemStack(Item.byBlock(Blocks.STONE))));
         inputIngredients = new MixedIngredients(ingredients);
         iMix = new DummyVariableIngredients(ValueObjectTypeIngredients.ValueIngredients.of(inputIngredients));
 
-        iChemical = new DummyVariable<>(MekanismValueTypes.OBJECT_CHEMICALSTACK, ValueObjectTypeChemicalStack.ValueChemicalStack.of(new GasStack(MekanismGases.HYDROGEN, 123)));
+        iChemical = new DummyVariable<>(MekanismValueTypes.OBJECT_CHEMICALSTACK, ValueObjectTypeChemicalStack.ValueChemicalStack.of(new ChemicalStack(MekanismChemicals.HYDROGEN, 123)));
     }
 
     /**
@@ -90,8 +89,8 @@ public class TestIngredientsOperators {
         TestHelpers.assertEqual(((ValueTypeList.ValueList) res1).getRawValue().getLength(), 2, "chemicals(chemicals, 0).size = 2");
         TestHelpers.assertEqual(res1,
                 ValueTypeList.ValueList.ofList(MekanismValueTypes.OBJECT_CHEMICALSTACK, Lists.newArrayList(
-                        ValueObjectTypeChemicalStack.ValueChemicalStack.of(new GasStack(MekanismGases.STEAM, 1000)),
-                        ValueObjectTypeChemicalStack.ValueChemicalStack.of(new GasStack(MekanismGases.HYDROGEN, 123))
+                        ValueObjectTypeChemicalStack.ValueChemicalStack.of(new ChemicalStack(MekanismChemicals.STEAM, 1000)),
+                        ValueObjectTypeChemicalStack.ValueChemicalStack.of(new ChemicalStack(MekanismChemicals.HYDROGEN, 123))
                 )), "chemicals(chemicals) = lava, water");
     }
 
@@ -119,9 +118,9 @@ public class TestIngredientsOperators {
         IValue res1 = MekanismOperators.INGREDIENTS_WITH_CHEMICAL.evaluate(iMix, i0, iChemical);
         Asserts.check(res1 instanceof ValueObjectTypeIngredients.ValueIngredients, "result is an ingredient");
         IMixedIngredients outputIngredients1 = ((ValueObjectTypeIngredients.ValueIngredients) res1).getRawValue().get();
-        List<ChemicalStack<?>> outputList1 = outputIngredients1.getInstances(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK);
+        List<ChemicalStack> outputList1 = outputIngredients1.getInstances(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK);
         TestHelpers.assertEqual(outputList1.size(), 1, "with_chemicals(mix, 0, chemicals)[0]size = 1");
-        TestHelpers.assertEqual(outputList1.get(0), new GasStack(MekanismGases.HYDROGEN, 123),
+        TestHelpers.assertEqual(outputList1.get(0), new ChemicalStack(MekanismChemicals.HYDROGEN, 123),
                 "with_chemicals(mix, 0, chemicals)[0] = chemicals[0]");
 
         TestHelpers.assertEqual(outputIngredients1.getInstances(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK).size(), inputIngredients.getInstances(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK).size(), "Chemicals size remains the same");
@@ -132,13 +131,13 @@ public class TestIngredientsOperators {
 
         IValue res2 = MekanismOperators.INGREDIENTS_WITH_CHEMICAL.evaluate(new IVariable[]{iMix, i2, iChemical});
         IMixedIngredients outputIngredients2 = ((ValueObjectTypeIngredients.ValueIngredients) res2).getRawValue().get();
-        List<ChemicalStack<?>> outputList2 = outputIngredients2.getInstances(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK);
+        List<ChemicalStack> outputList2 = outputIngredients2.getInstances(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK);
         TestHelpers.assertEqual(outputList2.size(), 3, "with_chemicals(mix, 3, chemicals)[0]size = 2");
-        TestHelpers.assertEqual(outputList2.get(0), new GasStack(MekanismGases.HYDROGEN, 125),
+        TestHelpers.assertEqual(outputList2.get(0), new ChemicalStack(MekanismChemicals.HYDROGEN, 125),
                 "with_chemicals(mix, 2, chemicals)[0] = chemicals[0]");
-        TestHelpers.assertEqual(outputList2.get(1), GasStack.EMPTY,
+        TestHelpers.assertEqual(outputList2.get(1), ChemicalStack.EMPTY,
                 "with_chemicals(mix, 2, chemicals)[1] = chemicals[1]");
-        TestHelpers.assertEqual(outputList2.get(2), new GasStack(MekanismGases.HYDROGEN, 123),
+        TestHelpers.assertEqual(outputList2.get(2), new ChemicalStack(MekanismChemicals.HYDROGEN, 123),
                 "with_chemicals(mix, 2, chemicals)[2] = chemicals[2]");
 
         TestHelpers.assertNonEqual(outputIngredients2.getInstances(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK).size(), inputIngredients.getInstances(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK).size(), "Chemicals size changes");
@@ -171,11 +170,11 @@ public class TestIngredientsOperators {
         IValue res1 = MekanismOperators.INGREDIENTS_WITH_CHEMICALS.evaluate(new IVariable[]{iMix, lChemicals});
         Asserts.check(res1 instanceof ValueObjectTypeIngredients.ValueIngredients, "result is an ingredient");
         IMixedIngredients outputIngredients1 = ((ValueObjectTypeIngredients.ValueIngredients) res1).getRawValue().get();
-        List<ChemicalStack<?>> outputList1 = outputIngredients1.getInstances(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK);
+        List<ChemicalStack> outputList1 = outputIngredients1.getInstances(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK);
         TestHelpers.assertEqual(outputList1.size(), 2, "with_chemicals(mix, chemicals)[0]size = 2");
-        TestHelpers.assertEqual(outputList1.get(0), new GasStack(MekanismGases.STEAM, 1000),
+        TestHelpers.assertEqual(outputList1.get(0), new ChemicalStack(MekanismChemicals.STEAM, 1000),
                 "with_chemicals(mix, chemicals)[0] = chemicals[0]");
-        TestHelpers.assertEqual(outputList1.get(1), new GasStack(MekanismGases.HYDROGEN, 123),
+        TestHelpers.assertEqual(outputList1.get(1), new ChemicalStack(MekanismChemicals.HYDROGEN, 123),
                 "with_chemicals(mix, chemicals)[1] = chemicals[1]");
 
         TestHelpers.assertEqual(outputIngredients1.getInstances(IngredientComponent.ITEMSTACK), inputIngredients.getInstances(IngredientComponent.ITEMSTACK), "Item remains the same");

@@ -25,7 +25,7 @@ public final class ChemicalMatch {
      */
     public static final int EXACT = TYPE | AMOUNT;
 
-    public static boolean areStacksEqual(ChemicalStack<?> a, ChemicalStack<?> b, int matchFlags) {
+    public static boolean areStacksEqual(ChemicalStack a, ChemicalStack b, int matchFlags) {
         if (matchFlags == ANY) {
             return true;
         }
@@ -33,7 +33,7 @@ public final class ChemicalMatch {
         boolean amount = (matchFlags & AMOUNT) > 0;
         return a == b || a.isEmpty() && b.isEmpty() ||
                 (!a.isEmpty() && !b.isEmpty()
-                        && (!fluid || a.getType() == b.getType())
+                        && (!fluid || a.getChemical() == b.getChemical())
                         && (!amount || a.getAmount() == b.getAmount()));
     }
 

@@ -20,7 +20,7 @@ import java.util.function.Supplier;
  */
 public class ItemToItemRecipeHandler extends MekanismRecipeHandler<ItemStackToItemStackRecipe> {
 
-    protected ItemToItemRecipeHandler(IMekanismRecipeTypeProvider<ItemStackToItemStackRecipe, ?> recipeType, Supplier<Level> levelSupplier) {
+    protected ItemToItemRecipeHandler(IMekanismRecipeTypeProvider<?, ItemStackToItemStackRecipe, ?> recipeType, Supplier<Level> levelSupplier) {
         super(recipeType, levelSupplier, Set.of(IngredientComponents.ITEMSTACK), Set.of(IngredientComponents.ITEMSTACK));
     }
 

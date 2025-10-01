@@ -6,5 +6,5 @@ import org.cyclops.integrateddynamics.api.network.IPositionedAddonsNetworkIngred
 /**
  * @author rubensworks
  */
-public interface IChemicalNetwork extends IPositionedAddonsNetworkIngredients<ChemicalStack<?>, Integer> {
+public interface IChemicalNetwork extends IPositionedAddonsNetworkIngredients<ChemicalStack, Integer> {
 }

@@ -1,89 +1,85 @@
 package org.cyclops.integratedmekanism.modcompat.integratedtunnels.part;
 
 import mekanism.api.Action;
-import mekanism.api.chemical.Chemical;
 import mekanism.api.chemical.ChemicalStack;
 import mekanism.api.chemical.IChemicalHandler;
-import net.minecraftforge.common.capabilities.Capability;
+import mekanism.common.capabilities.Capabilities;
 import org.cyclops.integratedmekanism.ingredient.MekanismIngredientComponents;
 import org.cyclops.integratedmekanism.network.IChemicalNetwork;
 import org.cyclops.integratedtunnels.core.part.IPartTypeInterfacePositionedAddon;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * @author rubensworks
  */
-public class ChemicalHandlerPartState<CHEMICAL extends Chemical<CHEMICAL>, STACK extends ChemicalStack<CHEMICAL>> implements IChemicalHandler<CHEMICAL, STACK> {
+public class ChemicalHandlerPartState implements IChemicalHandler {
 
-    private final IPartTypeInterfacePositionedAddon.IState<IChemicalNetwork, IChemicalHandler<?, ?>, ?, ?> state;
-    private final Capability<? extends IChemicalHandler<?, ? extends STACK>> handlerCapability;
+    private final IPartTypeInterfacePositionedAddon.IState<IChemicalNetwork, IChemicalHandler, ?, ?> state;
 
-    public ChemicalHandlerPartState(IPartTypeInterfacePositionedAddon.IState<IChemicalNetwork, IChemicalHandler<?, ?>, ?, ?> state, Capability<? extends IChemicalHandler<?, ? extends STACK>> handlerCapability) {
+    public ChemicalHandlerPartState(IPartTypeInterfacePositionedAddon.IState<IChemicalNetwork, IChemicalHandler, ?, ?> state) {
         this.state = state;
-        this.handlerCapability = handlerCapability;
     }
 
-    protected IChemicalHandler<CHEMICAL, STACK> getChemicalHandler() {
-        return (IChemicalHandler<CHEMICAL, STACK>) state.getPositionedAddonsNetwork().getChannelExternal(this.handlerCapability, state.getChannel());
+    protected IChemicalHandler getChemicalHandler() {
+        return (IChemicalHandler) state.getPositionedAddonsNetwork().getChannelExternal(Capabilities.CHEMICAL.block(), state.getChannel());
     }
 
     @Override
-    public int getTanks() {
+    public int getChemicalTanks() {
         if (!state.isNetworkAndPositionValid()) {
             return 0;
         }
         state.disablePosition();
-        int ret = getChemicalHandler().getTanks();
+        int ret = getChemicalHandler().getChemicalTanks();
         state.enablePosition();
         return ret;
     }
 
     @Override
-    public STACK getChemicalInTank(int tank) {
+    public ChemicalStack getChemicalInTank(int tank) {
         if (!state.isNetworkAndPositionValid()) {
             return getEmptyStack();
         }
         state.disablePosition();
-        STACK ret = getChemicalHandler().getChemicalInTank(tank);
+        ChemicalStack ret = getChemicalHandler().getChemicalInTank(tank);
         state.enablePosition();
         return ret;
     }
 
     @Override
-    public long getTankCapacity(int tank) {
+    public long getChemicalTankCapacity(int tank) {
         if (!state.isNetworkAndPositionValid()) {
             return 0;
         }
         state.disablePosition();
-        long ret = getChemicalHandler().getTankCapacity(tank);
+        long ret = getChemicalHandler().getChemicalTankCapacity(tank);
         state.enablePosition();
         return ret;
     }
 
     @Override
-    public STACK extractChemical(int tank, long l, Action action) {
+    public ChemicalStack extractChemical(int tank, long l, Action action) {
         if (!state.isNetworkAndPositionValid()) {
             return getEmptyStack();
         }
         state.disablePosition();
-        STACK ret = getChemicalHandler().extractChemical(tank, l, action);
+        ChemicalStack ret = getChemicalHandler().extractChemical(tank, l, action);
         state.enablePosition();
         return ret;
     }
 
     @Override
-    public STACK insertChemical(int tank, STACK stack, Action action) {
+    public ChemicalStack insertChemical(int tank, ChemicalStack stack, Action action) {
         if (!state.isNetworkAndPositionValid()) {
             return stack;
         }
         state.disablePosition();
-        STACK ret = getChemicalHandler().insertChemical(tank, stack, action);
+        ChemicalStack ret = getChemicalHandler().insertChemical(tank, stack, action);
         state.enablePosition();
         return ret;
     }
 
     @Override
-    public boolean isValid(int tank, STACK stack) {
+    public boolean isValid(int tank, ChemicalStack stack) {
         if (!state.isNetworkAndPositionValid()) {
             return false;
         }
@@ -94,7 +90,7 @@ public class ChemicalHandlerPartState<CHEMICAL extends Chemical<CHEMICAL>, STACK
     }
 
     @Override
-    public void setChemicalInTank(int tank, STACK stack) {
+    public void setChemicalInTank(int tank, ChemicalStack stack) {
         if (state.isNetworkAndPositionValid()) {
             state.disablePosition();
             getChemicalHandler().setChemicalInTank(tank, stack);
@@ -103,40 +99,39 @@ public class ChemicalHandlerPartState<CHEMICAL extends Chemical<CHEMICAL>, STACK
     }
 
     @Override
-    public STACK insertChemical(STACK stack, Action action) {
+    public ChemicalStack insertChemical(ChemicalStack stack, Action action) {
         if (!state.isNetworkAndPositionValid()) {
             return stack;
         }
         state.disablePosition();
-        STACK ret = getChemicalHandler().insertChemical(stack, action);
+        ChemicalStack ret = getChemicalHandler().insertChemical(stack, action);
         state.enablePosition();
         return ret;
     }
 
     @Override
-    public STACK extractChemical(long amount, Action action) {
+    public ChemicalStack extractChemical(long amount, Action action) {
         if (!state.isNetworkAndPositionValid()) {
             return getEmptyStack();
         }
         state.disablePosition();
-        STACK ret = getChemicalHandler().extractChemical(amount, action);
+        ChemicalStack ret = getChemicalHandler().extractChemical(amount, action);
         state.enablePosition();
         return ret;
     }
 
     @Override
-    public STACK extractChemical(STACK stack, Action action) {
+    public ChemicalStack extractChemical(ChemicalStack stack, Action action) {
         if (!state.isNetworkAndPositionValid()) {
             return getEmptyStack();
         }
         state.disablePosition();
-        STACK ret = getChemicalHandler().extractChemical(stack, action);
+        ChemicalStack ret = getChemicalHandler().extractChemical(stack, action);
         state.enablePosition();
         return ret;
     }
 
-    @Override
-    public @NotNull STACK getEmptyStack() {
-        return (STACK) MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK.getMatcher().getEmptyInstance();
+    public static ChemicalStack getEmptyStack() {
+        return MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK.getMatcher().getEmptyInstance();
     }
 }

@@ -20,7 +20,7 @@ import java.util.function.Supplier;
  */
 public class FluidToFluidRecipeHandler extends MekanismRecipeHandler<FluidToFluidRecipe> {
 
-    protected FluidToFluidRecipeHandler(IMekanismRecipeTypeProvider<? extends FluidToFluidRecipe, ?> recipeType, Supplier<Level> levelSupplier) {
+    protected FluidToFluidRecipeHandler(IMekanismRecipeTypeProvider<?, ? extends FluidToFluidRecipe, ?> recipeType, Supplier<Level> levelSupplier) {
         super(recipeType, levelSupplier, Set.of(IngredientComponents.FLUIDSTACK), Set.of(IngredientComponents.FLUIDSTACK));
     }
 

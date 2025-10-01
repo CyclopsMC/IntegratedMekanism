@@ -1,8 +1,9 @@
 package org.cyclops.integratedmekanism.modcompat.integratedtunnels;
 
 import com.google.common.collect.Lists;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.NewRegistryEvent;
+import net.neoforged.neoforge.registries.NewRegistryEvent;
+import org.cyclops.cyclopscore.init.IModBase;
+import org.cyclops.cyclopscore.init.ModBase;
 import org.cyclops.cyclopscore.modcompat.ICompatInitializer;
 import org.cyclops.integrateddynamics.core.event.IntegratedDynamicsSetupEvent;
 import org.cyclops.integrateddynamics.core.part.aspect.AspectRegistry;
@@ -16,8 +17,13 @@ import org.cyclops.integratedmekanism.modcompat.integratedtunnels.part.PartTypes
 public class ModCompatInitializerIntegratedTunnels implements ICompatInitializer {
     @Override
     public void initialize() {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onRegistriesCreate);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onSetup);
+
+    }
+
+    @Override
+    public void initialize(IModBase mod) {
+        ((ModBase<?>) mod).getModEventBus().addListener(this::onRegistriesCreate);
+        ((ModBase<?>) mod).getModEventBus().addListener(this::onSetup);
     }
 
     public void onRegistriesCreate(NewRegistryEvent event) {

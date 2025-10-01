@@ -1,50 +1,27 @@
 package org.cyclops.integratedmekanism.ingredient;
 
-import mekanism.api.chemical.Chemical;
+import com.google.gson.JsonParseException;
 import mekanism.api.chemical.ChemicalStack;
-import mekanism.api.chemical.gas.GasStack;
-import mekanism.api.chemical.infuse.InfusionStack;
-import mekanism.api.chemical.pigment.PigmentStack;
-import mekanism.api.chemical.slurry.SlurryStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.IntTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.registries.ForgeRegistry;
-import net.minecraftforge.registries.RegistryManager;
 import org.cyclops.commoncapabilities.api.ingredient.IIngredientSerializer;
 
 /**
  * Serializer for ChemicalStacks.
  * @author rubensworks
  */
-public class IngredientSerializerChemicalStack implements IIngredientSerializer<ChemicalStack<?>, Integer> {
+public class IngredientSerializerChemicalStack implements IIngredientSerializer<ChemicalStack, Integer> {
 
     @Override
-    public Tag serializeInstance(ChemicalStack<?> chemicalStack) {
-        CompoundTag tag = new CompoundTag();
-        if (chemicalStack instanceof GasStack) {
-            tag.putString("chemical", "mekanism:gas");
-        } else if (chemicalStack instanceof InfusionStack) {
-            tag.putString("chemical", "mekanism:infuse_type");
-        } else if (chemicalStack instanceof PigmentStack) {
-            tag.putString("chemical", "mekanism:pigment");
-        } else if (chemicalStack instanceof SlurryStack) {
-            tag.putString("chemical", "mekanism:slurry");
-        }
-        tag.putString("type", chemicalStack.getType().getRegistryName().toString());
-        tag.putLong("amount", chemicalStack.getAmount());
-        return tag;
+    public Tag serializeInstance(HolderLookup.Provider lookupProvider, ChemicalStack chemicalStack) {
+        return ChemicalStack.OPTIONAL_CODEC.encodeStart(lookupProvider.createSerializationContext(NbtOps.INSTANCE), chemicalStack).getOrThrow(JsonParseException::new);
     }
 
     @Override
-    public ChemicalStack<?> deserializeInstance(Tag tag) throws IllegalArgumentException {
-        if (!(tag instanceof CompoundTag compoundTag)) {
-            throw new IllegalArgumentException("This deserializer only accepts CompoundTag");
-        }
-        ForgeRegistry<Object> chemicalRegistry = RegistryManager.ACTIVE.getRegistry(ResourceLocation.tryParse(compoundTag.getString("chemical")));
-        Chemical<?> type = (Chemical<?>) chemicalRegistry.getValue(ResourceLocation.tryParse(compoundTag.getString("type")));
-        return type.getStack(compoundTag.getLong("amount"));
+    public ChemicalStack deserializeInstance(HolderLookup.Provider lookupProvider, Tag tag) throws IllegalArgumentException {
+        return ChemicalStack.OPTIONAL_CODEC.parse(lookupProvider.createSerializationContext(NbtOps.INSTANCE), tag).getOrThrow(JsonParseException::new);
     }
 
     @Override

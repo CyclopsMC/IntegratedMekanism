@@ -1,15 +1,16 @@
 package org.cyclops.integratedmekanism.part.aspect.listproxy;
 
 import mekanism.api.chemical.IChemicalHandler;
+import mekanism.common.capabilities.Capabilities;
 import net.minecraft.core.Direction;
-import net.minecraftforge.common.util.LazyOptional;
 import org.cyclops.cyclopscore.datastructure.DimPos;
+import org.cyclops.cyclopscore.helper.IModHelpersNeoForge;
 import org.cyclops.cyclopscore.persist.nbt.INBTProvider;
-import org.cyclops.integrateddynamics.api.part.PartPos;
 import org.cyclops.integrateddynamics.core.evaluate.variable.ValueTypeListProxyPositioned;
 import org.cyclops.integrateddynamics.core.evaluate.variable.ValueTypeLong;
 import org.cyclops.integrateddynamics.core.evaluate.variable.ValueTypes;
-import org.cyclops.integratedmekanism.core.CapabilityHelpers;
+
+import java.util.Optional;
 
 /**
  * A list proxy for a tank's capacities at a certain position.
@@ -24,21 +25,21 @@ public class ValueTypeListProxyPositionedChemicalTankCapacities extends ValueTyp
         this(null, null);
     }
 
-    protected LazyOptional<IChemicalHandler<?, ?>> getTank() {
-        return CapabilityHelpers.getFirstOf(PartPos.of(getPos(), getSide()), CapabilityHelpers.CHEMICAL_CAPABILITIES);
+    protected Optional<IChemicalHandler> getTank() {
+        return IModHelpersNeoForge.get().getCapabilityHelpers().getCapability(this.getPos(), this.getSide(), Capabilities.CHEMICAL.block());
     }
 
     @Override
     public int getLength() {
         return getTank()
-                .map(IChemicalHandler::getTanks)
+                .map(IChemicalHandler::getChemicalTanks)
                 .orElse(0);
     }
 
     @Override
     public ValueTypeLong.ValueLong get(int index) {
         return ValueTypeLong.ValueLong.of(getTank()
-                .map(chemicalHandler -> chemicalHandler.getTankCapacity(index))
+                .map(chemicalHandler -> chemicalHandler.getChemicalTankCapacity(index))
                 .orElse(0L));
     }
 }

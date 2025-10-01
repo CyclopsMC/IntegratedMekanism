@@ -5,10 +5,13 @@
       "item": "integratedmekanism:part_interface_chemical"
     },
     {
-      "item": "integrateddynamics:variable_transformer_output"
+      "item": "integratedmekanism:part_interface_chemical"
+    },
+    {
+      "item": "minecraft:hopper"
     }
   ],
   "result": {
-    "item": "integratedmekanism:part_exporter_chemical"
+    "id": "integratedmekanism:part_interface_filter_chemical"
   }
 }

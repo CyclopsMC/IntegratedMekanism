@@ -5,11 +5,12 @@ import mekanism.api.chemical.ChemicalStack;
 import mekanism.api.recipes.MekanismRecipe;
 import mekanism.api.recipes.ingredients.ChemicalStackIngredient;
 import mekanism.api.recipes.ingredients.InputIngredient;
+import mekanism.api.recipes.ingredients.ItemStackIngredient;
 import mekanism.common.recipe.IMekanismRecipeTypeProvider;
-import mekanism.common.recipe.ingredient.creator.ItemStackIngredientCreator;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 import org.cyclops.commoncapabilities.IngredientComponents;
 import org.cyclops.commoncapabilities.api.capability.fluidhandler.FluidMatch;
 import org.cyclops.commoncapabilities.api.capability.itemhandler.ItemMatch;
@@ -32,23 +33,23 @@ import java.util.stream.Collectors;
 /**
  * @author rubensworks
  */
-public abstract class MekanismRecipeHandler<R extends MekanismRecipe> implements IRecipeHandler {
+public abstract class MekanismRecipeHandler<R extends MekanismRecipe<?>> implements IRecipeHandler {
 
-    private final IMekanismRecipeTypeProvider<? extends R, ?> recipeType;
+    private final IMekanismRecipeTypeProvider<?, ? extends R, ?> recipeType;
     private final Supplier<Level> levelSupplier;
     private final Set<IngredientComponent<?, ?>> inputComponents;
     private final Set<IngredientComponent<?, ?>> outputComponents;
 
     public static Map<Class<?>, Collection<IRecipeDefinition>> CACHED_RECIPES = Maps.newHashMap();
 
-    protected MekanismRecipeHandler(IMekanismRecipeTypeProvider<? extends R, ?> recipeType, Supplier<Level> levelSupplier, Set<IngredientComponent<?, ?>> inputComponents, Set<IngredientComponent<?, ?>> outputComponents) {
+    protected MekanismRecipeHandler(IMekanismRecipeTypeProvider<?, ? extends R, ?> recipeType, Supplier<Level> levelSupplier, Set<IngredientComponent<?, ?>> inputComponents, Set<IngredientComponent<?, ?>> outputComponents) {
         this.recipeType = recipeType;
         this.levelSupplier = levelSupplier;
         this.inputComponents = inputComponents;
         this.outputComponents = outputComponents;
     }
 
-    public IMekanismRecipeTypeProvider<? extends R,?> getRecipeType() {
+    public IMekanismRecipeTypeProvider<?, ? extends R,?> getRecipeType() {
         return recipeType;
     }
 
@@ -78,18 +79,18 @@ public abstract class MekanismRecipeHandler<R extends MekanismRecipe> implements
 
     public Collection<IRecipeDefinition> getRecipesUncached() {
         return recipeType.getRecipes(getLevel()).stream()
-                .filter(recipe -> isValid(recipe))
-                .<IRecipeDefinition>map(recipe -> {
+                .filter(this::isValid)
+                .<IRecipeDefinition>map(recipeHolder -> {
                     Map<IngredientComponent<?, ?>, List<IPrototypedIngredientAlternatives<?, ?>>> inputs = Maps.newIdentityHashMap();
-                    recipeToInputs(recipe, inputs);
+                    recipeToInputs(recipeHolder.value(), inputs);
                     Map<IngredientComponent<?, ?>, List<?>> outputs = Maps.newIdentityHashMap();
-                    recipeToOutputs(recipe, outputs);
+                    recipeToOutputs(recipeHolder.value(), outputs);
                     return new RecipeDefinition(inputs, new MixedIngredients(outputs));
                 })
                 .toList();
     }
 
-    protected boolean isValid(R recipe) {
+    protected boolean isValid(RecipeHolder<? extends R> recipe) {
         return true;
     }
 
@@ -120,15 +121,15 @@ public abstract class MekanismRecipeHandler<R extends MekanismRecipe> implements
 
     protected abstract boolean doesRecipeMatchInput(R recipe, IMixedIngredients input);
 
-    public static List<IPrototypedIngredient<ChemicalStack<?>, Integer>> getPrototypesFromChemicalIngredient(ChemicalStackIngredient<?, ?> ingredient) {
-        return ((List<ChemicalStack<?>>) ingredient.getRepresentations()).stream()
+    public static List<IPrototypedIngredient<ChemicalStack, Integer>> getPrototypesFromChemicalIngredient(ChemicalStackIngredient ingredient) {
+        return ingredient.getRepresentations().stream()
                 .map(stack -> new PrototypedIngredient<>(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK, stack, ItemMatch.ITEM))
                 .collect(Collectors.toList());
     }
 
     public static List<IPrototypedIngredient<ItemStack, Integer>> getPrototypesFromItemIngredient(InputIngredient<ItemStack> ingredient) {
-        if (ingredient instanceof ItemStackIngredientCreator.SingleItemStackIngredient ingredientCast) {
-            return VanillaRecipeTypeRecipeHandler.getPrototypesFromIngredient(ingredientCast.getInputRaw());
+        if (ingredient instanceof ItemStackIngredient ingredientCast) {
+            return VanillaRecipeTypeRecipeHandler.getPrototypesFromIngredient(ingredientCast.ingredient());
         }
         return ingredient.getRepresentations().stream()
                 .map(stack -> new PrototypedIngredient<>(IngredientComponents.ITEMSTACK, stack, ItemMatch.ITEM))
