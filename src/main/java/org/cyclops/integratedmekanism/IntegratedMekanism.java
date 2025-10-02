@@ -40,9 +40,9 @@ import org.cyclops.integratedmekanism.part.PartTypesMekanism;
 import org.cyclops.integratedmekanism.part.aspect.listproxy.MekanismValueTypeListProxyFactories;
 import org.cyclops.integratedmekanism.proxy.ClientProxy;
 import org.cyclops.integratedmekanism.proxy.CommonProxy;
-import org.cyclops.integratedmekanism.test.TestChemicalStackOperators;
-import org.cyclops.integratedmekanism.test.TestIngredientsOperators;
-import org.cyclops.integratedmekanism.test.TestItemStackOperators;
+import org.cyclops.integratedmekanism.gametest.integration.TestChemicalStackOperators;
+import org.cyclops.integratedmekanism.gametest.integration.TestIngredientsOperators;
+import org.cyclops.integratedmekanism.gametest.integration.TestItemStackOperators;
 import org.cyclops.integratedmekanism.value.MekanismValueTypes;
 
 import java.util.List;

@@ -5,7 +5,7 @@ import org.cyclops.cyclopscore.init.ModBase;
 import org.cyclops.cyclopscore.modcompat.ICompatInitializer;
 import org.cyclops.integrateddynamics.command.CommandTest;
 import org.cyclops.integratedmekanism.modcompat.integratedscripting.translation.MekanismValueTranslators;
-import org.cyclops.integratedmekanism.test.TestValueTranslators;
+import org.cyclops.integratedmekanism.gametest.integration.TestValueTranslators;
 import org.cyclops.integratedscripting.api.evaluate.translation.ValueTranslatorRegisterEvent;
 
 import java.util.List;

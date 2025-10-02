@@ -1,4 +1,4 @@
-package org.cyclops.integratedmekanism.test;
+package org.cyclops.integratedmekanism.gametest.integration;
 
 import org.cyclops.integrateddynamics.api.evaluate.variable.IValue;
 import org.cyclops.integrateddynamics.api.evaluate.variable.IValueType;

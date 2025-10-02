@@ -1,4 +1,4 @@
-package org.cyclops.integratedmekanism.test;
+package org.cyclops.integratedmekanism.gametest.integration;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;

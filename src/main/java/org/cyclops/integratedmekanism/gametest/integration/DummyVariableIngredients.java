@@ -1,4 +1,4 @@
-package org.cyclops.integratedmekanism.test;
+package org.cyclops.integratedmekanism.gametest.integration;
 
 import org.cyclops.integrateddynamics.core.evaluate.variable.ValueObjectTypeIngredients;
 import org.cyclops.integrateddynamics.core.evaluate.variable.ValueTypes;

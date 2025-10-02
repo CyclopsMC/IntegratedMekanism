@@ -1,4 +1,4 @@
-package org.cyclops.integratedmekanism.test;
+package org.cyclops.integratedmekanism.gametest.integration;
 
 import com.google.common.collect.Sets;
 import mekanism.api.chemical.ChemicalStack;

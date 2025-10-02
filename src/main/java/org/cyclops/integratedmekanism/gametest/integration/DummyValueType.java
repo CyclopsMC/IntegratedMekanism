@@ -1,4 +1,4 @@
-package org.cyclops.integratedmekanism.test;
+package org.cyclops.integratedmekanism.gametest.integration;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.EndTag;

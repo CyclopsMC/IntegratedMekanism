@@ -1,4 +1,4 @@
-package org.cyclops.integratedmekanism.test;
+package org.cyclops.integratedmekanism.gametest.integration;
 
 import mekanism.api.Action;
 import mekanism.api.chemical.ChemicalStack;

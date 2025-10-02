@@ -1,4 +1,4 @@
-package org.cyclops.integratedmekanism.test;
+package org.cyclops.integratedmekanism.gametest.integration;
 
 import mekanism.api.chemical.ChemicalStack;
 import mekanism.api.text.EnumColor;
@@ -620,8 +620,8 @@ public class TestChemicalStackOperators {
         Asserts.check(res1 instanceof ValueTypeList.ValueList<?,?>, "result is a list");
         IValueTypeListProxy<ValueTypeString, ValueTypeString.ValueString> list = ((ValueTypeList.ValueList<ValueTypeString, ValueTypeString.ValueString>) res1).getRawValue();
         TestHelpers.assertEqual(list.getLength(), 2, "tag(steam).length = 2");
-        TestHelpers.assertEqual(list.get(0).getRawValue(), "mekanism:water_vapor", "tag(steam)[0] = mekanism:water_vapor");
-        TestHelpers.assertEqual(list.get(1).getRawValue(), "mekanism:gaseous", "tag(steam)[1] = mekanism:gaseous");
+        TestHelpers.assertEqual(list.get(0).getRawValue(), "mekanism:gaseous", "tag(steam)[0] = mekanism:gaseous");
+        TestHelpers.assertEqual(list.get(1).getRawValue(), "mekanism:water_vapor", "tag(steam)[1] = mekanism:water_vapor");
 
         IValue res2 = MekanismOperators.OBJECT_CHEMICALSTACK_TAG.evaluate(eHydrogen);
         TestHelpers.assertEqual(((ValueTypeList.ValueList<?, ?>) res2).getRawValue().getLength(), 1, "tag(hydrogen).length = 1");

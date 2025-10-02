@@ -292,7 +292,9 @@ public class MekanismOperators {
                 if(!a.getRawValue().isEmpty()) {
                     a.getRawValue()
                             .getTags()
-                            .forEach((owningTag) -> builder.add(ValueTypeString.ValueString.of(owningTag.location().toString())));
+                            .map(owningTag -> owningTag.location().toString())
+                            .sorted()
+                            .forEach((value) -> builder.add(ValueTypeString.ValueString.of(value)));
                 }
                 return ValueTypeList.ValueList.ofList(ValueTypes.STRING, builder.build());
             }).build());
