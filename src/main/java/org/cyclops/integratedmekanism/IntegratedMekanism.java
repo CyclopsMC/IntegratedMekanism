@@ -22,10 +22,12 @@ import org.cyclops.cyclopscore.proxy.ICommonProxy;
 import org.cyclops.integrateddynamics.IntegratedDynamics;
 import org.cyclops.integrateddynamics.command.CommandTest;
 import org.cyclops.integrateddynamics.core.event.IntegratedDynamicsSetupEvent;
+import org.cyclops.integrateddynamics.core.ingredient.IngredientComponentHandlers;
 import org.cyclops.integrateddynamics.infobook.OnTheDynamicsOfIntegrationBook;
 import org.cyclops.integratedmekanism.capability.recipehandler.MekanismCapabilityLoader;
 import org.cyclops.integratedmekanism.client.render.value.ValueTypeWorldRenderersMekanism;
 import org.cyclops.integratedmekanism.ingredient.IngredientComponentCapabilitiesMekanism;
+import org.cyclops.integratedmekanism.ingredient.IngredientComponentHandlerChemical;
 import org.cyclops.integratedmekanism.ingredient.MekanismIngredientComponents;
 import org.cyclops.integratedmekanism.logicprogrammer.MekanismLogicProgrammerElementTypes;
 import org.cyclops.integratedmekanism.modcompat.integratedrest.ModCompatIntegratedRest;
@@ -84,6 +86,7 @@ public class IntegratedMekanism extends ModBaseVersionable<IntegratedMekanism> {
 
     protected void onRegistriesLoad(RegisterEvent event) {
         event.register(IngredientComponent.REGISTRY.key(), MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK.getName(), () -> MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK);
+        IngredientComponentHandlers.REGISTRY.register(new IngredientComponentHandlerChemical());
     }
 
     protected void afterCapabilitiesLoaded(InterModEnqueueEvent event) {

@@ -290,9 +290,9 @@ public class MekanismOperators {
                 ValueObjectTypeChemicalStack.ValueChemicalStack a = variables.getValue(0, MekanismValueTypes.OBJECT_CHEMICALSTACK);
                 ImmutableList.Builder<ValueTypeString.ValueString> builder = ImmutableList.builder();
                 if(!a.getRawValue().isEmpty()) {
-                    ChemicalHelpers.getStackRegistry()
+                    a.getRawValue()
                             .getTags()
-                            .forEach((owningTag) -> builder.add(ValueTypeString.ValueString.of(owningTag.getFirst().location().toString())));
+                            .forEach((owningTag) -> builder.add(ValueTypeString.ValueString.of(owningTag.location().toString())));
                 }
                 return ValueTypeList.ValueList.ofList(ValueTypes.STRING, builder.build());
             }).build());

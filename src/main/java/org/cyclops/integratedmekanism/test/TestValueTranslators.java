@@ -18,7 +18,7 @@ import org.cyclops.integratedscripting.vendors.org.graalvm.polyglot.Value;
 /**
  * @author rubensworks
  */
-public class TestValueTranslators { // TODO: try to port to regular unit tests
+public class TestValueTranslators {
 
     private static ValueDeseralizationContext VDC = null;
     private static Context CTX = null;
@@ -40,15 +40,14 @@ public class TestValueTranslators { // TODO: try to port to regular unit tests
 
     @IntegrationTest
     public void testObjectChemical() throws EvaluationException {
-        TestHelpers.assertEqual(ValueTranslators.REGISTRY.translateFromGraal(CTX, getJsValue("exports = { id_chemical: { chemical: 'mekanism:gas', type: 'mekanism:steam', amount: 1000 } }"), EF, VDC), ValueObjectTypeChemicalStack.ValueChemicalStack.of(new ChemicalStack(MekanismChemicals.STEAM, 1000)), "chemical raw value");
+        TestHelpers.assertEqual(ValueTranslators.REGISTRY.translateFromGraal(CTX, getJsValue("exports = { id_chemical: { id: 'mekanism:steam', amount: 1000 } }"), EF, VDC), ValueObjectTypeChemicalStack.ValueChemicalStack.of(new ChemicalStack(MekanismChemicals.STEAM, 1000)), "chemical raw value");
 
         Value translated = ValueTranslators.REGISTRY.translateToGraal(CTX, ValueObjectTypeChemicalStack.ValueChemicalStack.of(new ChemicalStack(MekanismChemicals.STEAM, 1000)), EF, VDC);
         TestHelpers.assertEqual(translated.hasMembers(), true, "hasMembers true");
         TestHelpers.assertEqual(translated.getMemberKeys(), Sets.newHashSet("id_chemical"), "member keys is correct");
         TestHelpers.assertEqual(translated.getMember("id_chemical").hasMembers(), true, "id_chemical hasMembers true");
-        TestHelpers.assertEqual(translated.getMember("id_chemical").getMemberKeys(), Sets.newHashSet("chemical", "type", "amount"), "id_chemical keys is correct");
-        TestHelpers.assertEqual(translated.getMember("id_chemical").getMember("chemical").asString(), "mekanism:gas", "id_chemical has member chemical");
-        TestHelpers.assertEqual(translated.getMember("id_chemical").getMember("type").asString(), "mekanism:steam", "id_chemical has member type");
+        TestHelpers.assertEqual(translated.getMember("id_chemical").getMemberKeys(), Sets.newHashSet("id", "amount"), "id_chemical keys is correct");
+        TestHelpers.assertEqual(translated.getMember("id_chemical").getMember("id").asString(), "mekanism:steam", "id_chemical has member type");
         TestHelpers.assertEqual(translated.getMember("id_chemical").getMember("amount").asInt(), 1000, "id_chemical has member amount");
     }
 

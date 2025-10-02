@@ -619,11 +619,13 @@ public class TestChemicalStackOperators {
         IValue res1 = MekanismOperators.OBJECT_CHEMICALSTACK_TAG.evaluate(eSteam);
         Asserts.check(res1 instanceof ValueTypeList.ValueList<?,?>, "result is a list");
         IValueTypeListProxy<ValueTypeString, ValueTypeString.ValueString> list = ((ValueTypeList.ValueList<ValueTypeString, ValueTypeString.ValueString>) res1).getRawValue();
-        TestHelpers.assertEqual(list.getLength(), 1, "tag(steam).length = 1");
+        TestHelpers.assertEqual(list.getLength(), 2, "tag(steam).length = 2");
         TestHelpers.assertEqual(list.get(0).getRawValue(), "mekanism:water_vapor", "tag(steam)[0] = mekanism:water_vapor");
+        TestHelpers.assertEqual(list.get(1).getRawValue(), "mekanism:gaseous", "tag(steam)[1] = mekanism:gaseous");
 
         IValue res2 = MekanismOperators.OBJECT_CHEMICALSTACK_TAG.evaluate(eHydrogen);
-        TestHelpers.assertEqual(((ValueTypeList.ValueList<?, ?>) res2).getRawValue().getLength(), 0, "tag(hydrogen) = empty");
+        TestHelpers.assertEqual(((ValueTypeList.ValueList<?, ?>) res2).getRawValue().getLength(), 1, "tag(hydrogen).length = 1");
+        TestHelpers.assertEqual(((ValueTypeList.ValueList<ValueTypeString, ValueTypeString.ValueString>) res2).getRawValue().get(0).getRawValue(), "mekanism:gaseous", "tag(hydrogen)[1] = mekanism:gaseous");
     }
 
     @IntegrationTest(expected = EvaluationException.class)
