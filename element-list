@@ -3,6 +3,8 @@ org.cyclops.integratedmekanism.capability.recipehandler
 org.cyclops.integratedmekanism.client.render.value
 org.cyclops.integratedmekanism.core
 org.cyclops.integratedmekanism.core.predicate
+org.cyclops.integratedmekanism.gametest
+org.cyclops.integratedmekanism.gametest.integration
 org.cyclops.integratedmekanism.ingredient
 org.cyclops.integratedmekanism.logicprogrammer
 org.cyclops.integratedmekanism.modcompat.integratedrest
@@ -25,5 +27,4 @@ org.cyclops.integratedmekanism.part
 org.cyclops.integratedmekanism.part.aspect
 org.cyclops.integratedmekanism.part.aspect.listproxy
 org.cyclops.integratedmekanism.proxy
-org.cyclops.integratedmekanism.test
 org.cyclops.integratedmekanism.value
