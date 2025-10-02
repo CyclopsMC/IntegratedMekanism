@@ -7,6 +7,7 @@ org.cyclops.integratedmekanism.ingredient
 org.cyclops.integratedmekanism.logicprogrammer
 org.cyclops.integratedmekanism.modcompat.integratedrest
 org.cyclops.integratedmekanism.modcompat.integratedrest.json
+org.cyclops.integratedmekanism.modcompat.integratedrest.request
 org.cyclops.integratedmekanism.modcompat.integratedscripting
 org.cyclops.integratedmekanism.modcompat.integratedscripting.translation
 org.cyclops.integratedmekanism.modcompat.integratedterminals
