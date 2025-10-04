@@ -1,4 +1,5 @@
 org.cyclops.integratedmekanism
+org.cyclops.integratedmekanism.capability.chemicalhandler
 org.cyclops.integratedmekanism.capability.recipehandler
 org.cyclops.integratedmekanism.client.render.value
 org.cyclops.integratedmekanism.core
