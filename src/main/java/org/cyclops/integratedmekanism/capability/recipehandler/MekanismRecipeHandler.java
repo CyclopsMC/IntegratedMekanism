@@ -40,7 +40,7 @@ public abstract class MekanismRecipeHandler<R extends MekanismRecipe<?>> impleme
     private final Set<IngredientComponent<?, ?>> inputComponents;
     private final Set<IngredientComponent<?, ?>> outputComponents;
 
-    public static Map<Class<?>, Collection<IRecipeDefinition>> CACHED_RECIPES = Maps.newHashMap();
+    public static Map<IMekanismRecipeTypeProvider<?, ?, ?>, Collection<IRecipeDefinition>> CACHED_RECIPES = Maps.newHashMap();
 
     protected MekanismRecipeHandler(IMekanismRecipeTypeProvider<?, ? extends R, ?> recipeType, Supplier<Level> levelSupplier, Set<IngredientComponent<?, ?>> inputComponents, Set<IngredientComponent<?, ?>> outputComponents) {
         this.recipeType = recipeType;
@@ -69,10 +69,10 @@ public abstract class MekanismRecipeHandler<R extends MekanismRecipe<?>> impleme
 
     @Override
     public final Collection<IRecipeDefinition> getRecipes() {
-        Collection<IRecipeDefinition> cached = CACHED_RECIPES.get(getClass());
+        Collection<IRecipeDefinition> cached = CACHED_RECIPES.get(getRecipeType());
         if (cached == null) {
             cached = getRecipesUncached();
-            CACHED_RECIPES.put(getClass(), cached);
+            CACHED_RECIPES.put(getRecipeType(), cached);
         }
         return cached;
     }

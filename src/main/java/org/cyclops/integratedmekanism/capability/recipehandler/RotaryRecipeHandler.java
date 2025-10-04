@@ -33,17 +33,17 @@ public class RotaryRecipeHandler extends MekanismRecipeHandler<RotaryRecipe> {
 
     @Override
     public boolean isValidSizeInput(IngredientComponent<?, ?> ingredientComponent, int size) {
-        return (ingredientComponent == IngredientComponents.FLUIDSTACK && size == 1)
-                || (ingredientComponent == MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK && size == 1);
+        return (ingredientComponent == IngredientComponents.FLUIDSTACK && size <= 1)
+                || (ingredientComponent == MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK && size <= 1);
     }
 
     @Override
     public Collection<IRecipeDefinition> getRecipesUncached() {
         Collection<IRecipeDefinition> list = Lists.newArrayList();
         this.fluidToChemical = true;
-        list.addAll(super.getRecipes());
+        list.addAll(super.getRecipesUncached());
         this.fluidToChemical = false;
-        list.addAll(super.getRecipes());
+        list.addAll(super.getRecipesUncached());
         return list;
     }
 
@@ -82,12 +82,12 @@ public class RotaryRecipeHandler extends MekanismRecipeHandler<RotaryRecipe> {
 
     @Override
     protected void recipeToOutputsSimulated(RotaryRecipe recipe, IMixedIngredients input, Map<IngredientComponent<?, ?>, List<?>> outputs) {
-        if (recipe.hasFluidToChemical() && this.fluidToChemical) {
+        if (recipe.hasFluidToChemical() && !input.getInstances(IngredientComponents.FLUIDSTACK).isEmpty()) {
             outputs.put(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK, Lists.newArrayList(
                     recipe.getChemicalOutput(input.getInstances(IngredientComponents.FLUIDSTACK).get(0))
             ));
         }
-        if (recipe.hasChemicalToFluid() && !this.fluidToChemical) {
+        if (recipe.hasChemicalToFluid() && !input.getInstances(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK).isEmpty()) {
             outputs.put(IngredientComponents.FLUIDSTACK, Lists.newArrayList(
                     recipe.getFluidOutput(input.getInstances(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK).get(0))
             ));
