@@ -1,11 +1,16 @@
 package org.cyclops.integratedmekanism.capability.recipehandler;
 
 import com.google.common.collect.Maps;
+import mekanism.api.chemical.IChemicalHandler;
 import mekanism.common.recipe.IMekanismRecipeTypeProvider;
 import mekanism.common.recipe.MekanismRecipeType;
 import mekanism.common.registries.MekanismTileEntityTypes;
 import mekanism.common.tile.factory.TileEntityFactory;
 import net.minecraft.core.Direction;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.decoration.GlowItemFrame;
+import net.minecraft.world.entity.decoration.ItemFrame;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -18,6 +23,8 @@ import org.cyclops.commoncapabilities.api.capability.recipehandler.IRecipeHandle
 import org.cyclops.cyclopscore.modcompat.capabilities.CapabilityConstructorRegistry;
 import org.cyclops.cyclopscore.modcompat.capabilities.ICapabilityConstructor;
 import org.cyclops.integratedmekanism.IntegratedMekanism;
+import org.cyclops.integratedmekanism.capability.chemicalhandler.VanillaEntityItemChemicalHandler;
+import org.cyclops.integratedmekanism.capability.chemicalhandler.VanillaEntityItemFrameChemicalHandler;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -80,6 +87,59 @@ public class MekanismCapabilityLoader {
                 };
             }
         });
+
+        // Delegate chemical handlers from entity items to items
+        registry.registerEntity(() -> EntityType.ITEM,
+                new ICapabilityConstructor<ItemEntity, Direction, IChemicalHandler, EntityType<ItemEntity>>() {
+                    @Override
+                    public BaseCapability<IChemicalHandler, Direction> getCapability() {
+                        return (BaseCapability<IChemicalHandler, Direction>) mekanism.common.capabilities.Capabilities.CHEMICAL.entity();
+                    }
+
+                    @Override
+                    public ICapabilityProvider<ItemEntity, Direction, IChemicalHandler> createProvider(EntityType<ItemEntity> capabilityKey) {
+                        return (entity, context) -> {
+                            if (entity.getItem().getCapability(mekanism.common.capabilities.Capabilities.CHEMICAL.item()) != null) {
+                                return new VanillaEntityItemChemicalHandler(entity);
+                            }
+                            return null;
+                        };
+                    }
+                });
+        registry.registerEntity(() -> EntityType.ITEM_FRAME,
+                new ICapabilityConstructor<ItemFrame, Direction, IChemicalHandler, EntityType<ItemFrame>>() {
+                    @Override
+                    public BaseCapability<IChemicalHandler, Direction> getCapability() {
+                        return (BaseCapability<IChemicalHandler, Direction>) mekanism.common.capabilities.Capabilities.CHEMICAL.entity();
+                    }
+
+                    @Override
+                    public ICapabilityProvider<ItemFrame, Direction, IChemicalHandler> createProvider(EntityType<ItemFrame> capabilityKey) {
+                        return (entity, context) -> {
+                            if (entity.getItem().getCapability(mekanism.common.capabilities.Capabilities.CHEMICAL.item()) != null) {
+                                return new VanillaEntityItemFrameChemicalHandler(entity);
+                            }
+                            return null;
+                        };
+                    }
+                });
+        registry.registerEntity(() -> EntityType.GLOW_ITEM_FRAME,
+                new ICapabilityConstructor<GlowItemFrame, Direction, IChemicalHandler, EntityType<GlowItemFrame>>() {
+                    @Override
+                    public BaseCapability<IChemicalHandler, Direction> getCapability() {
+                        return (BaseCapability<IChemicalHandler, Direction>) mekanism.common.capabilities.Capabilities.CHEMICAL.entity();
+                    }
+
+                    @Override
+                    public ICapabilityProvider<GlowItemFrame, Direction, IChemicalHandler> createProvider(EntityType<GlowItemFrame> capabilityKey) {
+                        return (entity, context) -> {
+                            if (entity.getItem().getCapability(mekanism.common.capabilities.Capabilities.CHEMICAL.item()) != null) {
+                                return new VanillaEntityItemFrameChemicalHandler(entity);
+                            }
+                            return null;
+                        };
+                    }
+                });
     }
 
     protected static <T extends BlockEntity> void addRecipeHandler(CapabilityConstructorRegistry registry, Map<IMekanismRecipeTypeProvider<?, ?, ?>, Function<Supplier<Level>, IRecipeHandler>> recipeTypeHandlers, Supplier<BlockEntityType<T>> blockEntityType, IMekanismRecipeTypeProvider<?, ?, ?> recipeType, Function<Supplier<Level>, IRecipeHandler> recipeHandlerConstructor) {
