@@ -104,7 +104,7 @@ public class MekanismAspectReadBuilders {
         public static final IAspectValuePropagator<Pair<PartTarget, IAspectProperties>, Optional<FissionReactorMultiblockData>> PROP_GET_FISSIONREACTOR = input -> {
             DimPos dimPos = input.getLeft().getTarget().getPos();
             IMultiblock<?> multiBlock = BlockEntityHelpers.get(dimPos.getLevel(true), dimPos.getBlockPos(), IMultiblock.class).orElse(null);
-            if (multiBlock.getMultiblock() instanceof FissionReactorMultiblockData data) {
+            if (multiBlock != null && multiBlock.getMultiblock() instanceof FissionReactorMultiblockData data) {
                 return Optional.of(data);
             }
             return Optional.empty();
