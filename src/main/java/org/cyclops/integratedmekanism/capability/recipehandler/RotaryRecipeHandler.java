@@ -14,7 +14,10 @@ import org.cyclops.commoncapabilities.api.ingredient.IMixedIngredients;
 import org.cyclops.commoncapabilities.api.ingredient.IngredientComponent;
 import org.cyclops.integratedmekanism.ingredient.MekanismIngredientComponents;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -30,17 +33,17 @@ public class RotaryRecipeHandler extends MekanismRecipeHandler<RotaryRecipe> {
 
     @Override
     public boolean isValidSizeInput(IngredientComponent<?, ?> ingredientComponent, int size) {
-        return (ingredientComponent == IngredientComponents.FLUIDSTACK && size == 1)
-                || (ingredientComponent == MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK && size == 1);
+        return (ingredientComponent == IngredientComponents.FLUIDSTACK && size <= 1)
+                || (ingredientComponent == MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK && size <= 1);
     }
 
     @Override
     public Collection<IRecipeDefinition> getRecipesUncached() {
         Collection<IRecipeDefinition> list = Lists.newArrayList();
         this.fluidToGas = true;
-        list.addAll(super.getRecipes());
+        list.addAll(super.getRecipesUncached());
         this.fluidToGas = false;
-        list.addAll(super.getRecipes());
+        list.addAll(super.getRecipesUncached());
         return list;
     }
 
@@ -79,12 +82,12 @@ public class RotaryRecipeHandler extends MekanismRecipeHandler<RotaryRecipe> {
 
     @Override
     protected void recipeToOutputsSimulated(RotaryRecipe recipe, IMixedIngredients input, Map<IngredientComponent<?, ?>, List<?>> outputs) {
-        if (recipe.hasFluidToGas() && this.fluidToGas) {
+        if (recipe.hasFluidToGas() && !input.getInstances(IngredientComponents.FLUIDSTACK).isEmpty()) {
             outputs.put(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK, Lists.newArrayList(
                     recipe.getGasOutput(input.getInstances(IngredientComponents.FLUIDSTACK).get(0))
             ));
         }
-        if (recipe.hasGasToFluid() && !this.fluidToGas) {
+        if (recipe.hasGasToFluid() && !input.getInstances(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK).isEmpty()) {
             outputs.put(IngredientComponents.FLUIDSTACK, Lists.newArrayList(
                     recipe.getFluidOutput(input.getInstances(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK).get(0) instanceof GasStack gasStack ? gasStack : GasStack.EMPTY)
             ));
