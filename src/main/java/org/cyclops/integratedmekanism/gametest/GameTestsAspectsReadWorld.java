@@ -20,7 +20,7 @@ public class GameTestsAspectsReadWorld {
     public static final BlockPos POS = BlockPos.ZERO.offset(2, 0, 2);
 
     @GameTest(template = TEMPLATE_EMPTY)
-    public void testAspectsReadChemicalFullTrue(GameTestHelper helper) {
+    public void testAspectsReadRadiationDefault(GameTestHelper helper) {
         testReadAspect(POS, helper, PartTypes.WORLD_READER, MekanismAspects.Read.World.DOUBLE_RADIATION, ValueTypeDouble.ValueDouble.of(0.0000001));
     }
 

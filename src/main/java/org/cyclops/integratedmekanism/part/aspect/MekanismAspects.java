@@ -133,7 +133,7 @@ public class MekanismAspects {
                             .map(r -> r.lastBoilRate)
                             .orElse(0L)
                     ).handle(AspectReadBuilders.PROP_GET_LONG, "heatingrate").buildRead();
-            public static final IAspectRead<ValueTypeDouble.ValueDouble, ValueTypeDouble> DOUBLE_FISSIONREACTOR_HEATERATE =
+            public static final IAspectRead<ValueTypeDouble.ValueDouble, ValueTypeDouble> DOUBLE_FISSIONREACTOR_ENVIRONMENTLOSS =
                     MekanismAspectReadBuilders.Machine.BUILDER_FISSIONREACTOR_DOUBLE.handle(reactor -> reactor
                             .map(r -> r.lastEnvironmentLoss)
                             .orElse(0D)

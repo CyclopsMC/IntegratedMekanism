@@ -114,7 +114,7 @@ public class IntegratedMekanism extends ModBaseVersionable<IntegratedMekanism> {
                 MekanismAspects.Read.Machine.DOUBLE_FISSIONREACTOR_BURNRATEMAX,
                 MekanismAspects.Read.Machine.DOUBLE_FISSIONREACTOR_BURNRATELIMIT,
                 MekanismAspects.Read.Machine.LONG_FISSIONREACTOR_HEATERATE,
-                MekanismAspects.Read.Machine.DOUBLE_FISSIONREACTOR_HEATERATE
+                MekanismAspects.Read.Machine.DOUBLE_FISSIONREACTOR_ENVIRONMENTLOSS
         ));
 
         // Add test classes
