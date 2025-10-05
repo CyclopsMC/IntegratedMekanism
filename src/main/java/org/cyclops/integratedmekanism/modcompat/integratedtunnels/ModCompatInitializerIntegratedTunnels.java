@@ -22,10 +22,6 @@ public class ModCompatInitializerIntegratedTunnels implements ICompatInitializer
 
     public void onRegistriesCreate(NewRegistryEvent event) {
         PartTypesMekanismTunnels.load();
-    }
-
-    protected void onSetup(IntegratedDynamicsSetupEvent event) {
-        MekanismTunnelsValueTypeListProxyFactories.load();
 
         // Inject aspects into ID parts
         AspectRegistry.getInstance().register(org.cyclops.integrateddynamics.core.part.PartTypes.NETWORK_READER, Lists.newArrayList(
@@ -34,6 +30,10 @@ public class ModCompatInitializerIntegratedTunnels implements ICompatInitializer
                 MekanismTunnelsAspects.Read.Chemical.LIST_CHEMICALSTACKS,
                 MekanismTunnelsAspects.Read.Chemical.OPERATOR_GETCHEMICALCOUNT,
                 MekanismTunnelsAspects.Read.Chemical.INTEGER_INTERFACES
-        ));
+        )); // TODO: move to onSetup in 1.21
+    }
+
+    protected void onSetup(IntegratedDynamicsSetupEvent event) {
+        MekanismTunnelsValueTypeListProxyFactories.load();
     }
 }

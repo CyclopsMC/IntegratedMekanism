@@ -79,6 +79,10 @@
     "aspect.integratedmekanism.read.integer.chemicalnetwork.interfaces": "Network Chemical Interfaces",
     "aspect.integratedmekanism.read.integer.chemicalnetwork.interfaces.info": "Get number of valid interfaces for chemical storage",
 
+    "_comment": "# World aspects",
+    "aspect.integratedmekanism.read.double.world.radiation": "Radiation",
+    "aspect.integratedmekanism.read.double.world.radiation.info": "Get the radiation level at the target (in Sv/h)",
+
     "_comment": "# Chemical",
     "aspect.integratedmekanism.write.boolean.chemical.export": "Export All Chemicals",
     "aspect.integratedmekanism.write.boolean.chemical.export.info": "Export chemicals if the boolean is true",
@@ -206,6 +210,11 @@
     "operator.integratedmekanism.ingredients.with_chemical.info": "Get a copy of the given ingredients with the given chemical at the given ingredient position",
     "operator.integratedmekanism.ingredients.with_chemicals": "With Chemicals",
     "operator.integratedmekanism.ingredients.with_chemicals.info": "Get a copy of the given ingredients with the given list of chemicals at the given ingredient position",
+
+    "operator.integratedmekanism.entity": "Entity",
+    "operator.integratedmekanism.entity.basename": "Entity %s",
+    "operator.integratedmekanism.entity.radiation": "Radiation",
+    "operator.integratedmekanism.entity.radiation.info": "Get the radiation level of the given entity (in Sv/h)",
 
     "_comment": "Gui",
     "gui.integratedterminals.terminal_storage.sort.chemicalstack.id": "Chemical ID",

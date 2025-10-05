@@ -1,9 +1,12 @@
 package org.cyclops.integratedmekanism.part.aspect;
 
+import mekanism.api.Coord4D;
 import mekanism.api.chemical.ChemicalStack;
 import mekanism.api.chemical.IChemicalHandler;
+import mekanism.api.radiation.IRadiationManager;
 import org.cyclops.integrateddynamics.api.part.aspect.IAspectRead;
 import org.cyclops.integrateddynamics.core.evaluate.variable.*;
+import org.cyclops.integrateddynamics.core.helper.Helpers;
 import org.cyclops.integrateddynamics.part.aspect.read.AspectReadBuilders;
 import org.cyclops.integratedmekanism.Reference;
 import org.cyclops.integratedmekanism.value.ValueObjectTypeChemicalStack;
@@ -102,6 +105,17 @@ public class MekanismAspects {
                             .handle(MekanismAspectReadBuilders.Chemical.PROP_GET_CHEMICALSTACK)
                             .handle(MekanismAspectReadBuilders.PROP_GET_CHEMICALSTACK)
                             .buildRead();
+
+        }
+
+        public static final class World {
+
+            public static final IAspectRead<ValueTypeDouble.ValueDouble, ValueTypeDouble> DOUBLE_RADIATION =
+                    MekanismAspectReadBuilders.World.BUILDER_DOUBLE.handle(
+                            dimPos -> IRadiationManager.INSTANCE.getRadiationLevel(
+                                    new Coord4D(dimPos.getBlockPos().getX(), dimPos.getBlockPos().getY(), dimPos.getBlockPos().getZ(), dimPos.getLevelKey())
+                            )
+                    ).handle(AspectReadBuilders.PROP_GET_DOUBLE, "radiation").buildRead();
 
         }
 

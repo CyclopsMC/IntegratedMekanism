@@ -34,6 +34,7 @@
   { "type": "minecraft:single", "resource": "integratedmekanism:aspects/read/boolean/chemical/applicable" },
   { "type": "minecraft:single", "resource": "integratedmekanism:aspects/read/boolean/chemical/empty" },
   { "type": "minecraft:single", "resource": "integratedmekanism:aspects/read/boolean/chemical/full" },
+  { "type": "minecraft:single", "resource": "integratedmekanism:aspects/read/double/world/radiation" },
   { "type": "minecraft:single", "resource": "integratedmekanism:aspects/read/double/chemical/fillratio" },
   { "type": "minecraft:single", "resource": "integratedmekanism:aspects/read/integer/chemicalnetwork/interfaces" },
   { "type": "minecraft:single", "resource": "integratedmekanism:aspects/read/integer/chemical/tanks" },

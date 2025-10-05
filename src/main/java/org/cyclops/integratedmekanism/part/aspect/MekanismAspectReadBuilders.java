@@ -5,6 +5,7 @@ import mekanism.api.chemical.ChemicalStack;
 import mekanism.api.chemical.IChemicalHandler;
 import mekanism.api.chemical.gas.GasStack;
 import org.apache.commons.lang3.tuple.Pair;
+import org.cyclops.cyclopscore.datastructure.DimPos;
 import org.cyclops.integrateddynamics.api.part.PartTarget;
 import org.cyclops.integrateddynamics.api.part.aspect.property.IAspectProperties;
 import org.cyclops.integrateddynamics.api.part.aspect.property.IAspectPropertyTypeInstance;
@@ -30,6 +31,8 @@ public class MekanismAspectReadBuilders {
     // --------------- Value type builders ---------------
     public static final AspectBuilder<ValueObjectTypeChemicalStack.ValueChemicalStack, ValueObjectTypeChemicalStack, Pair<PartTarget, IAspectProperties>>
             BUILDER_OBJECT_CHEMICALSTACK = AspectBuilder.forReadType(MekanismValueTypes.OBJECT_CHEMICALSTACK).byMod(Reference.MOD_ID);
+    public static final AspectBuilder<ValueTypeDouble.ValueDouble, ValueTypeDouble, Pair<PartTarget, IAspectProperties>>
+            BUILDER_DOUBLE = AspectBuilder.forReadType(ValueTypes.DOUBLE).byMod(Reference.MOD_ID);
 
     // --------------- Value type propagators ---------------
     public static final IAspectValuePropagator<ChemicalStack<?>, ValueObjectTypeChemicalStack.ValueChemicalStack>
@@ -85,6 +88,11 @@ public class MekanismAspectReadBuilders {
         public static final AspectBuilder<ValueTypeDouble.ValueDouble, ValueTypeDouble, Pair<IChemicalHandler<?, ?>, Integer>>
                 BUILDER_DOUBLE_ACTIVATABLE = AspectReadBuilders.BUILDER_DOUBLE.byMod(Reference.MOD_ID).handle(PROP_GET_ACTIVATABLE, "chemical").withProperties(PROPERTIES);
 
+    }
+
+    public static final class World {
+        public static final AspectBuilder<ValueTypeDouble.ValueDouble, ValueTypeDouble, DimPos>
+                BUILDER_DOUBLE = MekanismAspectReadBuilders.BUILDER_DOUBLE.handle(AspectReadBuilders.World.PROP_GET, "world");
     }
 
 }
