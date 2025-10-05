@@ -1,5 +1,7 @@
 org.cyclops.integratedmekanism
 org.cyclops.integratedmekanism.capability.recipehandler
+org.cyclops.integratedmekanism.capability.temperature
+org.cyclops.integratedmekanism.capability.worker
 org.cyclops.integratedmekanism.client.render.value
 org.cyclops.integratedmekanism.core
 org.cyclops.integratedmekanism.core.predicate
