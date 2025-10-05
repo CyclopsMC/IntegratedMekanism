@@ -7,6 +7,8 @@ import mekanism.common.recipe.MekanismRecipeType;
 import mekanism.common.registries.MekanismTileEntityTypes;
 import mekanism.common.tier.FactoryTier;
 import mekanism.common.tile.factory.TileEntityFactory;
+import mekanism.generators.common.registries.GeneratorsTileEntityTypes;
+import mekanism.generators.common.tile.fission.TileEntityFissionReactorLogicAdapter;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.decoration.GlowItemFrame;
@@ -21,11 +23,15 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import org.cyclops.commoncapabilities.api.capability.Capabilities;
 import org.cyclops.commoncapabilities.api.capability.recipehandler.IRecipeHandler;
+import org.cyclops.commoncapabilities.api.capability.temperature.ITemperature;
+import org.cyclops.commoncapabilities.api.capability.work.IWorker;
 import org.cyclops.cyclopscore.modcompat.capabilities.CapabilityConstructorRegistry;
 import org.cyclops.cyclopscore.modcompat.capabilities.ICapabilityConstructor;
 import org.cyclops.integratedmekanism.IntegratedMekanism;
 import org.cyclops.integratedmekanism.capability.chemicalhandler.VanillaEntityItemChemicalHandler;
 import org.cyclops.integratedmekanism.capability.chemicalhandler.VanillaEntityItemFrameChemicalHandler;
+import org.cyclops.integratedmekanism.capability.temperature.FissionReactorTemperature;
+import org.cyclops.integratedmekanism.capability.worker.FissionReactorWorker;
 
 import javax.annotation.Nullable;
 import java.util.function.Function;
@@ -38,6 +44,34 @@ public class MekanismCapabilityLoader {
 
     public static void load() {
         CapabilityConstructorRegistry registry = IntegratedMekanism._instance.getCapabilityConstructorRegistry();
+
+        // Worker
+        registry.registerBlockEntity(GeneratorsTileEntityTypes.FISSION_REACTOR_LOGIC_ADAPTER,
+                new ICapabilityConstructor<TileEntityFissionReactorLogicAdapter, Direction, IWorker, BlockEntityType<TileEntityFissionReactorLogicAdapter>>() {
+                    @Override
+                    public BaseCapability<IWorker, Direction> getCapability() {
+                        return Capabilities.Worker.BLOCK;
+                    }
+
+                    @Override
+                    public ICapabilityProvider<TileEntityFissionReactorLogicAdapter, Direction, IWorker> createProvider(BlockEntityType<TileEntityFissionReactorLogicAdapter> tBlockEntityType) {
+                        return (blockEntity, side) -> new FissionReactorWorker(blockEntity);
+                    }
+                });
+
+        // Temperature
+        registry.registerBlockEntity(GeneratorsTileEntityTypes.FISSION_REACTOR_LOGIC_ADAPTER,
+                new ICapabilityConstructor<TileEntityFissionReactorLogicAdapter, Direction, ITemperature, BlockEntityType<TileEntityFissionReactorLogicAdapter>>() {
+                    @Override
+                    public BaseCapability<ITemperature, Direction> getCapability() {
+                        return Capabilities.Temperature.BLOCK;
+                    }
+
+                    @Override
+                    public ICapabilityProvider<TileEntityFissionReactorLogicAdapter, Direction, ITemperature> createProvider(BlockEntityType<TileEntityFissionReactorLogicAdapter> tBlockEntityType) {
+                        return (blockEntity, side) -> new FissionReactorTemperature(blockEntity);
+                    }
+                });
 
         // RecipeHandlers
         NeoForge.EVENT_BUS.addListener((ServerStoppedEvent event) -> MekanismRecipeHandler.CACHED_RECIPES.clear());

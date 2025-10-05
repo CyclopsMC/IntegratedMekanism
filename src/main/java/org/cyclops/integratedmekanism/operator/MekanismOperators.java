@@ -7,6 +7,8 @@ import mekanism.api.chemical.ChemicalStack;
 import mekanism.api.datamaps.chemical.attribute.ChemicalFuel;
 import mekanism.api.datamaps.chemical.attribute.ChemicalRadioactivity;
 import mekanism.api.datamaps.chemical.attribute.IChemicalCoolant;
+import mekanism.api.radiation.capability.IRadiationEntity;
+import mekanism.common.capabilities.Capabilities;
 import mekanism.common.registries.MekanismDataMapTypes;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.network.chat.Component;
@@ -368,5 +370,21 @@ public class MekanismOperators {
                 return ValueObjectTypeIngredients.ValueIngredients.of(new ExtendedIngredientsList<>(baseIngredients,
                         MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK, OperatorBuilders.unwrapIngredientComponentList(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK, list)));
             }).build());
+
+    /**
+     * ----------------------------------- ENTITY OBJECT OPERATORS -----------------------------------
+     */
+
+    /**
+     * If the entity is a mob
+     */
+    public static final IOperator OBJECT_ENTITY_RADIATION = REGISTRY.register(OperatorBuilders.ENTITY_1_SUFFIX_LONG
+            .modId(Reference.MOD_ID)
+            .output(ValueTypes.DOUBLE).symbolOperatorInteract("radiation")
+            .function(OperatorBuilders.FUNCTION_ENTITY_TO_DOUBLE.build(
+                    entity -> Optional.ofNullable(entity.getCapability(Capabilities.RADIATION_ENTITY))
+                            .map(IRadiationEntity::getRadiation)
+                            .orElse(0D)
+            )).build());
 
 }

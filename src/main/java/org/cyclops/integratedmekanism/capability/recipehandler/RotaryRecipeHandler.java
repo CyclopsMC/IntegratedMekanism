@@ -2,7 +2,6 @@ package org.cyclops.integratedmekanism.capability.recipehandler;
 
 import com.google.common.collect.Lists;
 import mekanism.api.recipes.RotaryRecipe;
-import mekanism.api.recipes.ingredients.ChemicalStackIngredient;
 import mekanism.common.recipe.MekanismRecipeType;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
@@ -97,6 +96,6 @@ public class RotaryRecipeHandler extends MekanismRecipeHandler<RotaryRecipe> {
     @Override
     protected boolean doesRecipeMatchInput(RotaryRecipe recipe, IMixedIngredients input) {
         return recipe.getFluidInput().test(input.getFirstNonEmpty(IngredientComponents.FLUIDSTACK))
-                || ((ChemicalStackIngredient) recipe.getChemicalInput()).test(input.getFirstNonEmpty(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK));
+                || recipe.getChemicalInput().test(input.getFirstNonEmpty(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK));
     }
 }

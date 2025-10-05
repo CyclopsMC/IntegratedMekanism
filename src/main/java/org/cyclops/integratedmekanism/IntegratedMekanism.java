@@ -1,5 +1,6 @@
 package org.cyclops.integratedmekanism;
 
+import com.google.common.collect.Lists;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
@@ -23,9 +24,12 @@ import org.cyclops.integrateddynamics.IntegratedDynamics;
 import org.cyclops.integrateddynamics.command.CommandTest;
 import org.cyclops.integrateddynamics.core.event.IntegratedDynamicsSetupEvent;
 import org.cyclops.integrateddynamics.core.ingredient.IngredientComponentHandlers;
+import org.cyclops.integrateddynamics.core.part.PartTypes;
+import org.cyclops.integrateddynamics.core.part.aspect.AspectRegistry;
 import org.cyclops.integrateddynamics.infobook.OnTheDynamicsOfIntegrationBook;
 import org.cyclops.integratedmekanism.capability.recipehandler.MekanismCapabilityLoader;
 import org.cyclops.integratedmekanism.client.render.value.ValueTypeWorldRenderersMekanism;
+import org.cyclops.integratedmekanism.gametest.integration.TestEntityOperators;
 import org.cyclops.integratedmekanism.ingredient.IngredientComponentCapabilitiesMekanism;
 import org.cyclops.integratedmekanism.ingredient.IngredientComponentHandlerChemical;
 import org.cyclops.integratedmekanism.ingredient.MekanismIngredientComponents;
@@ -37,6 +41,7 @@ import org.cyclops.integratedmekanism.modcompat.integratedtunnels.ModCompatInteg
 import org.cyclops.integratedmekanism.network.NetworkCapabilityConstructorsMekanism;
 import org.cyclops.integratedmekanism.operator.MekanismOperators;
 import org.cyclops.integratedmekanism.part.PartTypesMekanism;
+import org.cyclops.integratedmekanism.part.aspect.MekanismAspects;
 import org.cyclops.integratedmekanism.part.aspect.listproxy.MekanismValueTypeListProxyFactories;
 import org.cyclops.integratedmekanism.proxy.ClientProxy;
 import org.cyclops.integratedmekanism.proxy.CommonProxy;
@@ -71,6 +76,19 @@ public class IntegratedMekanism extends ModBaseVersionable<IntegratedMekanism> {
         IngredientComponentCapabilitiesMekanism.load();
         PartTypesMekanism.load();
         MekanismCapabilityLoader.load();
+
+        // Inject aspects into ID parts
+        AspectRegistry.getInstance().register(PartTypes.WORLD_READER, Lists.newArrayList(
+                MekanismAspects.Read.World.DOUBLE_RADIATION
+        ));  // TODO: move to onSetup in 1.21
+        AspectRegistry.getInstance().register(PartTypes.MACHINE_READER, Lists.newArrayList(
+                MekanismAspects.Read.Machine.DOUBLE_FISSIONREACTOR_DAMAGE,
+                MekanismAspects.Read.Machine.DOUBLE_FISSIONREACTOR_BURNRATE,
+                MekanismAspects.Read.Machine.DOUBLE_FISSIONREACTOR_BURNRATEMAX,
+                MekanismAspects.Read.Machine.DOUBLE_FISSIONREACTOR_BURNRATELIMIT,
+                MekanismAspects.Read.Machine.LONG_FISSIONREACTOR_HEATERATE,
+                MekanismAspects.Read.Machine.DOUBLE_FISSIONREACTOR_HEATERATE
+        ));  // TODO: move to onSetup in 1.21
     }
 
     @Override
@@ -103,7 +121,8 @@ public class IntegratedMekanism extends ModBaseVersionable<IntegratedMekanism> {
         CommandTest.CLASSES.addAll(List.of(
                 TestChemicalStackOperators.class.getName(),
                 TestIngredientsOperators.class.getName(),
-                TestItemStackOperators.class.getName()
+                TestItemStackOperators.class.getName(),
+                TestEntityOperators.class.getName()
         ));
 
         if (MinecraftHelpers.isClientSide()) {

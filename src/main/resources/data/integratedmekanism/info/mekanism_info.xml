@@ -19,6 +19,17 @@
             <appendix_list factory="integrateddynamics:part_aspects">integratedmekanism:chemical_reader</appendix_list>
         </section>
 
+        <section name="info_book.integratedmekanism.manual.logic.part_readers">
+            <paragraph>info_book.integratedmekanism.manual.logic.part_readers.text1</paragraph>
+            <appendix type="integrateddynamics:aspect">integratedmekanism:read_double_world_radiation</appendix>
+            <appendix type="integrateddynamics:aspect">integratedmekanism:read_double_machine_fissionreactor_damage</appendix>
+            <appendix type="integrateddynamics:aspect">integratedmekanism:read_double_machine_fissionreactor_burnrate</appendix>
+            <appendix type="integrateddynamics:aspect">integratedmekanism:read_double_machine_fissionreactor_burnratemax</appendix>
+            <appendix type="integrateddynamics:aspect">integratedmekanism:read_double_machine_fissionreactor_burnratelimit</appendix>
+            <appendix type="integrateddynamics:aspect">integratedmekanism:read_long_machine_fissionreactor_heatingrate</appendix>
+            <appendix type="integrateddynamics:aspect">integratedmekanism:read_double_machine_fissionreactor_environmentloss</appendix>
+        </section>
+
         <section name="info_book.integratedmekanism.manual.logic.operators">
             <paragraph>info_book.integratedmekanism.manual.logic.operators.text1</paragraph>
             <appendix_list factory="integrateddynamics:operators_output">integratedmekanism:.*</appendix_list>

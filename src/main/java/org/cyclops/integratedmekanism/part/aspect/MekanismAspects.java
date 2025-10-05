@@ -2,6 +2,7 @@ package org.cyclops.integratedmekanism.part.aspect;
 
 import mekanism.api.chemical.ChemicalStack;
 import mekanism.api.chemical.IChemicalHandler;
+import mekanism.api.radiation.IRadiationManager;
 import org.cyclops.integrateddynamics.api.part.aspect.IAspectRead;
 import org.cyclops.integrateddynamics.core.evaluate.variable.*;
 import org.cyclops.integrateddynamics.part.aspect.read.AspectReadBuilders;
@@ -102,6 +103,50 @@ public class MekanismAspects {
                             .handle(MekanismAspectReadBuilders.Chemical.PROP_GET_CHEMICALSTACK)
                             .handle(MekanismAspectReadBuilders.PROP_GET_CHEMICALSTACK)
                             .buildRead();
+
+        }
+
+        public static final class Machine {
+
+            public static final IAspectRead<ValueTypeDouble.ValueDouble, ValueTypeDouble> DOUBLE_FISSIONREACTOR_DAMAGE =
+                    MekanismAspectReadBuilders.Machine.BUILDER_FISSIONREACTOR_DOUBLE.handle(reactor -> reactor
+                            .map(r -> r.reactorDamage)
+                            .orElse(0D)
+                    ).handle(AspectReadBuilders.PROP_GET_DOUBLE, "damage").buildRead();
+            public static final IAspectRead<ValueTypeDouble.ValueDouble, ValueTypeDouble> DOUBLE_FISSIONREACTOR_BURNRATE =
+                    MekanismAspectReadBuilders.Machine.BUILDER_FISSIONREACTOR_DOUBLE.handle(reactor -> reactor
+                            .map(r -> r.lastBurnRate)
+                            .orElse(0D)
+                    ).handle(AspectReadBuilders.PROP_GET_DOUBLE, "burnrate").buildRead();
+            public static final IAspectRead<ValueTypeDouble.ValueDouble, ValueTypeDouble> DOUBLE_FISSIONREACTOR_BURNRATEMAX =
+                    MekanismAspectReadBuilders.Machine.BUILDER_FISSIONREACTOR_DOUBLE.handle(reactor -> reactor
+                            .map(r -> (double) r.getMaxBurnRate())
+                            .orElse(0D)
+                    ).handle(AspectReadBuilders.PROP_GET_DOUBLE, "burnratemax").buildRead();
+            public static final IAspectRead<ValueTypeDouble.ValueDouble, ValueTypeDouble> DOUBLE_FISSIONREACTOR_BURNRATELIMIT =
+                    MekanismAspectReadBuilders.Machine.BUILDER_FISSIONREACTOR_DOUBLE.handle(reactor -> reactor
+                            .map(r -> r.rateLimit)
+                            .orElse(0D)
+                    ).handle(AspectReadBuilders.PROP_GET_DOUBLE, "burnratelimit").buildRead();
+            public static final IAspectRead<ValueTypeLong.ValueLong, ValueTypeLong> LONG_FISSIONREACTOR_HEATERATE =
+                    MekanismAspectReadBuilders.Machine.BUILDER_FISSIONREACTOR_LONG.handle(reactor -> reactor
+                            .map(r -> r.lastBoilRate)
+                            .orElse(0L)
+                    ).handle(AspectReadBuilders.PROP_GET_LONG, "heatingrate").buildRead();
+            public static final IAspectRead<ValueTypeDouble.ValueDouble, ValueTypeDouble> DOUBLE_FISSIONREACTOR_HEATERATE =
+                    MekanismAspectReadBuilders.Machine.BUILDER_FISSIONREACTOR_DOUBLE.handle(reactor -> reactor
+                            .map(r -> r.lastEnvironmentLoss)
+                            .orElse(0D)
+                    ).handle(AspectReadBuilders.PROP_GET_DOUBLE, "environmentloss").buildRead();
+
+        }
+
+        public static final class World {
+
+            public static final IAspectRead<ValueTypeDouble.ValueDouble, ValueTypeDouble> DOUBLE_RADIATION =
+                    MekanismAspectReadBuilders.World.BUILDER_DOUBLE.handle(dimPos -> IRadiationManager.INSTANCE
+                            .getRadiationLevel(dimPos.getLevel(true), dimPos.getBlockPos()))
+                            .handle(AspectReadBuilders.PROP_GET_DOUBLE, "radiation").buildRead();
 
         }
 

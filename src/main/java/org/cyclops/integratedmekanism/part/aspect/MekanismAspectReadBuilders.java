@@ -4,7 +4,11 @@ import com.google.common.collect.ImmutableList;
 import mekanism.api.chemical.ChemicalStack;
 import mekanism.api.chemical.IChemicalHandler;
 import mekanism.common.capabilities.Capabilities;
+import mekanism.common.lib.multiblock.IMultiblock;
+import mekanism.generators.common.content.fission.FissionReactorMultiblockData;
 import org.apache.commons.lang3.tuple.Pair;
+import org.cyclops.cyclopscore.datastructure.DimPos;
+import org.cyclops.cyclopscore.helper.IModHelpers;
 import org.cyclops.cyclopscore.helper.IModHelpersNeoForge;
 import org.cyclops.integrateddynamics.api.part.PartPos;
 import org.cyclops.integrateddynamics.api.part.PartTarget;
@@ -23,6 +27,8 @@ import org.cyclops.integratedmekanism.part.aspect.listproxy.ValueTypeListProxyPo
 import org.cyclops.integratedmekanism.value.MekanismValueTypes;
 import org.cyclops.integratedmekanism.value.ValueObjectTypeChemicalStack;
 
+import java.util.Optional;
+
 /**
  * @author rubensworks
  */
@@ -31,6 +37,12 @@ public class MekanismAspectReadBuilders {
     // --------------- Value type builders ---------------
     public static final AspectBuilder<ValueObjectTypeChemicalStack.ValueChemicalStack, ValueObjectTypeChemicalStack, Pair<PartTarget, IAspectProperties>>
             BUILDER_OBJECT_CHEMICALSTACK = AspectBuilder.forReadType(MekanismValueTypes.OBJECT_CHEMICALSTACK).byMod(Reference.MOD_ID);
+    public static final AspectBuilder<ValueTypeInteger.ValueInteger, ValueTypeInteger, Pair<PartTarget, IAspectProperties>>
+            BUILDER_INTEGER = AspectBuilder.forReadType(ValueTypes.INTEGER).byMod(Reference.MOD_ID);
+    public static final AspectBuilder<ValueTypeDouble.ValueDouble, ValueTypeDouble, Pair<PartTarget, IAspectProperties>>
+            BUILDER_DOUBLE = AspectBuilder.forReadType(ValueTypes.DOUBLE).byMod(Reference.MOD_ID);
+    public static final AspectBuilder<ValueTypeLong.ValueLong, ValueTypeLong, Pair<PartTarget, IAspectProperties>>
+            BUILDER_LONG = AspectBuilder.forReadType(ValueTypes.LONG).byMod(Reference.MOD_ID);
 
     // --------------- Value type propagators ---------------
     public static final IAspectValuePropagator<ChemicalStack, ValueObjectTypeChemicalStack.ValueChemicalStack>
@@ -88,6 +100,33 @@ public class MekanismAspectReadBuilders {
         public static final AspectBuilder<ValueTypeDouble.ValueDouble, ValueTypeDouble, Pair<IChemicalHandler, Integer>>
                 BUILDER_DOUBLE_ACTIVATABLE = AspectReadBuilders.BUILDER_DOUBLE.byMod(Reference.MOD_ID).handle(PROP_GET_ACTIVATABLE, "chemical").withProperties(PROPERTIES);
 
+    }
+
+    public static final class Machine {
+
+        public static final IAspectValuePropagator<Pair<PartTarget, IAspectProperties>, Optional<FissionReactorMultiblockData>> PROP_GET_FISSIONREACTOR = input -> {
+            DimPos dimPos = input.getLeft().getTarget().getPos();
+            IMultiblock<?> multiBlock = IModHelpers.get().getBlockEntityHelpers().get(dimPos.getLevel(true), dimPos.getBlockPos(), IMultiblock.class).orElse(null);
+            if (multiBlock.getMultiblock() instanceof FissionReactorMultiblockData data) {
+                return Optional.of(data);
+            }
+            return Optional.empty();
+        };
+
+        public static final AspectBuilder<ValueTypeInteger.ValueInteger, ValueTypeInteger, Optional<FissionReactorMultiblockData>>
+                BUILDER_FISSIONREACTOR_INTEGER = MekanismAspectReadBuilders.BUILDER_INTEGER.appendKind("machine")
+                .handle(PROP_GET_FISSIONREACTOR, "fissionreactor");
+        public static final AspectBuilder<ValueTypeDouble.ValueDouble, ValueTypeDouble, Optional<FissionReactorMultiblockData>>
+                BUILDER_FISSIONREACTOR_DOUBLE = MekanismAspectReadBuilders.BUILDER_DOUBLE.appendKind("machine")
+                .handle(PROP_GET_FISSIONREACTOR, "fissionreactor");
+        public static final AspectBuilder<ValueTypeLong.ValueLong, ValueTypeLong, Optional<FissionReactorMultiblockData>>
+                BUILDER_FISSIONREACTOR_LONG = MekanismAspectReadBuilders.BUILDER_LONG.appendKind("machine")
+                .handle(PROP_GET_FISSIONREACTOR, "fissionreactor");
+    }
+
+    public static final class World {
+        public static final AspectBuilder<ValueTypeDouble.ValueDouble, ValueTypeDouble, DimPos>
+                BUILDER_DOUBLE = MekanismAspectReadBuilders.BUILDER_DOUBLE.handle(AspectReadBuilders.World.PROP_GET, "world");
     }
 
 }
