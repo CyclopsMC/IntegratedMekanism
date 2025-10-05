@@ -83,6 +83,20 @@
     "aspect.integratedmekanism.read.double.world.radiation": "Radiation",
     "aspect.integratedmekanism.read.double.world.radiation.info": "Get the radiation level at the target (in Sv/h)",
 
+    "_comment": "# Machine aspects",
+    "aspect.integratedmekanism.read.double.machine.fissionreactor.damage": "Fission Reactor Damage",
+    "aspect.integratedmekanism.read.double.machine.fissionreactor.damage.info": "Damage factor of the given Fission Reactor",
+    "aspect.integratedmekanism.read.double.machine.fissionreactor.burnrate": "Fission Reactor Actual Burn Rate",
+    "aspect.integratedmekanism.read.double.machine.fissionreactor.burnrate.info": "The actual burn rate of the given Fission Reactor",
+    "aspect.integratedmekanism.read.double.machine.fissionreactor.burnratemax": "Fission Reactor Maximum Burn Rate",
+    "aspect.integratedmekanism.read.double.machine.fissionreactor.burnratemax.info": "The maximum possible burn rate of the given Fission Reactor",
+    "aspect.integratedmekanism.read.double.machine.fissionreactor.burnratelimit": "Fission Reactor Set Burn Rate",
+    "aspect.integratedmekanism.read.double.machine.fissionreactor.burnratelimit.info": "The configured burn rate of the given Fission Reactor",
+    "aspect.integratedmekanism.read.long.machine.fissionreactor.heatingrate": "Fission Reactor Heating Rate",
+    "aspect.integratedmekanism.read.long.machine.fissionreactor.heatingrate.info": "The amount of coolant being heated (mB/t) of the given Fission Reactor",
+    "aspect.integratedmekanism.read.double.machine.fissionreactor.environmentloss": "Fission Reactor Environmental Loss",
+    "aspect.integratedmekanism.read.double.machine.fissionreactor.environmentloss.info": "The environmental loss of the given Fission Reactor",
+
     "_comment": "# Chemical",
     "aspect.integratedmekanism.write.boolean.chemical.export": "Export All Chemicals",
     "aspect.integratedmekanism.write.boolean.chemical.export.info": "Export chemicals if the boolean is true",
@@ -261,6 +275,9 @@
 
     "info_book.integratedmekanism.manual.logic.part_reader_chemical": "Chemical Reader",
     "info_book.integratedmekanism.manual.logic.part_reader_chemical.text1": "A part that adds information about the chemical machine the part is facing.",
+
+    "info_book.integratedmekanism.manual.logic.part_readers": "New read aspects",
+    "info_book.integratedmekanism.manual.logic.part_readers.text1": "Parts such as the &lWorld Reader&r and &lMachine Reader&r have some additional aspects to read information about things such as radiation and fission reactor statistics.",
 
     "info_book.integratedmekanism.manual.logic.operators": "Chemical Operators",
     "info_book.integratedmekanism.manual.logic.operators.text1": "&8Chemical&0 values can be used within a variety of operators, for example to check if something is radioactive, or reading its conductivity.",

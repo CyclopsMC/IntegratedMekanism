@@ -84,6 +84,14 @@ public class IntegratedMekanism extends ModBaseVersionable<IntegratedMekanism> {
         AspectRegistry.getInstance().register(PartTypes.WORLD_READER, Lists.newArrayList(
                 MekanismAspects.Read.World.DOUBLE_RADIATION
         ));  // TODO: move to onSetup in 1.21
+        AspectRegistry.getInstance().register(PartTypes.MACHINE_READER, Lists.newArrayList(
+                MekanismAspects.Read.Machine.DOUBLE_FISSIONREACTOR_DAMAGE,
+                MekanismAspects.Read.Machine.DOUBLE_FISSIONREACTOR_BURNRATE,
+                MekanismAspects.Read.Machine.DOUBLE_FISSIONREACTOR_BURNRATEMAX,
+                MekanismAspects.Read.Machine.DOUBLE_FISSIONREACTOR_BURNRATELIMIT,
+                MekanismAspects.Read.Machine.LONG_FISSIONREACTOR_HEATERATE,
+                MekanismAspects.Read.Machine.DOUBLE_FISSIONREACTOR_HEATERATE
+        ));  // TODO: move to onSetup in 1.21
     }
 
     @Override

@@ -7,6 +7,7 @@ import mekanism.common.tile.factory.TileEntityFactory;
 import mekanism.common.tile.machine.*;
 import mekanism.common.tile.multiblock.TileEntityThermalEvaporationController;
 import mekanism.common.tile.multiblock.TileEntityThermalEvaporationValve;
+import mekanism.generators.common.tile.fission.TileEntityFissionReactorLogicAdapter;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -16,11 +17,18 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.server.ServerStoppedEvent;
 import org.cyclops.commoncapabilities.api.capability.recipehandler.IRecipeHandler;
+import org.cyclops.commoncapabilities.api.capability.temperature.ITemperature;
+import org.cyclops.commoncapabilities.api.capability.work.IWorker;
 import org.cyclops.commoncapabilities.capability.recipehandler.RecipeHandlerConfig;
+import org.cyclops.commoncapabilities.capability.temperature.TemperatureConfig;
+import org.cyclops.commoncapabilities.capability.worker.WorkerConfig;
 import org.cyclops.cyclopscore.modcompat.capabilities.CapabilityConstructorRegistry;
 import org.cyclops.cyclopscore.modcompat.capabilities.DefaultCapabilityProvider;
 import org.cyclops.cyclopscore.modcompat.capabilities.ICapabilityConstructor;
+import org.cyclops.cyclopscore.modcompat.capabilities.SimpleCapabilityConstructor;
 import org.cyclops.integratedmekanism.IntegratedMekanism;
+import org.cyclops.integratedmekanism.capability.temperature.FissionReactorTemperature;
+import org.cyclops.integratedmekanism.capability.worker.FissionReactorWorker;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -35,6 +43,36 @@ public class MekanismCapabilityLoader {
 
     public static void load() {
         CapabilityConstructorRegistry registry = IntegratedMekanism._instance.getCapabilityConstructorRegistry();
+
+        // Worker
+        registry.registerTile(TileEntityFissionReactorLogicAdapter.class,
+                new SimpleCapabilityConstructor<IWorker, TileEntityFissionReactorLogicAdapter>() {
+                    @Override
+                    public Capability<IWorker> getCapability() {
+                        return WorkerConfig.CAPABILITY;
+                    }
+
+                    @Nullable
+                    @Override
+                    public ICapabilityProvider createProvider(TileEntityFissionReactorLogicAdapter host) {
+                        return new DefaultCapabilityProvider<>(this::getCapability, new FissionReactorWorker(host));
+                    }
+                });
+
+        // Temperature
+        registry.registerTile(TileEntityFissionReactorLogicAdapter.class,
+                new SimpleCapabilityConstructor<ITemperature, TileEntityFissionReactorLogicAdapter>() {
+                    @Override
+                    public Capability<ITemperature> getCapability() {
+                        return TemperatureConfig.CAPABILITY;
+                    }
+
+                    @Nullable
+                    @Override
+                    public ICapabilityProvider createProvider(TileEntityFissionReactorLogicAdapter host) {
+                        return new DefaultCapabilityProvider<>(this::getCapability, new FissionReactorTemperature(host));
+                    }
+                });
 
         // RecipeHandlers
         MinecraftForge.EVENT_BUS.addListener((ServerStoppedEvent event) -> MekanismRecipeHandler.CACHED_RECIPES.clear());
