@@ -246,7 +246,6 @@ runs {
 }
 
 jar {
-    archiveClassifier.set('slim')
     manifest {
         attributes([
                 "Specification-Title": "${project.name}",
