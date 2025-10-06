@@ -1,7 +1,7 @@
 {
     "_comment": "General",
     "itemGroup.integratedmekanism": "Integrated Mekanism",
-    "general.integratedmekanism.description": "Compability mod between Mekanism and the Integrated Dynamics mods.",
+    "general.integratedmekanism.description": "Compatibility mod between Mekanism and the Integrated Dynamics mods.",
 
     "_comment": "Recipe components",
     "recipecomponent.mekanism.chemicalstack": "Chemical",
