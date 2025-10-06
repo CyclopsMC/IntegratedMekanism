@@ -284,6 +284,7 @@
 
     "info_book.integratedmekanism.manual.crafting": "Chemical Crafting",
     "info_book.integratedmekanism.manual.crafting.text1": "Auto-crafting with chemicals works in exactly the same way as for items, fluids, and energy. You can create recipes within the &lLogic Programmer&r (Chemical Recipe), or read all available recipes in a machine using the &lMachine Reader&r. These recipes can be inserted in the &lCrafting Interface&r for autocrafting with at places such as the &lCrafting Writer&r or the &lStorage Terminal&r.",
+    "info_book.integratedmekanism.manual.crafting.text2": "&lWARNING:&r The &lChemical Tanks&r from &lMekanism&r do not allow chemical interaction from all sides by default. So you may have to explicitly allow &lInput/Output&r for the connected side within the &lChemical Tank&r GUI.",
 
     "info_book.integratedmekanism.tutorials": "Mekanism Tutorials",
 
