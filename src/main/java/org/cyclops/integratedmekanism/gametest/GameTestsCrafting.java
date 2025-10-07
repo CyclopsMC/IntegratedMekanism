@@ -33,6 +33,7 @@ import org.cyclops.commoncapabilities.api.ingredient.IMixedIngredients;
 import org.cyclops.commoncapabilities.api.ingredient.IngredientComponent;
 import org.cyclops.commoncapabilities.api.ingredient.MixedIngredients;
 import org.cyclops.commoncapabilities.api.ingredient.PrototypedIngredient;
+import org.cyclops.integratedcrafting.part.PartTypeInterfaceCrafting;
 import org.cyclops.integratedcrafting.part.aspect.CraftingAspectWriteBuilders;
 import org.cyclops.integratedcrafting.part.aspect.CraftingAspects;
 import org.cyclops.integrateddynamics.api.part.PartPos;
@@ -84,7 +85,7 @@ public class GameTestsCrafting {
         blockEntity.getConfig().getConfig(TransmissionType.ITEM).setCanEject(true);
     }
 
-    public static TileEntityConfigurableMachine getMachine(GameTestHelper helper, NetworkPositions positions) {
+    public static TileEntityConfigurableMachine getMachine(GameTestHelper helper, INetworkPositions<PartTypeInterfaceCrafting.State> positions) {
         PartPos iface = positions.interfaces().get(0);
         return (TileEntityConfigurableMachine) helper.getLevel().getBlockEntity(iface.getPos().getBlockPos().relative(iface.getSide()));
     }
@@ -95,7 +96,7 @@ public class GameTestsCrafting {
 
     @GameTest(template = TEMPLATE_EMPTY, timeoutTicks = TIMEOUT)
     public void testCraftingCrystalizeBrineToSalt(GameTestHelper helper) {
-        NetworkPositions positions = createBasicNetwork(helper, POS, MekanismBlocks.CHEMICAL_CRYSTALLIZER.get());
+        INetworkPositions<PartTypeInterfaceCrafting.State> positions = createBasicNetwork(helper, POS, MekanismBlocks.CHEMICAL_CRYSTALLIZER.get());
         TileEntityConfigurableMachine machine = getMachine(helper, positions);
         machine.insertEnergy(100_000, Action.EXECUTE);
         machine.getConfig().getConfig(TransmissionType.CHEMICAL).setDataType(DataType.INPUT, RelativeSide.TOP);
@@ -135,7 +136,7 @@ public class GameTestsCrafting {
 
     @GameTest(template = TEMPLATE_EMPTY, timeoutTicks = TIMEOUT)
     public void testCraftingRotaryWaterVapor(GameTestHelper helper) {
-        NetworkPositions positions = createBasicNetwork(helper, POS, MekanismBlocks.ROTARY_CONDENSENTRATOR.get());
+        INetworkPositions<PartTypeInterfaceCrafting.State> positions = createBasicNetwork(helper, POS, MekanismBlocks.ROTARY_CONDENSENTRATOR.get());
         TileEntityConfigurableMachine machine = getMachine(helper, positions);
         machine.insertEnergy(100_000, Action.EXECUTE);
         machine.getConfig().getConfig(TransmissionType.FLUID).setDataType(DataType.INPUT, RelativeSide.TOP);
