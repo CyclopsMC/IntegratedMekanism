@@ -353,8 +353,8 @@ curseforge {
         }
 
         changelog = ""
-        if (new File("resources/changelog/${secrets.version}.txt").exists()) {
-            changelog = new File("resources/changelog/${secrets.version}.txt").text
+        if (new File("resources/changelog/${project.version}.txt").exists()) {
+            changelog = new File("resources/changelog/${project.version}.txt").text
         }
 
         addArtifact deobfJar
