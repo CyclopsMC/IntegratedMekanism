@@ -344,6 +344,7 @@ curseforge {
                 requiredDependency 'cyclops-core'
                 requiredDependency 'integrated-dynamics'
                 requiredDependency 'mekanism'
+                requiredDependency 'mekanism-generators'
                 optionalDependency 'integrated-tunnels'
                 optionalDependency 'integrated-crafting'
                 optionalDependency 'integrated-terminals'
@@ -385,6 +386,7 @@ modrinth {
       required.project "oFXrCkDI" // Common Capabilities
       required.project "yYzdQHJI" // Integrated Dynamics
       required.project "Ce6I4WUE" // Mekanism
+      required.project "OFVYKsAk" // Mekanism Generators
       optional.project "Etqy1Omb" // Integrated Tunnels
       optional.project "qwpACdla" // Integrated Crafting
       optional.project "HmLJoQ1K" // Integrated Terminals
