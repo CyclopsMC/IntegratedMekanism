@@ -353,6 +353,7 @@ task publishCurseForge(type: TaskPublishCurseForge) {
     mainFile.addRequirement("cyclops-core")
 	mainFile.addRequirement('integrated-dynamics')
     mainFile.addRequirement('mekanism')
+    mainFile.addRequirement('mekanism-generators')
     mainFile.addOptional('integrated-tunnels')
     mainFile.addOptional('integrated-crafting')
     mainFile.addOptional('integrated-terminals')
@@ -375,6 +376,7 @@ modrinth {
       required.project "oFXrCkDI" // Common Capabilities
       required.project "yYzdQHJI" // Integrated Dynamics
       required.project "Ce6I4WUE" // Mekanism
+      required.project "OFVYKsAk" // Mekanism Generators
       optional.project "Etqy1Omb" // Integrated Tunnels
       optional.project "qwpACdla" // Integrated Crafting
       optional.project "HmLJoQ1K" // Integrated Terminals
