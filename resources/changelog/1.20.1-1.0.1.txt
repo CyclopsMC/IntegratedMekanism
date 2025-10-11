@@ -1,0 +1,5 @@
+As always, don't forget to backup your world before updating!
+Requires CyclopsCore version 1.21.0 or higher.
+
+Fixes:
+* Handle overflows in chemical reader total aspects

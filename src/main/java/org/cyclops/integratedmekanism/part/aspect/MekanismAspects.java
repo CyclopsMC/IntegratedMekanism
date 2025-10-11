@@ -62,7 +62,14 @@ public class MekanismAspects {
                     MekanismAspectReadBuilders.Chemical.BUILDER_LONG.handle(tankInfo -> {
                         long amount = 0;
                         for (int i = 0; i < tankInfo.getChemicalTanks(); i++) {
-                            amount += tankInfo.getChemicalInTank(i).getAmount();
+                            try {
+                                amount = Math.addExact(amount, tankInfo.getChemicalInTank(i).getAmount());
+                            } catch (ArithmeticException e) {
+                                amount = Integer.MAX_VALUE;
+                            }
+                            if (amount == Integer.MAX_VALUE) {
+                                break;
+                            }
                         }
                         return amount;
                     }).handle(AspectReadBuilders.PROP_GET_LONG, "totalamount").buildRead();
@@ -74,7 +81,14 @@ public class MekanismAspects {
                     MekanismAspectReadBuilders.Chemical.BUILDER_LONG.handle(tankInfo -> {
                         long capacity = 0;
                         for (int i = 0; i < tankInfo.getChemicalTanks(); i++) {
-                            capacity += tankInfo.getChemicalTankCapacity(i);
+                            try {
+                                capacity = Math.addExact(capacity, tankInfo.getChemicalTankCapacity(i));
+                            } catch (ArithmeticException e) {
+                                capacity = Integer.MAX_VALUE;
+                            }
+                            if (capacity == Integer.MAX_VALUE) {
+                                break;
+                            }
                         }
                         return capacity;
                     }).handle(AspectReadBuilders.PROP_GET_LONG, "totalcapacity").buildRead();
