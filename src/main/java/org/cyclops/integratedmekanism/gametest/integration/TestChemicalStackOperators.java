@@ -7,6 +7,7 @@ import mekanism.common.resource.PrimaryResource;
 import org.cyclops.integrateddynamics.api.evaluate.EvaluationException;
 import org.cyclops.integrateddynamics.api.evaluate.variable.IValue;
 import org.cyclops.integrateddynamics.api.evaluate.variable.IValueTypeListProxy;
+import org.cyclops.integrateddynamics.api.evaluate.variable.IVariable;
 import org.cyclops.integrateddynamics.core.evaluate.variable.*;
 import org.cyclops.integrateddynamics.core.test.IntegrationBefore;
 import org.cyclops.integrateddynamics.core.test.IntegrationTest;
@@ -673,6 +674,33 @@ public class TestChemicalStackOperators {
     @IntegrationTest(expected = EvaluationException.class)
     public void testInvalidInputTypeTagStacks() throws EvaluationException {
         MekanismOperators.OBJECT_CHEMICALSTACK_TAG_STACKS.evaluate(DUMMY_VARIABLE);
+    }
+
+    /**
+     * ----------------------------------- CHEMICALBYNAME -----------------------------------
+     */
+
+    @IntegrationTest
+    public void testChemicalChemicalByName() throws EvaluationException {
+        IValue res1 = MekanismOperators.OBJECT_CHEMICALSTACK_BY_NAME.evaluate(new IVariable[]{sWaterVapor});
+        Asserts.check(res1 instanceof ValueObjectTypeChemicalStack.ValueChemicalStack, "result is a chemical");
+        TestHelpers.assertEqual(((ValueObjectTypeChemicalStack.ValueChemicalStack) res1).getRawValue().getChemical(),
+                new ChemicalStack(MekanismChemicals.WATER_VAPOR, 1000).getChemical(), "chemicalbyname(mekanism:watervapor) = watervapor");
+    }
+
+    @IntegrationTest(expected = EvaluationException.class)
+    public void testInvalidInputSizeChemicalByNameLarge() throws EvaluationException {
+        MekanismOperators.OBJECT_CHEMICALSTACK_BY_NAME.evaluate(new IVariable[]{sWaterVapor, sWaterVapor});
+    }
+
+    @IntegrationTest(expected = EvaluationException.class)
+    public void testInvalidInputSizeChemicalByNameSmall() throws EvaluationException {
+        MekanismOperators.OBJECT_CHEMICALSTACK_BY_NAME.evaluate(new IVariable[]{});
+    }
+
+    @IntegrationTest(expected = EvaluationException.class)
+    public void testInvalidInputTypeChemicalByName() throws EvaluationException {
+        MekanismOperators.OBJECT_CHEMICALSTACK_BY_NAME.evaluate(new IVariable[]{DUMMY_VARIABLE});
     }
 
 }

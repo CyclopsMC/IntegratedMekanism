@@ -3,6 +3,7 @@ package org.cyclops.integratedmekanism.operator;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import mekanism.api.chemical.Chemical;
 import mekanism.api.chemical.ChemicalStack;
 import mekanism.api.datamaps.chemical.attribute.ChemicalFuel;
 import mekanism.api.datamaps.chemical.attribute.ChemicalRadioactivity;
@@ -11,6 +12,7 @@ import mekanism.api.radiation.capability.IRadiationEntity;
 import mekanism.common.capabilities.Capabilities;
 import mekanism.common.registries.MekanismDataMapTypes;
 import net.minecraft.ResourceLocationException;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringUtil;
 import org.cyclops.commoncapabilities.api.ingredient.IMixedIngredients;
@@ -323,6 +325,22 @@ public class MekanismOperators {
                 }
                 return ValueTypeList.ValueList.ofList(MekanismValueTypes.OBJECT_CHEMICALSTACK, builder.build());
             }).build());
+
+    /**
+     * Get an chemical by name.
+     */
+    public static final IOperator OBJECT_CHEMICALSTACK_BY_NAME = REGISTRY.register(MekanismOperatorBuilders.CHEMICALSTACK_1_SUFFIX_LONG
+            .inputType(ValueTypes.STRING).output(MekanismValueTypes.OBJECT_CHEMICALSTACK)
+            .symbol("chemical_by_name").operatorName("chemicalbyname").interactName("chemicalByName")
+            .function(OperatorBuilders.FUNCTION_STRING_TO_RESOURCE_LOCATION
+                    .build(input -> {
+                        Optional<Holder.Reference<Chemical>> chemical = ChemicalHelpers.getStackRegistry().getHolder(input);
+                        ChemicalStack chemicalStack = ChemicalStack.EMPTY;
+                        if (chemical.isPresent()) {
+                            chemicalStack = new ChemicalStack(chemical.get(), ChemicalHelpers.BUCKET_VOLUME);
+                        }
+                        return ValueObjectTypeChemicalStack.ValueChemicalStack.of(chemicalStack);
+                    })).build());
 
     /**
      * ----------------------------------- INGREDIENTS OPERATORS -----------------------------------

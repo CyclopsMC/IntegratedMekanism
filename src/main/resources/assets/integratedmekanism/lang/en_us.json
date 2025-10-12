@@ -202,6 +202,8 @@
     "operator.integratedmekanism.chemicalstack.tag.info": "The Tag names (strings) of the given chemical",
     "operator.integratedmekanism.chemicalstack.chemicalwithtag": "With Tag",
     "operator.integratedmekanism.chemicalstack.chemicalwithtag.info": "Set the NBT tag of the given chemical.",
+    "operator.integratedmekanism.chemicalstack.chemicalbyname": "Chemical By Name",
+    "operator.integratedmekanism.chemicalstack.chemicalbyname.info": "Get the chemical corresponding to the given unique name.",
 
     "operator.integratedmekanism.string": "String",
     "operator.integratedmekanism.string.basename": "String %s",
