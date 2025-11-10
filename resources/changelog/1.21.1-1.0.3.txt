@@ -1,0 +1,9 @@
+As always, don't forget to backup your world before updating!
+Requires CyclopsCore version 1.27.0 or higher.
+
+Additions:
+* Add translations through Crowdin (#8)
+
+Fixes:
+* Fix broken NBT clear recipes, Closes #11
+* Fix some spelling and grammar typos in lang (#7)
