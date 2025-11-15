@@ -110,4 +110,10 @@ public class ChemicalNetwork extends PositionedAddonsNetworkIngredients<Chemical
                     true, true, superFilter == null || superFilter.isAllowAllIfFilterNotApplied());
         }
     }
+
+    @Override
+    public void update() {
+        super.update();
+        this.cacheStorageChemicals.invalidateAll();
+    }
 }
