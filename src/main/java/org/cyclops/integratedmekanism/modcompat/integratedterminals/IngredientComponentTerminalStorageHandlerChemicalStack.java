@@ -178,7 +178,7 @@ public class IngredientComponentTerminalStorageHandlerChemicalStack implements I
     @Override
     public ChemicalStack<?> insertIntoContainer(IIngredientComponentStorage<ChemicalStack<?>, Integer> storage, AbstractContainerMenu container, int containerSlot, ChemicalStack<?> maxInstance, @Nullable Player player, boolean transferFullSelection) {
         ItemStack stack = container.getSlot(containerSlot).getItem();
-        return CapabilityHelpers.getChemicalHandler(stack)
+        return CapabilityHelpers.getChemicalHandler(stack, maxInstance.getType())
                 .<ChemicalStack<?>>map(chemicalHandler -> {
                     IIngredientComponentStorage<ChemicalStack<?>, Integer> itemStorage = getChemicalStorage(storage.getComponent(), chemicalHandler);
                     ChemicalStack<?> moved = GasStack.EMPTY;

@@ -1,6 +1,15 @@
 package org.cyclops.integratedmekanism.core;
 
+import mekanism.api.chemical.Chemical;
 import mekanism.api.chemical.IChemicalHandler;
+import mekanism.api.chemical.gas.Gas;
+import mekanism.api.chemical.gas.IGasHandler;
+import mekanism.api.chemical.infuse.IInfusionHandler;
+import mekanism.api.chemical.infuse.InfuseType;
+import mekanism.api.chemical.pigment.IPigmentHandler;
+import mekanism.api.chemical.pigment.Pigment;
+import mekanism.api.chemical.slurry.ISlurryHandler;
+import mekanism.api.chemical.slurry.Slurry;
 import mekanism.common.capabilities.Capabilities;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.Capability;
@@ -8,6 +17,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import org.cyclops.cyclopscore.helper.BlockEntityHelpers;
 import org.cyclops.integrateddynamics.api.part.PartPos;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -49,13 +59,23 @@ public class CapabilityHelpers {
      * @return An optional chemical handler.
      * @param <T> The chemical handler type.
      */
-    public static <T extends IChemicalHandler<?, ?>> LazyOptional<T> getFirstOf(ItemStack itemStack, List<Capability<? extends T>> capabilities) {
+    public static <T extends IChemicalHandler<?, ?>> LazyOptional<T> getFirstOf(ItemStack itemStack, @Nullable Chemical<?> preferChemical, List<Capability<? extends T>> capabilities) {
         LazyOptional<T> lazyOptionalFirst = LazyOptional.empty();
         for (Capability<? extends T> capability : capabilities) {
             LazyOptional<T> lazyOptionalCurrent = itemStack.getCapability(capability).cast();
             if (lazyOptionalCurrent.isPresent()) {
                 T handler = lazyOptionalCurrent.resolve().get();
-                if (handler.getTanks() > 0 && !handler.getChemicalInTank(0).isEmpty()) {
+                boolean matchPreferChemical = false;
+                if (preferChemical != null) { // TODO: remove in 1.21
+                    matchPreferChemical = (preferChemical instanceof Gas && handler instanceof IGasHandler)
+                            || (preferChemical instanceof InfuseType && handler instanceof IInfusionHandler)
+                            || (preferChemical instanceof Pigment && handler instanceof IPigmentHandler)
+                            || (preferChemical instanceof Slurry && handler instanceof ISlurryHandler);
+                    if (!matchPreferChemical) {
+                        continue;
+                    }
+                }
+                if (handler.getTanks() > 0 && (matchPreferChemical || !handler.getChemicalInTank(0).isEmpty())) {
                     return lazyOptionalCurrent;
                 }
                 if (!lazyOptionalFirst.isPresent()) {
@@ -66,7 +86,11 @@ public class CapabilityHelpers {
         return lazyOptionalFirst;
     }
 
+    public static LazyOptional<IChemicalHandler<?, ?>> getChemicalHandler(ItemStack itemStack, @Nullable Chemical<?> preferChemical) {
+        return getFirstOf(itemStack, preferChemical, CHEMICAL_CAPABILITIES);
+    }
+
     public static LazyOptional<IChemicalHandler<?, ?>> getChemicalHandler(ItemStack itemStack) {
-        return getFirstOf(itemStack, CHEMICAL_CAPABILITIES);
+        return getChemicalHandler(itemStack, null);
     }
 }
