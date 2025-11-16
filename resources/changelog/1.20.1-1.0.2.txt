@@ -1,0 +1,6 @@
+As always, don't forget to backup your world before updating!
+Requires CyclopsCore version 1.21.0 or higher.
+
+Fixes:
+* Fix non-gas chemicals not being insertable to items from terminal, Closes #13
+* Fix interfaces not correctly updating on changed tanks, Closes #14
