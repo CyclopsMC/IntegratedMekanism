@@ -1,8 +1,15 @@
 # Changelog for Minecraft 1.20.1
 All notable changes to this project will be documented in this file.
 
+<a name="1.20.1-1.0.3"></a>
+## [1.20.1-1.0.3](/compare/1.20.1-1.0.2...1.20.1-1.0.3) - 2025-11-22 10:52:05
+
+
+### Fixed
+* Fix crafting interfaces not handling non-gas chemical inputs, Closes #17
+
 <a name="1.20.1-1.0.2"></a>
-## [1.20.1-1.0.2](/compare/1.20.1-1.0.1...1.20.1-1.0.2) - 2025-11-16 08:53:08
+## [1.20.1-1.0.2](/compare/1.20.1-1.0.1...1.20.1-1.0.2) - 2025-11-16 08:53:08 +0100
 
 
 ### Fixed
