@@ -74,6 +74,13 @@ public abstract class IngredientComponentStorageWrapperHandlerChemicalStack<CHEM
         return this.ingredientComponent;
     }
 
+    // TODO: Remove this method override completely in 1.21.1, as it's not necessary there anymore due to Mekanisms's 1.21 API.
+    @Override
+    public IIngredientComponentStorage<ChemicalStack<?>, Integer> getComponentStorage(ICapabilityProvider capabilityProvider, @org.jetbrains.annotations.Nullable Direction facing) {
+        LazyOptional<C> storage = this.getStorage(capabilityProvider, facing);
+        return storage.map(this::wrapComponentStorage).orElse(null);
+    }
+
     public static class ComponentStorageWrapper<CHEMICAL extends Chemical<CHEMICAL>, STACK extends ChemicalStack<CHEMICAL>, C extends IChemicalHandler<CHEMICAL, STACK>> implements IIngredientComponentStorage<STACK, Integer> {
 
         private final IngredientComponent<STACK, Integer> ingredientComponent;
