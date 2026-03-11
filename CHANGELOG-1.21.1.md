@@ -1,8 +1,18 @@
 # Changelog for Minecraft 1.21.1
 All notable changes to this project will be documented in this file.
 
+<a name="1.21.1-1.0.4"></a>
+## [1.21.1-1.0.4](https://github.com/CyclopsMC/IntegratedMekanism/compare/1.21.1-1.0.3...1.21.1-1.0.4) - 2026-03-11 14:10:21
+
+
+### Added
+* Add translations through Crowdin (#16)
+
+### Fixed
+* Fix advancement JSON format errors (#20)
+
 <a name="1.21.1-1.0.3"></a>
-## [1.21.1-1.0.3](https://github.com/CyclopsMC/IntegratedMekanism/compare/1.21.1-1.0.2...1.21.1-1.0.3) - 2025-11-10 19:53:40
+## [1.21.1-1.0.3](https://github.com/CyclopsMC/IntegratedMekanism/compare/1.21.1-1.0.2...1.21.1-1.0.3) - 2025-11-10 19:53:40 +0100
 
 
 ### Added
