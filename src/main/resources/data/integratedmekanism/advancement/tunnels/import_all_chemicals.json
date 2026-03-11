@@ -1,8 +1,15 @@
 {
   "display": {
     "icon": {
-      "item": "integrateddynamics:variable",
-      "nbt": "{\"aspectName\":\"integratedmekanism:write_boolean_chemical_import\",\"partId\":1,\"_type\":\"integrateddynamics:aspect\",\"_id\":1}"
+      "id": "integrateddynamics:variable",
+      "components": {
+        "integrateddynamics:variable_facade": {
+          "partId": 1,
+          "_id": 1,
+          "_type": "integrateddynamics:aspect",
+          "aspectName": "integratedmekanism:write_boolean_chemical_import"
+        }
+      }
     },
     "title": {
       "translate": "advancement.integratedmekanism.tunnels.import_all_chemicals"
@@ -19,8 +26,12 @@
         "parttype": "integratedmekanism:importer_chemical",
         "aspect": "integratedmekanism:write_boolean_chemical_import",
         "variable": {
-          "valuetype": "integrateddynamics:boolean",
-          "value": "{Primitive:true}"
+          "type": "value_type",
+          "value": {
+            "type": "serialized",
+            "value_type": "integrateddynamics:boolean",
+            "value": "{Primitive:true}"
+          }
         }
       }
     }

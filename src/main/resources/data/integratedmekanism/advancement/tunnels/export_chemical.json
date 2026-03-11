@@ -1,8 +1,15 @@
 {
   "display": {
     "icon": {
-      "item": "integrateddynamics:variable",
-      "nbt": "{\"aspectName\":\"integratedmekanism:write_chemicalstack_chemical_export\",\"partId\":1,\"_type\":\"integrateddynamics:aspect\",\"_id\":1}"
+      "id": "integrateddynamics:variable",
+      "components": {
+        "integrateddynamics:variable_facade": {
+          "partId": 1,
+          "_id": 1,
+          "_type": "integrateddynamics:aspect",
+          "aspectName": "integratedmekanism:write_chemicalstack_chemical_export"
+        }
+      }
     },
     "title": {
       "translate": "advancement.integratedmekanism.tunnels.export_chemical"
@@ -19,7 +26,8 @@
         "parttype": "integratedmekanism:exporter_chemical",
         "aspect": "integratedmekanism:write_chemicalstack_chemical_export",
         "variable": {
-          "valuetype": "integratedmekanism:chemicalstack"
+          "type": "value_type",
+          "value_type": "integratedmekanism:chemicalstack"
         }
       }
     }
