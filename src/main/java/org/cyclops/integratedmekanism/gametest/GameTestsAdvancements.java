@@ -14,6 +14,7 @@ import net.minecraft.server.level.ClientInformation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.EventHooks;
@@ -50,6 +51,7 @@ import org.cyclops.integratedmekanism.part.PartTypesMekanism;
 import org.cyclops.integratedmekanism.value.MekanismValueTypes;
 import org.cyclops.integratedmekanism.value.ValueObjectTypeChemicalStack;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,6 +75,8 @@ public class GameTestsAdvancements {
     /**
      * Creates a minimal mock ServerPlayer without going through placeNewPlayer(),
      * which avoids issues with custom network payloads in the test environment.
+     * awardRecipes() is overridden to be a no-op, preventing a NPE when advancements
+     * with recipe rewards (like root) are granted and try to sync via the null connection.
      */
     private static ServerPlayer createMockPlayer(GameTestHelper helper) {
         GameProfile profile = new GameProfile(UUID.randomUUID(), "test-advancement-player");
@@ -87,6 +91,11 @@ public class GameTestsAdvancements {
             @Override
             public boolean isCreative() {
                 return true;
+            }
+
+            @Override
+            public void awardRecipes(Collection<RecipeHolder<?>> recipes) {
+                // no-op: skip ClientboundUpdateRecipesPacket since connection is null in tests
             }
         };
     }
