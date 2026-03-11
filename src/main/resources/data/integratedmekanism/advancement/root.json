@@ -1,7 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "integratedmekanism:part_interface_chemical"
+      "id": "integratedmekanism:part_interface_chemical"
     },
     "title": {
       "translate": "itemGroup.integratedmekanism"
