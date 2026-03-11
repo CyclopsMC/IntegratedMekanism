@@ -94,8 +94,9 @@ public class GameTestsAdvancements {
             }
 
             @Override
-            public void awardRecipes(Collection<RecipeHolder<?>> recipes) {
+            public int awardRecipes(Collection<RecipeHolder<?>> recipes) {
                 // no-op: skip ClientboundUpdateRecipesPacket since connection is null in tests
+                return 0;
             }
         };
     }
