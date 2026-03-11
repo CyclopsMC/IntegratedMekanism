@@ -115,7 +115,6 @@ public class GameTestsAdvancements {
             @Override public V getValue() throws EvaluationException { return aspect.getValueType().getDefault(); }
             @Override public void invalidate() {}
             @Override public void addInvalidationListener(IVariableInvalidateListener l) {}
-            @Override public void removeInvalidationListener(IVariableInvalidateListener l) {}
         };
     }
 
