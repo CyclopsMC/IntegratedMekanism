@@ -34,6 +34,9 @@ public interface IChemicalTarget extends IChanneledTarget<IChemicalNetwork, Chem
     // TODO: this hack can be removed in 1.21 when Mekanism puts all chemicals in a single registry, and just use getStorage() without args.
     public <H extends IChemicalHandler<?, ?>> IIngredientComponentStorage<ChemicalStack<?>, Integer> getStorage(Capability<H> chemicalCapability);
 
+    // TODO: this hack can be removed in 1.21 when Mekanism puts all chemicals in a single registry, and just use getConnection() without args.
+    public ITunnelConnection getConnection(Capability<?> chemicalCapability);
+
     public IngredientPredicate<ChemicalStack<?>, Integer> getChemicalStackMatcher();
 
     public PartTarget getPartTarget();

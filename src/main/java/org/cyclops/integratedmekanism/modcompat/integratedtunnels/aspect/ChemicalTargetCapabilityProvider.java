@@ -23,6 +23,7 @@ import org.cyclops.integratedtunnels.part.aspect.*;
 
 import javax.annotation.Nullable;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author rubensworks
@@ -39,6 +40,8 @@ public class ChemicalTargetCapabilityProvider extends ChanneledTargetCapabilityP
     private final ICapabilityProvider capabilityProvider;
     private final Direction side;
     private final Map<Capability<?>, IIngredientComponentStorage<ChemicalStack<?>, Integer>> storages = Maps.newIdentityHashMap();
+    // TODO: this hack can be removed in 1.21 when Mekanism puts all chemicals in a single registry
+    private final Map<Capability<?>, ITunnelConnection> capabilityConnections = Maps.newIdentityHashMap();
 
     public ChemicalTargetCapabilityProvider(ITunnelTransfer transfer, INetwork network, @Nullable ICapabilityProvider capabilityProvider,
                                             Direction side, IngredientPredicate<ChemicalStack<?>, Integer> chemicalStackMatcher,
@@ -103,8 +106,46 @@ public class ChemicalTargetCapabilityProvider extends ChanneledTargetCapabilityP
         return connection;
     }
 
+    // TODO: this hack can be removed in 1.21 when Mekanism puts all chemicals in a single registry
+    @Override
+    public ITunnelConnection getConnection(Capability<?> chemicalCapability) {
+        return capabilityConnections.computeIfAbsent(chemicalCapability,
+                cap -> new CapabilityTunnelConnection(this.connection, cap));
+    }
+
     @Override
     protected IngredientComponent<ChemicalStack<?>, Integer> getComponent() {
         return MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK;
+    }
+
+    /**
+     * A tunnel connection wrapper that includes a capability in its identity to prevent the sleep-cache
+     * from one capability iteration (e.g. GAS) from blocking subsequent iterations (e.g. SLURRY).
+     * TODO: this hack can be removed in 1.21 when Mekanism puts all chemicals in a single registry
+     */
+    private static final class CapabilityTunnelConnection implements ITunnelConnection {
+
+        private final ITunnelConnection base;
+        private final Capability<?> capability;
+
+        private CapabilityTunnelConnection(ITunnelConnection base, Capability<?> capability) {
+            this.base = base;
+            this.capability = capability;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (!(obj instanceof CapabilityTunnelConnection)) {
+                return false;
+            }
+            CapabilityTunnelConnection that = (CapabilityTunnelConnection) obj;
+            return this.capability == that.capability && Objects.equals(this.base, that.base);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(System.identityHashCode(capability), base);
+        }
     }
 }
