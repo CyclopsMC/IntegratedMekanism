@@ -1,8 +1,15 @@
 # Changelog for Minecraft 1.20.1
 All notable changes to this project will be documented in this file.
 
+<a name="1.20.1-1.0.4"></a>
+## [1.20.1-1.0.4](/compare/1.20.1-1.0.3...1.20.1-1.0.4) - 2026-03-13 06:53:50
+
+
+### Fixed
+* Fix slurry/infusion/pigment transfers blocked by gas capability sleep-cache entry (#21), Closes #19
+
 <a name="1.20.1-1.0.3"></a>
-## [1.20.1-1.0.3](/compare/1.20.1-1.0.2...1.20.1-1.0.3) - 2025-11-22 10:52:05
+## [1.20.1-1.0.3](/compare/1.20.1-1.0.2...1.20.1-1.0.3) - 2025-11-22 10:52:05 +0100
 
 
 ### Fixed

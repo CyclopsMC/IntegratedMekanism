@@ -1,0 +1,5 @@
+As always, don't forget to backup your world before updating!
+Requires CyclopsCore version 1.21.0 or higher.
+
+Fixes:
+* Fix slurry/infusion/pigment transfers blocked by gas capability sleep-cache entry (#21), Closes #19
