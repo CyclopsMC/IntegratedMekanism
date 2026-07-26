@@ -1,11 +1,11 @@
 package org.cyclops.integratedmekanism.gametest;
 
+import com.google.common.collect.Lists;
 import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestGenerator;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.TestFunction;
 import net.neoforged.neoforge.gametest.GameTestHolder;
-import org.apache.commons.compress.utils.Lists;
 import org.cyclops.integratedmekanism.Reference;
 import org.cyclops.integrateddynamics.core.test.IntegrationBefore;
 import org.cyclops.integrateddynamics.core.test.IntegrationTest;
@@ -40,8 +40,8 @@ public class GameTester {
             Object testInstance = clazz.newInstance();
 
             // Collect test methods
-            List<Method> befores = com.google.common.collect.Lists.newLinkedList();
-            List<Method> tests = com.google.common.collect.Lists.newLinkedList();
+            List<Method> befores = Lists.newLinkedList();
+            List<Method> tests = Lists.newLinkedList();
             for(Method method : clazz.getDeclaredMethods()) {
                 if(method.isAnnotationPresent(IntegrationBefore.class)) {
                     befores.add(method);
