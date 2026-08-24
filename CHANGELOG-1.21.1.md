@@ -1,8 +1,16 @@
 # Changelog for Minecraft 1.21.1
 All notable changes to this project will be documented in this file.
 
+<a name="1.21.1-1.1.0"></a>
+## [1.21.1-1.1.0](https://github.com/CyclopsMC/IntegratedMekanism/compare/1.21.1-1.0.4...1.21.1-1.1.0) - 2026-08-24 21:29:25
+
+
+### Added
+* Add option to ignore aspect filter during passive interaction (#23), Mirrors CyclopsMC/IntegratedTunnels#377
+* Add support for dragging JEI chemicals into the Logic Programmer (#24), Closes #9
+
 <a name="1.21.1-1.0.4"></a>
-## [1.21.1-1.0.4](https://github.com/CyclopsMC/IntegratedMekanism/compare/1.21.1-1.0.3...1.21.1-1.0.4) - 2026-03-11 14:10:21
+## [1.21.1-1.0.4](https://github.com/CyclopsMC/IntegratedMekanism/compare/1.21.1-1.0.3...1.21.1-1.0.4) - 2026-03-11 14:10:21 +0100
 
 
 ### Added
