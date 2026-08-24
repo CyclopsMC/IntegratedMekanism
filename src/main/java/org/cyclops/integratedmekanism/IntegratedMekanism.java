@@ -34,6 +34,7 @@ import org.cyclops.integratedmekanism.ingredient.IngredientComponentCapabilities
 import org.cyclops.integratedmekanism.ingredient.IngredientComponentHandlerChemical;
 import org.cyclops.integratedmekanism.ingredient.MekanismIngredientComponents;
 import org.cyclops.integratedmekanism.logicprogrammer.MekanismLogicProgrammerElementTypes;
+import org.cyclops.integratedmekanism.logicprogrammer.MekanismLogicProgrammerIngredientConverters;
 import org.cyclops.integratedmekanism.modcompat.integratedrest.ModCompatIntegratedRest;
 import org.cyclops.integratedmekanism.modcompat.integratedscripting.ModCompatIntegratedScripting;
 import org.cyclops.integratedmekanism.modcompat.integratedterminals.ModCompatIntegratedTerminals;
@@ -127,6 +128,7 @@ public class IntegratedMekanism extends ModBaseVersionable<IntegratedMekanism> {
 
         if (MinecraftHelpers.isClientSide()) {
             ValueTypeWorldRenderersMekanism.load();
+            MekanismLogicProgrammerIngredientConverters.load();
         }
 
         getModEventBus().addListener(new NetworkCapabilityConstructorsMekanism()::onNetworkLoad);
