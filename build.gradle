@@ -119,6 +119,13 @@ repositories {
         }
     }
     maven {
+        name = "Refined Storage"
+        url = uri("https://maven.creeperhost.net")
+        content {
+            includeGroup("com.refinedmods.refinedstorage")
+        }
+    }
+    maven {
         name 'Blame Jared'
         url 'https://maven.blamejared.com/'
     }
@@ -198,6 +205,12 @@ dependencies {
     compileOnly("me.shedaniel:RoughlyEnoughItems-neoforge:${rei_version}") // https://maven.shedaniel.me/me/shedaniel/RoughlyEnoughItems-neoforge/ or just look on CurseForge by modloader and MC version...
     implementation("me.shedaniel.cloth:cloth-config-neoforge:$cloth_config_version");
     implementation("dev.architectury:architectury-neoforge:$architectury_version");
+
+    // Required at runtime only, because the Integrated Dynamics jar bundles Refined Storage game tests
+    // that would otherwise fail to be loaded during game test registration.
+    runtimeOnly("com.refinedmods.refinedstorage:refinedstorage-neoforge:${refinedstorage_version}") { // https://github.com/refinedmods/refinedstorage2/releases
+        transitive = false
+    }
 
     modLib "com.google.re2j:re2j:1.1"
     modLib ("io.netty:netty-codec-http:4.1.77.Final") {

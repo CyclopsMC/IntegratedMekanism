@@ -74,7 +74,7 @@ public class GameTestsTunnelChemical {
 
         // Place empty variable in importer
         ItemStack variableAspect = new ItemStack(RegistryEntries.ITEM_VARIABLE);
-        placeVariableInWriter(helper.getLevel(), PartPos.of(helper.getLevel(), helper.absolutePos(POS), Direction.WEST), MekanismTunnelsAspects.Write.Chemical.BOOLEAN_IMPORT, variableAspect);
+        placeVariableInWriter(helper, PartPos.of(helper.getLevel(), helper.absolutePos(POS), Direction.WEST), MekanismTunnelsAspects.Write.Chemical.BOOLEAN_IMPORT, variableAspect);
 
         helper.succeedWhen(() -> {
             // Check if chemical is moved
@@ -115,7 +115,7 @@ public class GameTestsTunnelChemical {
 
         // Place empty variable in exporter
         ItemStack variableAspect = new ItemStack(RegistryEntries.ITEM_VARIABLE);
-        placeVariableInWriter(helper.getLevel(), PartPos.of(helper.getLevel(), helper.absolutePos(POS.east()), Direction.EAST), MekanismTunnelsAspects.Write.Chemical.BOOLEAN_EXPORT, variableAspect);
+        placeVariableInWriter(helper, PartPos.of(helper.getLevel(), helper.absolutePos(POS.east()), Direction.EAST), MekanismTunnelsAspects.Write.Chemical.BOOLEAN_EXPORT, variableAspect);
 
         helper.succeedWhen(() -> {
             // Check if chemical is moved
@@ -160,11 +160,11 @@ public class GameTestsTunnelChemical {
 
         // Place empty variable in importer
         ItemStack variableAspectImporter = new ItemStack(RegistryEntries.ITEM_VARIABLE);
-        placeVariableInWriter(helper.getLevel(), PartPos.of(helper.getLevel(), helper.absolutePos(POS), Direction.WEST), MekanismTunnelsAspects.Write.Chemical.BOOLEAN_IMPORT, variableAspectImporter);
+        placeVariableInWriter(helper, PartPos.of(helper.getLevel(), helper.absolutePos(POS), Direction.WEST), MekanismTunnelsAspects.Write.Chemical.BOOLEAN_IMPORT, variableAspectImporter);
 
         // Place empty variable in exporter
         ItemStack variableAspectExporter = new ItemStack(RegistryEntries.ITEM_VARIABLE);
-        placeVariableInWriter(helper.getLevel(), PartPos.of(helper.getLevel(), helper.absolutePos(POS.east()), Direction.NORTH), MekanismTunnelsAspects.Write.Chemical.BOOLEAN_EXPORT, variableAspectExporter);
+        placeVariableInWriter(helper, PartPos.of(helper.getLevel(), helper.absolutePos(POS.east()), Direction.NORTH), MekanismTunnelsAspects.Write.Chemical.BOOLEAN_EXPORT, variableAspectExporter);
 
         helper.succeedWhen(() -> {
             // Check if chemical is moved
@@ -195,7 +195,7 @@ public class GameTestsTunnelChemical {
 
         // Place empty variable in importer
         ItemStack variableAspect = createVariableForValue(helper.getLevel(), MekanismValueTypes.OBJECT_CHEMICALSTACK, ValueObjectTypeChemicalStack.ValueChemicalStack.of(new ChemicalStack(MekanismChemicals.HYDROGEN, 100)));
-        placeVariableInWriter(helper.getLevel(), PartPos.of(helper.getLevel(), helper.absolutePos(POS), Direction.WEST), MekanismTunnelsAspects.Write.Chemical.CHEMICALSTACK_IMPORT, variableAspect);
+        placeVariableInWriter(helper, PartPos.of(helper.getLevel(), helper.absolutePos(POS), Direction.WEST), MekanismTunnelsAspects.Write.Chemical.CHEMICALSTACK_IMPORT, variableAspect);
 
         helper.succeedWhen(() -> {
             // Check if chemical is moved
@@ -225,7 +225,7 @@ public class GameTestsTunnelChemical {
 
         // Place empty variable in importer
         ItemStack variableAspect = createVariableForValue(helper.getLevel(), MekanismValueTypes.OBJECT_CHEMICALSTACK, ValueObjectTypeChemicalStack.ValueChemicalStack.of(new ChemicalStack(MekanismChemicals.GOLD, 100)));
-        placeVariableInWriter(helper.getLevel(), PartPos.of(helper.getLevel(), helper.absolutePos(POS), Direction.WEST), MekanismTunnelsAspects.Write.Chemical.CHEMICALSTACK_IMPORT, variableAspect);
+        placeVariableInWriter(helper, PartPos.of(helper.getLevel(), helper.absolutePos(POS), Direction.WEST), MekanismTunnelsAspects.Write.Chemical.CHEMICALSTACK_IMPORT, variableAspect);
 
         helper.succeedWhen(() -> {
             // Check if chemical is not moved
@@ -255,11 +255,11 @@ public class GameTestsTunnelChemical {
 
         // Place empty variable in importer
         ItemStack variableAspectImporter = new ItemStack(RegistryEntries.ITEM_VARIABLE);
-        placeVariableInWriter(helper.getLevel(), PartPos.of(helper.getLevel(), helper.absolutePos(POS), Direction.WEST), MekanismTunnelsAspects.Write.Chemical.BOOLEAN_IMPORT, variableAspectImporter);
+        placeVariableInWriter(helper, PartPos.of(helper.getLevel(), helper.absolutePos(POS), Direction.WEST), MekanismTunnelsAspects.Write.Chemical.BOOLEAN_IMPORT, variableAspectImporter);
 
         // Place empty variable in filtering interface
         ItemStack variableAspectInterface = new ItemStack(RegistryEntries.ITEM_VARIABLE);
-        placeVariableInWriter(helper.getLevel(), PartPos.of(helper.getLevel(), helper.absolutePos(POS.east()), Direction.EAST), MekanismTunnelsAspects.Write.ChemicalFilter.BOOLEAN_SET_FILTER, variableAspectInterface);
+        placeVariableInWriter(helper, PartPos.of(helper.getLevel(), helper.absolutePos(POS.east()), Direction.EAST), MekanismTunnelsAspects.Write.ChemicalFilter.BOOLEAN_SET_FILTER, variableAspectInterface);
 
         helper.succeedWhen(() -> {
             // Check if chemical is moved
@@ -311,11 +311,11 @@ public class GameTestsTunnelChemical {
 
         // Place empty variable in importer
         ItemStack variableAspectImporter = new ItemStack(RegistryEntries.ITEM_VARIABLE);
-        placeVariableInWriter(helper.getLevel(), PartPos.of(helper.getLevel(), helper.absolutePos(POS), Direction.WEST), MekanismTunnelsAspects.Write.Chemical.BOOLEAN_IMPORT, variableAspectImporter);
+        placeVariableInWriter(helper, PartPos.of(helper.getLevel(), helper.absolutePos(POS), Direction.WEST), MekanismTunnelsAspects.Write.Chemical.BOOLEAN_IMPORT, variableAspectImporter);
 
         // Place empty variable in filtering interface
         ItemStack variableAspectInterface = createVariableForValue(helper.getLevel(), MekanismValueTypes.OBJECT_CHEMICALSTACK, ValueObjectTypeChemicalStack.ValueChemicalStack.of(new ChemicalStack(MekanismChemicals.HYDROGEN, 100)));
-        placeVariableInWriter(helper.getLevel(), PartPos.of(helper.getLevel(), helper.absolutePos(POS.east()), Direction.EAST), MekanismTunnelsAspects.Write.ChemicalFilter.CHEMICALSTACK_SET_FILTER, variableAspectInterface);
+        placeVariableInWriter(helper, PartPos.of(helper.getLevel(), helper.absolutePos(POS.east()), Direction.EAST), MekanismTunnelsAspects.Write.ChemicalFilter.CHEMICALSTACK_SET_FILTER, variableAspectInterface);
 
         helper.succeedWhen(() -> {
             // Check if chemical is moved
@@ -367,11 +367,11 @@ public class GameTestsTunnelChemical {
 
         // Place empty variable in importer
         ItemStack variableAspectImporter = new ItemStack(RegistryEntries.ITEM_VARIABLE);
-        placeVariableInWriter(helper.getLevel(), PartPos.of(helper.getLevel(), helper.absolutePos(POS), Direction.WEST), MekanismTunnelsAspects.Write.Chemical.BOOLEAN_IMPORT, variableAspectImporter);
+        placeVariableInWriter(helper, PartPos.of(helper.getLevel(), helper.absolutePos(POS), Direction.WEST), MekanismTunnelsAspects.Write.Chemical.BOOLEAN_IMPORT, variableAspectImporter);
 
         // Place empty variable in filtering interface
         ItemStack variableAspectInterface = createVariableForValue(helper.getLevel(), MekanismValueTypes.OBJECT_CHEMICALSTACK, ValueObjectTypeChemicalStack.ValueChemicalStack.of(new ChemicalStack(MekanismChemicals.GOLD, 100)));
-        placeVariableInWriter(helper.getLevel(), PartPos.of(helper.getLevel(), helper.absolutePos(POS.east()), Direction.EAST), MekanismTunnelsAspects.Write.ChemicalFilter.CHEMICALSTACK_SET_FILTER, variableAspectInterface);
+        placeVariableInWriter(helper, PartPos.of(helper.getLevel(), helper.absolutePos(POS.east()), Direction.EAST), MekanismTunnelsAspects.Write.ChemicalFilter.CHEMICALSTACK_SET_FILTER, variableAspectInterface);
 
         helper.succeedWhen(() -> {
             // Check if chemical is moved
@@ -426,7 +426,7 @@ public class GameTestsTunnelChemical {
                 ValueObjectTypeChemicalStack.ValueChemicalStack.of(new ChemicalStack(MekanismChemicals.GOLD, 100)),
                 ValueObjectTypeChemicalStack.ValueChemicalStack.of(new ChemicalStack(MekanismChemicals.HYDROGEN, 100))
         ));
-        placeVariableInWriter(helper.getLevel(), PartPos.of(helper.getLevel(), helper.absolutePos(POS), Direction.WEST), MekanismTunnelsAspects.Write.Chemical.LIST_IMPORT, variableAspect);
+        placeVariableInWriter(helper, PartPos.of(helper.getLevel(), helper.absolutePos(POS), Direction.WEST), MekanismTunnelsAspects.Write.Chemical.LIST_IMPORT, variableAspect);
 
         helper.succeedWhen(() -> {
             // Check if chemical is moved
@@ -459,7 +459,7 @@ public class GameTestsTunnelChemical {
                 ValueObjectTypeChemicalStack.ValueChemicalStack.of(new ChemicalStack(MekanismChemicals.GOLD, 100)),
                 ValueObjectTypeChemicalStack.ValueChemicalStack.of(new ChemicalStack(MekanismChemicals.BIO, 100))
         ));
-        placeVariableInWriter(helper.getLevel(), PartPos.of(helper.getLevel(), helper.absolutePos(POS), Direction.WEST), MekanismTunnelsAspects.Write.Chemical.LIST_IMPORT, variableAspectImporter);
+        placeVariableInWriter(helper, PartPos.of(helper.getLevel(), helper.absolutePos(POS), Direction.WEST), MekanismTunnelsAspects.Write.Chemical.LIST_IMPORT, variableAspectImporter);
 
         helper.succeedWhen(() -> {
             // Check if chemical is moved
@@ -492,7 +492,7 @@ public class GameTestsTunnelChemical {
                 ValueObjectTypeChemicalStack.ValueChemicalStack.of(new ChemicalStack(MekanismChemicals.GOLD, 100)),
                 ValueObjectTypeChemicalStack.ValueChemicalStack.of(new ChemicalStack(MekanismChemicals.BIO, 100))
         ));
-        placeVariableInWriter(helper.getLevel(), PartPos.of(helper.getLevel(), helper.absolutePos(POS), Direction.WEST), MekanismTunnelsAspects.Write.Chemical.LIST_IMPORT, variableAspect);
+        placeVariableInWriter(helper, PartPos.of(helper.getLevel(), helper.absolutePos(POS), Direction.WEST), MekanismTunnelsAspects.Write.Chemical.LIST_IMPORT, variableAspect);
 
         // Enable blacklist
         PartPos posImporter = PartPos.of(DimPos.of(helper.getLevel(), helper.absolutePos(POS)), Direction.WEST);
@@ -532,7 +532,7 @@ public class GameTestsTunnelChemical {
                 ValueObjectTypeChemicalStack.ValueChemicalStack.of(new ChemicalStack(MekanismChemicals.HYDROGEN, 100)),
                 ValueObjectTypeChemicalStack.ValueChemicalStack.of(new ChemicalStack(MekanismChemicals.GOLD, 100))
         ));
-        placeVariableInWriter(helper.getLevel(), PartPos.of(helper.getLevel(), helper.absolutePos(POS), Direction.WEST), MekanismTunnelsAspects.Write.Chemical.LIST_IMPORT, variableAspect);
+        placeVariableInWriter(helper, PartPos.of(helper.getLevel(), helper.absolutePos(POS), Direction.WEST), MekanismTunnelsAspects.Write.Chemical.LIST_IMPORT, variableAspect);
 
         // Enable blacklist
         PartPos posImporter = PartPos.of(DimPos.of(helper.getLevel(), helper.absolutePos(POS)), Direction.WEST);
@@ -579,7 +579,7 @@ public class GameTestsTunnelChemical {
 
         // Place empty variable in exporter
         ItemStack variableAspect = createVariableForValue(helper.getLevel(), MekanismValueTypes.OBJECT_CHEMICALSTACK, ValueObjectTypeChemicalStack.ValueChemicalStack.of(new ChemicalStack(MekanismChemicals.GOLD, 100)));
-        placeVariableInWriter(helper.getLevel(), PartPos.of(helper.getLevel(), helper.absolutePos(POS.east()), Direction.EAST), MekanismTunnelsAspects.Write.Chemical.CHEMICALSTACK_EXPORT, variableAspect);
+        placeVariableInWriter(helper, PartPos.of(helper.getLevel(), helper.absolutePos(POS.east()), Direction.EAST), MekanismTunnelsAspects.Write.Chemical.CHEMICALSTACK_EXPORT, variableAspect);
 
         helper.succeedWhen(() -> {
             // Check if chemical is moved
@@ -611,7 +611,7 @@ public class GameTestsTunnelChemical {
 
         // Place empty variable in importer
         ItemStack variableAspect = new ItemStack(RegistryEntries.ITEM_VARIABLE);
-        placeVariableInWriter(helper.getLevel(), PartPos.of(helper.getLevel(), helper.absolutePos(POS), Direction.WEST), MekanismTunnelsAspects.Write.World.ENTITY_CHEMICAL_BOOLEAN_IMPORT, variableAspect);
+        placeVariableInWriter(helper, PartPos.of(helper.getLevel(), helper.absolutePos(POS), Direction.WEST), MekanismTunnelsAspects.Write.World.ENTITY_CHEMICAL_BOOLEAN_IMPORT, variableAspect);
 
         helper.succeedWhen(() -> {
             // Check if chemical is moved

@@ -39,6 +39,7 @@ import org.cyclops.integratedcrafting.part.aspect.CraftingAspects;
 import org.cyclops.integrateddynamics.api.part.PartPos;
 import org.cyclops.integrateddynamics.api.part.PartTarget;
 import org.cyclops.integrateddynamics.api.part.aspect.property.IAspectProperties;
+import org.cyclops.integrateddynamics.core.evaluate.variable.ValueObjectTypeItemStack;
 import org.cyclops.integrateddynamics.core.evaluate.variable.ValueObjectTypeRecipe;
 import org.cyclops.integrateddynamics.core.evaluate.variable.ValueTypeInteger;
 import org.cyclops.integrateddynamics.core.evaluate.variable.ValueTypes;
@@ -91,7 +92,13 @@ public class GameTestsCrafting {
     }
 
     public static void enableChemicalRecipeInWriter(GameTestHelper helper, PartPos writerPos, IRecipeDefinition recipe) {
-        placeVariableInWriter(helper.getLevel(), writerPos, CraftingAspects.Write.RECIPE_CRAFT, createVariableForValue(helper.getLevel(), ValueTypes.OBJECT_RECIPE, ValueObjectTypeRecipe.ValueRecipe.of(recipe)));
+        placeVariableInWriter(helper, writerPos, CraftingAspects.Write.RECIPE_CRAFT, createVariableForValue(helper.getLevel(), ValueTypes.OBJECT_RECIPE, ValueObjectTypeRecipe.ValueRecipe.of(recipe)));
+    }
+
+    // Identical to GameTestHelpersIntegratedCrafting#enableRecipeInWriter,
+    // but passing a player so that the aspect is actually activated.
+    public static void enableItemRecipeInWriter(GameTestHelper helper, PartPos writerPos, ItemStack itemStack) {
+        placeVariableInWriter(helper, writerPos, CraftingAspects.Write.ITEMSTACK_CRAFT, createVariableForValue(helper.getLevel(), ValueTypes.OBJECT_ITEMSTACK, ValueObjectTypeItemStack.ValueItemStack.of(itemStack)));
     }
 
     @GameTest(template = TEMPLATE_EMPTY, timeoutTicks = TIMEOUT)
@@ -122,7 +129,7 @@ public class GameTestsCrafting {
         positions.interfaceStates().get(0).getInventoryVariables().setItem(0, variableRecipe);
 
         // Enable crafting aspect in crafting writer
-        enableRecipeInWriter(helper, positions.writer(), new ItemStack(MekanismItems.SALT.asItem()));
+        enableItemRecipeInWriter(helper, positions.writer(), new ItemStack(MekanismItems.SALT.asItem()));
 
         helper.succeedWhen(() -> {
             // Check crafting interface state
