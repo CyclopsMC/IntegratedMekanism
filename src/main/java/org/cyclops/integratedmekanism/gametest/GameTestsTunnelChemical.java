@@ -35,6 +35,7 @@ import org.cyclops.integratedtunnels.part.aspect.TunnelAspectWriteBuilders;
 
 import static org.cyclops.integrateddynamics.gametest.GameTestHelpersIntegratedDynamics.createVariableForValue;
 import static org.cyclops.integrateddynamics.gametest.GameTestHelpersIntegratedDynamics.placeVariableInWriter;
+import static org.cyclops.integratedtunnels.gametest.GameTestHelpersIntegratedTunnels.setPassiveInteraction;
 
 @GameTestHolder(Reference.MOD_ID)
 @PrefixGameTestTemplate(false)
@@ -42,6 +43,7 @@ public class GameTestsTunnelChemical {
 
     public static final String TEMPLATE_EMPTY = "empty10";
     public static final int TIMEOUT = 3000;
+    public static final int TICKS_PASSIVE_INTERACTION = 100;
     public static final BlockPos POS = BlockPos.ZERO.offset(2, 0, 2);
 
     public static TileEntityChemicalTank setTank(GameTestHelper helper, BlockPos pos) {
@@ -628,6 +630,170 @@ public class GameTestsTunnelChemical {
             );
             helper.assertValueEqual(partStateWriter.getActiveAspect(), MekanismTunnelsAspects.Write.World.ENTITY_CHEMICAL_BOOLEAN_IMPORT, "Active aspect is incorrect");
             helper.assertTrue(partStateWriter.getErrors(MekanismTunnelsAspects.Write.World.ENTITY_CHEMICAL_BOOLEAN_IMPORT).isEmpty(), "Active aspect has errors");
+        });
+    }
+
+    /**
+     * Setup a chemical importer filtered on a chemical that is not available, so that it never imports actively,
+     * next to a separate subnetwork that actively exports chemicals into it.
+     * The two networks are not connected, as both cables hold a part on their touching face.
+     * @return The position of the importer part.
+     */
+    protected static PartPos setupPassiveImporter(GameTestHelper helper) {
+        // Place cables of the network under test
+        helper.setBlock(POS, RegistryEntries.BLOCK_CABLE.value());
+        helper.setBlock(POS.east(), RegistryEntries.BLOCK_CABLE.value());
+
+        // Place chemical importer under test
+        PartHelpers.addPart(helper.getLevel(), helper.absolutePos(POS), Direction.WEST, PartTypesMekanismTunnels.IMPORTER_CHEMICAL, new ItemStack(PartTypesMekanismTunnels.IMPORTER_CHEMICAL.getItem()));
+
+        // Place chemical interface with a tank to store the network's chemicals in
+        PartHelpers.addPart(helper.getLevel(), helper.absolutePos(POS.east()), Direction.EAST, PartTypesMekanismTunnels.INTERFACE_CHEMICAL, new ItemStack(PartTypesMekanismTunnels.INTERFACE_CHEMICAL.getItem()));
+        setTank(helper, POS.east().east());
+
+        // Place a subnetwork that exports chemicals into the importer under test
+        helper.setBlock(POS.west(), RegistryEntries.BLOCK_CABLE.value());
+        PartHelpers.addPart(helper.getLevel(), helper.absolutePos(POS.west()), Direction.EAST, PartTypesMekanismTunnels.EXPORTER_CHEMICAL, new ItemStack(PartTypesMekanismTunnels.EXPORTER_CHEMICAL.getItem()));
+        PartHelpers.addPart(helper.getLevel(), helper.absolutePos(POS.west()), Direction.WEST, PartTypesMekanismTunnels.INTERFACE_CHEMICAL, new ItemStack(PartTypesMekanismTunnels.INTERFACE_CHEMICAL.getItem()));
+        TileEntityChemicalTank tankIn = setTank(helper, POS.west().west());
+        tankIn.getChemicalTank().setStack(new ChemicalStack(MekanismChemicals.HYDROGEN, 1_000L));
+
+        // Let the subnetwork export everything it holds
+        placeVariableInWriter(helper, PartPos.of(helper.getLevel(), helper.absolutePos(POS.west()), Direction.EAST), MekanismTunnelsAspects.Write.Chemical.BOOLEAN_EXPORT,
+                createVariableForValue(helper.getLevel(), ValueTypes.BOOLEAN, ValueTypeBoolean.ValueBoolean.of(true)));
+
+        // Filter the importer under test on a chemical that the subnetwork does not hold,
+        // so that it never imports anything by itself.
+        PartPos posImporter = PartPos.of(helper.getLevel(), helper.absolutePos(POS), Direction.WEST);
+        placeVariableInWriter(helper, posImporter, MekanismTunnelsAspects.Write.Chemical.CHEMICALSTACK_IMPORT,
+                createVariableForValue(helper.getLevel(), MekanismValueTypes.OBJECT_CHEMICALSTACK, ValueObjectTypeChemicalStack.ValueChemicalStack.of(new ChemicalStack(MekanismChemicals.GOLD, 1_000L))));
+
+        return posImporter;
+    }
+
+    @GameTest(template = TEMPLATE_EMPTY, timeoutTicks = TIMEOUT)
+    public void testChemicalPassiveImporterIgnoreFilter(GameTestHelper helper) {
+        PartPos posImporter = setupPassiveImporter(helper);
+        setPassiveInteraction(posImporter, MekanismTunnelsAspects.Write.Chemical.CHEMICALSTACK_IMPORT, true, true);
+
+        helper.succeedWhen(() -> {
+            // Check if the subnetwork was able to push its chemicals into the network under test
+            TileEntityChemicalTank tankIn = helper.getBlockEntity(POS.west().west());
+            TileEntityChemicalTank tankOut = helper.getBlockEntity(POS.east().east());
+            helper.assertValueEqual(tankIn.getChemicalTank().getStack().getAmount(), 0L, "Tank in was not drained");
+            helper.assertValueEqual(tankOut.getChemicalTank().getStack().getAmount(), 1_000L, "Tank out does not contain chemicals");
+        });
+    }
+
+    @GameTest(template = TEMPLATE_EMPTY, timeoutTicks = TIMEOUT)
+    public void testChemicalPassiveImporterRespectFilter(GameTestHelper helper) {
+        PartPos posImporter = setupPassiveImporter(helper);
+        setPassiveInteraction(posImporter, MekanismTunnelsAspects.Write.Chemical.CHEMICALSTACK_IMPORT, true, false);
+
+        helper.runAfterDelay(TICKS_PASSIVE_INTERACTION, () -> {
+            // Check if the subnetwork was not able to push its chemicals into the network under test
+            TileEntityChemicalTank tankIn = helper.getBlockEntity(POS.west().west());
+            TileEntityChemicalTank tankOut = helper.getBlockEntity(POS.east().east());
+            helper.assertValueEqual(tankIn.getChemicalTank().getStack().getAmount(), 1_000L, "Tank in was incorrectly drained");
+            helper.assertValueEqual(tankOut.getChemicalTank().getStack().getAmount(), 0L, "Tank out incorrectly contains chemicals");
+            helper.succeed();
+        });
+    }
+
+    @GameTest(template = TEMPLATE_EMPTY, timeoutTicks = TIMEOUT)
+    public void testChemicalPassiveImporterDisabled(GameTestHelper helper) {
+        PartPos posImporter = setupPassiveImporter(helper);
+        setPassiveInteraction(posImporter, MekanismTunnelsAspects.Write.Chemical.CHEMICALSTACK_IMPORT, false, true);
+
+        helper.runAfterDelay(TICKS_PASSIVE_INTERACTION, () -> {
+            // Check if the subnetwork was not able to push its chemicals into the network under test
+            TileEntityChemicalTank tankIn = helper.getBlockEntity(POS.west().west());
+            TileEntityChemicalTank tankOut = helper.getBlockEntity(POS.east().east());
+            helper.assertValueEqual(tankIn.getChemicalTank().getStack().getAmount(), 1_000L, "Tank in was incorrectly drained");
+            helper.assertValueEqual(tankOut.getChemicalTank().getStack().getAmount(), 0L, "Tank out incorrectly contains chemicals");
+            helper.succeed();
+        });
+    }
+
+    /**
+     * Setup a chemical exporter filtered on a chemical that is not available, so that it never exports actively,
+     * next to a separate subnetwork that actively imports chemicals out of it.
+     * The two networks are not connected, as both cables hold a part on their touching face.
+     * @return The position of the exporter part.
+     */
+    protected static PartPos setupPassiveExporter(GameTestHelper helper) {
+        // Place cables of the network under test
+        helper.setBlock(POS, RegistryEntries.BLOCK_CABLE.value());
+        helper.setBlock(POS.east(), RegistryEntries.BLOCK_CABLE.value());
+
+        // Place chemical exporter under test
+        PartHelpers.addPart(helper.getLevel(), helper.absolutePos(POS), Direction.WEST, PartTypesMekanismTunnels.EXPORTER_CHEMICAL, new ItemStack(PartTypesMekanismTunnels.EXPORTER_CHEMICAL.getItem()));
+
+        // Place chemical interface with a tank holding the network's chemicals
+        PartHelpers.addPart(helper.getLevel(), helper.absolutePos(POS.east()), Direction.EAST, PartTypesMekanismTunnels.INTERFACE_CHEMICAL, new ItemStack(PartTypesMekanismTunnels.INTERFACE_CHEMICAL.getItem()));
+        TileEntityChemicalTank tankIn = setTank(helper, POS.east().east());
+        tankIn.getChemicalTank().setStack(new ChemicalStack(MekanismChemicals.HYDROGEN, 1_000L));
+
+        // Place a subnetwork that imports chemicals out of the exporter under test
+        helper.setBlock(POS.west(), RegistryEntries.BLOCK_CABLE.value());
+        PartHelpers.addPart(helper.getLevel(), helper.absolutePos(POS.west()), Direction.EAST, PartTypesMekanismTunnels.IMPORTER_CHEMICAL, new ItemStack(PartTypesMekanismTunnels.IMPORTER_CHEMICAL.getItem()));
+        PartHelpers.addPart(helper.getLevel(), helper.absolutePos(POS.west()), Direction.WEST, PartTypesMekanismTunnels.INTERFACE_CHEMICAL, new ItemStack(PartTypesMekanismTunnels.INTERFACE_CHEMICAL.getItem()));
+        setTank(helper, POS.west().west());
+
+        // Let the subnetwork import everything it can
+        placeVariableInWriter(helper, PartPos.of(helper.getLevel(), helper.absolutePos(POS.west()), Direction.EAST), MekanismTunnelsAspects.Write.Chemical.BOOLEAN_IMPORT,
+                createVariableForValue(helper.getLevel(), ValueTypes.BOOLEAN, ValueTypeBoolean.ValueBoolean.of(true)));
+
+        // Filter the exporter under test on a chemical that the network does not hold,
+        // so that it never exports anything by itself.
+        PartPos posExporter = PartPos.of(helper.getLevel(), helper.absolutePos(POS), Direction.WEST);
+        placeVariableInWriter(helper, posExporter, MekanismTunnelsAspects.Write.Chemical.CHEMICALSTACK_EXPORT,
+                createVariableForValue(helper.getLevel(), MekanismValueTypes.OBJECT_CHEMICALSTACK, ValueObjectTypeChemicalStack.ValueChemicalStack.of(new ChemicalStack(MekanismChemicals.GOLD, 1_000L))));
+
+        return posExporter;
+    }
+
+    @GameTest(template = TEMPLATE_EMPTY, timeoutTicks = TIMEOUT)
+    public void testChemicalPassiveExporterIgnoreFilter(GameTestHelper helper) {
+        PartPos posExporter = setupPassiveExporter(helper);
+        setPassiveInteraction(posExporter, MekanismTunnelsAspects.Write.Chemical.CHEMICALSTACK_EXPORT, true, true);
+
+        helper.succeedWhen(() -> {
+            // Check if the subnetwork was able to pull chemicals out of the network under test
+            TileEntityChemicalTank tankIn = helper.getBlockEntity(POS.east().east());
+            TileEntityChemicalTank tankOut = helper.getBlockEntity(POS.west().west());
+            helper.assertValueEqual(tankIn.getChemicalTank().getStack().getAmount(), 0L, "Tank in was not drained");
+            helper.assertValueEqual(tankOut.getChemicalTank().getStack().getAmount(), 1_000L, "Tank out does not contain chemicals");
+        });
+    }
+
+    @GameTest(template = TEMPLATE_EMPTY, timeoutTicks = TIMEOUT)
+    public void testChemicalPassiveExporterRespectFilter(GameTestHelper helper) {
+        PartPos posExporter = setupPassiveExporter(helper);
+        setPassiveInteraction(posExporter, MekanismTunnelsAspects.Write.Chemical.CHEMICALSTACK_EXPORT, true, false);
+
+        helper.runAfterDelay(TICKS_PASSIVE_INTERACTION, () -> {
+            // Check if the subnetwork was not able to pull chemicals out of the network under test
+            TileEntityChemicalTank tankIn = helper.getBlockEntity(POS.east().east());
+            TileEntityChemicalTank tankOut = helper.getBlockEntity(POS.west().west());
+            helper.assertValueEqual(tankIn.getChemicalTank().getStack().getAmount(), 1_000L, "Tank in was incorrectly drained");
+            helper.assertValueEqual(tankOut.getChemicalTank().getStack().getAmount(), 0L, "Tank out incorrectly contains chemicals");
+            helper.succeed();
+        });
+    }
+
+    @GameTest(template = TEMPLATE_EMPTY, timeoutTicks = TIMEOUT)
+    public void testChemicalPassiveExporterDisabled(GameTestHelper helper) {
+        PartPos posExporter = setupPassiveExporter(helper);
+        setPassiveInteraction(posExporter, MekanismTunnelsAspects.Write.Chemical.CHEMICALSTACK_EXPORT, false, true);
+
+        helper.runAfterDelay(TICKS_PASSIVE_INTERACTION, () -> {
+            // Check if the subnetwork was not able to pull chemicals out of the network under test
+            TileEntityChemicalTank tankIn = helper.getBlockEntity(POS.east().east());
+            TileEntityChemicalTank tankOut = helper.getBlockEntity(POS.west().west());
+            helper.assertValueEqual(tankIn.getChemicalTank().getStack().getAmount(), 1_000L, "Tank in was incorrectly drained");
+            helper.assertValueEqual(tankOut.getChemicalTank().getStack().getAmount(), 0L, "Tank out incorrectly contains chemicals");
+            helper.succeed();
         });
     }
 

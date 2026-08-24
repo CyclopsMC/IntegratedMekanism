@@ -88,6 +88,7 @@ public class MekanismTunnelsAspectWriteBuilders {
                 TunnelAspectWriteBuilders.PROP_CHANNEL,
                 //PROP_EXACTAMOUNT
                 TunnelAspectWriteBuilders.PROP_PASSIVE_IO,
+                TunnelAspectWriteBuilders.PROP_PASSIVE_IO_IGNORE_FILTER,
                 PROP_CHECK_AMOUNT
         ));
         public static final IAspectProperties PROPERTIES_RATE = new AspectProperties(ImmutableList.<IAspectPropertyTypeInstance>of(
@@ -96,6 +97,7 @@ public class MekanismTunnelsAspectWriteBuilders {
                 PROP_RATE,
                 //PROP_EXACTAMOUNT
                 TunnelAspectWriteBuilders.PROP_PASSIVE_IO,
+                TunnelAspectWriteBuilders.PROP_PASSIVE_IO_IGNORE_FILTER,
                 PROP_CHECK_AMOUNT
         ));
         public static final IAspectProperties PROPERTIES_RATECHECKS = new AspectProperties(ImmutableList.<IAspectPropertyTypeInstance>of(
@@ -105,6 +107,7 @@ public class MekanismTunnelsAspectWriteBuilders {
                 TunnelAspectWriteBuilders.PROP_EMPTYISANY,
                 PROP_RATE,
                 TunnelAspectWriteBuilders.PROP_PASSIVE_IO,
+                TunnelAspectWriteBuilders.PROP_PASSIVE_IO_IGNORE_FILTER,
                 //PROP_EXACTAMOUNT,
                 PROP_CHECK_AMOUNT
         ));
@@ -115,6 +118,7 @@ public class MekanismTunnelsAspectWriteBuilders {
                 TunnelAspectWriteBuilders.PROP_EMPTYISANY,
                 PROP_RATE,
                 TunnelAspectWriteBuilders.PROP_PASSIVE_IO,
+                TunnelAspectWriteBuilders.PROP_PASSIVE_IO_IGNORE_FILTER,
                 //PROP_EXACTAMOUNT,
                 PROP_CHECK_AMOUNT,
                 TunnelAspectWriteBuilders.PROP_CRAFT
@@ -125,6 +129,7 @@ public class MekanismTunnelsAspectWriteBuilders {
                 TunnelAspectWriteBuilders.PROP_BLACKLIST,
                 PROP_RATE,
                 TunnelAspectWriteBuilders.PROP_PASSIVE_IO,
+                TunnelAspectWriteBuilders.PROP_PASSIVE_IO_IGNORE_FILTER,
                 //PROP_EXACTAMOUNT,
                 PROP_CHECK_AMOUNT
         ));
@@ -146,6 +151,7 @@ public class MekanismTunnelsAspectWriteBuilders {
             PROPERTIES.setValue(TunnelAspectWriteBuilders.PROP_CHANNEL, ValueTypeInteger.ValueInteger.of(IPositionedAddonsNetworkIngredients.DEFAULT_CHANNEL));
             //PROPERTIES.setValue(PROP_EXACTAMOUNT, ValueTypeBoolean.ValueBoolean.of(false));
             PROPERTIES.setValue(TunnelAspectWriteBuilders.PROP_PASSIVE_IO, ValueTypeBoolean.ValueBoolean.of(true));
+            PROPERTIES.setValue(TunnelAspectWriteBuilders.PROP_PASSIVE_IO_IGNORE_FILTER, ValueTypeBoolean.ValueBoolean.of(false));
             PROPERTIES.setValue(PROP_CHECK_AMOUNT, ValueTypeBoolean.ValueBoolean.of(false));
 
             PROPERTIES_RATE.setValue(TunnelAspectWriteBuilders.PROP_CHANNEL, ValueTypeInteger.ValueInteger.of(IPositionedAddonsNetworkIngredients.DEFAULT_CHANNEL));
@@ -153,6 +159,7 @@ public class MekanismTunnelsAspectWriteBuilders {
             PROPERTIES_RATE.setValue(PROP_RATE, ValueTypeLong.ValueLong.of(1000));
             //PROPERTIES_RATE.setValue(PROP_EXACTAMOUNT, ValueTypeBoolean.ValueBoolean.of(false));
             PROPERTIES_RATE.setValue(TunnelAspectWriteBuilders.PROP_PASSIVE_IO, ValueTypeBoolean.ValueBoolean.of(true));
+            PROPERTIES_RATE.setValue(TunnelAspectWriteBuilders.PROP_PASSIVE_IO_IGNORE_FILTER, ValueTypeBoolean.ValueBoolean.of(false));
             PROPERTIES_RATE.setValue(PROP_CHECK_AMOUNT, ValueTypeBoolean.ValueBoolean.of(false));
 
             PROPERTIES_RATECHECKS.setValue(TunnelAspectWriteBuilders.PROP_CHANNEL, ValueTypeInteger.ValueInteger.of(IPositionedAddonsNetworkIngredients.DEFAULT_CHANNEL));
@@ -161,6 +168,7 @@ public class MekanismTunnelsAspectWriteBuilders {
             PROPERTIES_RATECHECKS.setValue(TunnelAspectWriteBuilders.PROP_EMPTYISANY, ValueTypeBoolean.ValueBoolean.of(false));
             PROPERTIES_RATECHECKS.setValue(PROP_RATE, ValueTypeLong.ValueLong.of(1000));
             PROPERTIES_RATECHECKS.setValue(TunnelAspectWriteBuilders.PROP_PASSIVE_IO, ValueTypeBoolean.ValueBoolean.of(true));
+            PROPERTIES_RATECHECKS.setValue(TunnelAspectWriteBuilders.PROP_PASSIVE_IO_IGNORE_FILTER, ValueTypeBoolean.ValueBoolean.of(false));
             //PROPERTIES_RATECHECKS.setValue(PROP_EXACTAMOUNT, ValueTypeBoolean.ValueBoolean.of(false));
             PROPERTIES_RATECHECKS.setValue(PROP_CHECK_AMOUNT, ValueTypeBoolean.ValueBoolean.of(false));
 
@@ -170,6 +178,7 @@ public class MekanismTunnelsAspectWriteBuilders {
             PROPERTIES_RATECHECKSCRAFT.setValue(TunnelAspectWriteBuilders.PROP_EMPTYISANY, ValueTypeBoolean.ValueBoolean.of(false));
             PROPERTIES_RATECHECKSCRAFT.setValue(PROP_RATE, ValueTypeLong.ValueLong.of(1000));
             PROPERTIES_RATECHECKSCRAFT.setValue(TunnelAspectWriteBuilders.PROP_PASSIVE_IO, ValueTypeBoolean.ValueBoolean.of(true));
+            PROPERTIES_RATECHECKSCRAFT.setValue(TunnelAspectWriteBuilders.PROP_PASSIVE_IO_IGNORE_FILTER, ValueTypeBoolean.ValueBoolean.of(false));
             //PROPERTIES_RATECHECKSCRAFT.setValue(PROP_EXACTAMOUNT, ValueTypeBoolean.ValueBoolean.of(false));
             PROPERTIES_RATECHECKSCRAFT.setValue(PROP_CHECK_AMOUNT, ValueTypeBoolean.ValueBoolean.of(false));
             PROPERTIES_RATECHECKSCRAFT.setValue(TunnelAspectWriteBuilders.PROP_CRAFT, ValueTypeBoolean.ValueBoolean.of(false));
@@ -180,6 +189,7 @@ public class MekanismTunnelsAspectWriteBuilders {
             PROPERTIES_RATECHECKSLIST.setValue(PROP_RATE, ValueTypeLong.ValueLong.of(1000));
             //PROPERTIES_RATECHECKSLIST.setValue(PROP_EXACTAMOUNT, ValueTypeBoolean.ValueBoolean.of(false));
             PROPERTIES_RATECHECKSLIST.setValue(TunnelAspectWriteBuilders.PROP_PASSIVE_IO, ValueTypeBoolean.ValueBoolean.of(true));
+            PROPERTIES_RATECHECKSLIST.setValue(TunnelAspectWriteBuilders.PROP_PASSIVE_IO_IGNORE_FILTER, ValueTypeBoolean.ValueBoolean.of(false));
             PROPERTIES_RATECHECKSLIST.setValue(PROP_CHECK_AMOUNT, ValueTypeBoolean.ValueBoolean.of(false));
 
             PROPERTIES_FILTER.setValue(TunnelAspectWriteBuilders.PROP_FILTER_APPLY_TO_INSERTIONS, ValueTypeBoolean.ValueBoolean.of(true));
@@ -283,8 +293,9 @@ public class MekanismTunnelsAspectWriteBuilders {
                 PROP_EXPORT = input -> {
             // Save this filter into the part state to handle passive exports
             if (input.isPassiveIO()) {
+                Predicate<ChemicalStack> passiveFilter = input.isPassiveIOIgnoreFilter() ? (chemicalStack) -> true : input.getChemicalStackMatcher();
                 input.getPartStatePositionedAddon().setStorageFilter(new PositionedAddonsNetworkIngredientsFilter<>(
-                        input.getChemicalStackMatcher(),
+                        passiveFilter,
                         false,
                         true,
                         false
@@ -318,8 +329,9 @@ public class MekanismTunnelsAspectWriteBuilders {
                 PROP_IMPORT = input -> {
             // Save this filter into the part state to handle passive imports
             if (input.isPassiveIO()) {
+                Predicate<ChemicalStack> passiveFilter = input.isPassiveIOIgnoreFilter() ? (chemicalStack) -> true : input.getChemicalStackMatcher();
                 input.getPartStatePositionedAddon().setStorageFilter(new PositionedAddonsNetworkIngredientsFilter<>(
-                        input.getChemicalStackMatcher(),
+                        passiveFilter,
                         true,
                         false,
                         false
@@ -389,25 +401,31 @@ public class MekanismTunnelsAspectWriteBuilders {
                 PROPERTIES_CHEMICAL.setValue(TunnelAspectWriteBuilders.PROP_BLACKLIST, ValueTypeBoolean.ValueBoolean.of(false));
                 PROPERTIES_CHEMICAL.setValue(TunnelAspectWriteBuilders.PROP_EMPTYISANY, ValueTypeBoolean.ValueBoolean.of(false));
                 PROPERTIES_CHEMICAL.removeValue(TunnelAspectWriteBuilders.PROP_PASSIVE_IO);
+                PROPERTIES_CHEMICAL.removeValue(TunnelAspectWriteBuilders.PROP_PASSIVE_IO_IGNORE_FILTER);
 
                 PROPERTIES_CHEMICALLIST.setValue(TunnelAspectWriteBuilders.PROP_CHANNEL, ValueTypeInteger.ValueInteger.of(IPositionedAddonsNetworkIngredients.DEFAULT_CHANNEL));
                 PROPERTIES_CHEMICALLIST.setValue(TunnelAspectWriteBuilders.PROP_ROUNDROBIN, ValueTypeBoolean.ValueBoolean.of(false));
                 PROPERTIES_CHEMICALLIST.setValue(TunnelAspectWriteBuilders.PROP_BLACKLIST, ValueTypeBoolean.ValueBoolean.of(false));
                 PROPERTIES_CHEMICALLIST.removeValue(TunnelAspectWriteBuilders.PROP_PASSIVE_IO);
+                PROPERTIES_CHEMICALLIST.removeValue(TunnelAspectWriteBuilders.PROP_PASSIVE_IO_IGNORE_FILTER);
 
                 PROPERTIES_RATE.setValue(TunnelAspectWriteBuilders.World.PROPERTY_ENTITYINDEX, ValueTypeInteger.ValueInteger.of(0));
                 PROPERTIES_RATE.removeValue(TunnelAspectWriteBuilders.PROP_PASSIVE_IO);
+                PROPERTIES_RATE.removeValue(TunnelAspectWriteBuilders.PROP_PASSIVE_IO_IGNORE_FILTER);
 
                 PROPERTIES_RATECHECKS.setValue(TunnelAspectWriteBuilders.World.PROPERTY_ENTITYINDEX, ValueTypeInteger.ValueInteger.of(0));
                 PROPERTIES_RATECHECKS.setValue(TunnelAspectWriteBuilders.PROP_BLACKLIST, ValueTypeBoolean.ValueBoolean.of(false));
                 PROPERTIES_RATECHECKS.removeValue(TunnelAspectWriteBuilders.PROP_PASSIVE_IO);
+                PROPERTIES_RATECHECKS.removeValue(TunnelAspectWriteBuilders.PROP_PASSIVE_IO_IGNORE_FILTER);
 
                 PROPERTIES_RATECHECKSCRAFT.setValue(TunnelAspectWriteBuilders.World.PROPERTY_ENTITYINDEX, ValueTypeInteger.ValueInteger.of(0));
                 PROPERTIES_RATECHECKSCRAFT.setValue(TunnelAspectWriteBuilders.PROP_BLACKLIST, ValueTypeBoolean.ValueBoolean.of(false));
                 PROPERTIES_RATECHECKSCRAFT.removeValue(TunnelAspectWriteBuilders.PROP_PASSIVE_IO);
+                PROPERTIES_RATECHECKSCRAFT.removeValue(TunnelAspectWriteBuilders.PROP_PASSIVE_IO_IGNORE_FILTER);
 
                 PROPERTIES_RATECHECKSLIST.setValue(TunnelAspectWriteBuilders.World.PROPERTY_ENTITYINDEX, ValueTypeInteger.ValueInteger.of(0));
                 PROPERTIES_RATECHECKSLIST.removeValue(TunnelAspectWriteBuilders.PROP_PASSIVE_IO);
+                PROPERTIES_RATECHECKSLIST.removeValue(TunnelAspectWriteBuilders.PROP_PASSIVE_IO_IGNORE_FILTER);
             }
 
             public static final IAspectValuePropagator<Triple<PartTarget, IAspectProperties, Boolean>, IChemicalTarget>

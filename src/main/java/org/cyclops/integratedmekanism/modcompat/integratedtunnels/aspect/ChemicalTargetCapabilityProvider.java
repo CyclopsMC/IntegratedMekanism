@@ -39,7 +39,8 @@ public class ChemicalTargetCapabilityProvider extends ChanneledTargetCapabilityP
                 properties.getValue(TunnelAspectWriteBuilders.PROP_CHANNEL).getRawValue(),
                 properties.getValue(TunnelAspectWriteBuilders.PROP_ROUNDROBIN).getRawValue(),
                 properties.getValue(TunnelAspectWriteBuilders.PROP_CRAFT).getRawValue(),
-                properties.getValue(TunnelAspectWriteBuilders.PROP_PASSIVE_IO).getRawValue());
+                properties.getValue(TunnelAspectWriteBuilders.PROP_PASSIVE_IO).getRawValue(),
+                properties.getValue(TunnelAspectWriteBuilders.PROP_PASSIVE_IO_IGNORE_FILTER).getRawValue());
         this.connection = new TunnelConnectionPositionedNetworkCapabilityProvider(network, getChannel(), partTarget.getTarget(), transfer, capabilityProvider);
         this.chemicalStackMatcher = chemicalStackMatcher;
         this.partTarget = partTarget;
