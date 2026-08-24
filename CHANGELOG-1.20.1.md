@@ -1,8 +1,15 @@
 # Changelog for Minecraft 1.20.1
 All notable changes to this project will be documented in this file.
 
+<a name="1.20.1-1.1.0"></a>
+## [1.20.1-1.1.0](/compare/1.20.1-1.0.4...1.20.1-1.1.0) - 2026-08-24 20:42:11
+
+
+### Added
+* Add support for dragging JEI chemicals into the Logic Programmer (#24), Closes #9
+
 <a name="1.20.1-1.0.4"></a>
-## [1.20.1-1.0.4](/compare/1.20.1-1.0.3...1.20.1-1.0.4) - 2026-03-13 06:53:50
+## [1.20.1-1.0.4](/compare/1.20.1-1.0.3...1.20.1-1.0.4) - 2026-03-13 06:53:50 +0100
 
 
 ### Fixed
