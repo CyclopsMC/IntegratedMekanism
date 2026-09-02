@@ -20,6 +20,8 @@ import org.cyclops.commoncapabilities.api.ingredient.MixedIngredients;
 import org.cyclops.integratedmekanism.Reference;
 import org.cyclops.integratedmekanism.ingredient.MekanismIngredientComponents;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -50,14 +52,19 @@ public class GameTestsChemicalRecipeHandler {
     }
 
     protected static void testMachineFactories(GameTestHelper helper, FactoryType factoryType, Set<IngredientComponent<?, ?>> inputComponents, Set<IngredientComponent<?, ?>> outputComponents, int minRecipes) {
-        for (FactoryTier factoryTier : FactoryTier.values()) {
-            helper.setBlock(POS.offset(0, factoryTier.ordinal(), 0), MekanismBlocks.getFactory(factoryTier, factoryType).get());
+        // Other mods can add tiers to the FactoryTier enum without registering a factory block for them.
+        List<FactoryTier> factoryTiers = Arrays.stream(FactoryTier.values())
+                .filter(factoryTier -> MekanismBlocks.getFactory(factoryTier, factoryType) != null)
+                .toList();
+
+        for (int i = 0; i < factoryTiers.size(); i++) {
+            helper.setBlock(POS.offset(0, i, 0), MekanismBlocks.getFactory(factoryTiers.get(i), factoryType).get());
         }
 
         helper.succeedIf(() -> {
-            for (FactoryTier factoryTier : FactoryTier.values()) {
+            for (int i = 0; i < factoryTiers.size(); i++) {
                 // Check if recipe handler capability exists and is valid
-                IRecipeHandler recipeHandler = helper.getLevel().getCapability(Capabilities.RecipeHandler.BLOCK, helper.absolutePos(POS.offset(0, factoryTier.ordinal(), 0)), Direction.NORTH);
+                IRecipeHandler recipeHandler = helper.getLevel().getCapability(Capabilities.RecipeHandler.BLOCK, helper.absolutePos(POS.offset(0, i, 0)), Direction.NORTH);
 
                 helper.assertTrue(recipeHandler != null, "Recipe handler does not exist");
                 helper.assertValueEqual(recipeHandler.getRecipeInputComponents(), inputComponents, "Input components are incorrect");

@@ -4,6 +4,7 @@ import mekanism.api.chemical.IChemicalHandler;
 import mekanism.common.content.blocktype.FactoryType;
 import mekanism.common.recipe.IMekanismRecipeTypeProvider;
 import mekanism.common.recipe.MekanismRecipeType;
+import mekanism.common.registration.impl.TileEntityTypeRegistryObject;
 import mekanism.common.registries.MekanismTileEntityTypes;
 import mekanism.common.tier.FactoryTier;
 import mekanism.common.tile.factory.TileEntityFactory;
@@ -175,7 +176,13 @@ public class MekanismCapabilityLoader {
         // Register handlers for factory types
         if (factoryType != null) {
             for (FactoryTier factoryTier : FactoryTier.values()) {
-                registry.registerBlockEntity(() -> (BlockEntityType<TileEntityFactory>) (BlockEntityType) MekanismTileEntityTypes.getFactoryTile(factoryTier, factoryType).get(), new ICapabilityConstructor<TileEntityFactory, Direction, IRecipeHandler, BlockEntityType<TileEntityFactory>>() {
+                // Other mods can add tiers to the FactoryTier enum without registering a factory tile for them.
+                TileEntityTypeRegistryObject<? extends TileEntityFactory<?>> factoryTile = MekanismTileEntityTypes.getFactoryTile(factoryTier, factoryType);
+                if (factoryTile == null) {
+                    continue;
+                }
+
+                registry.registerBlockEntity(() -> (BlockEntityType<TileEntityFactory>) (BlockEntityType) factoryTile.get(), new ICapabilityConstructor<TileEntityFactory, Direction, IRecipeHandler, BlockEntityType<TileEntityFactory>>() {
                     @Override
                     public BaseCapability<IRecipeHandler, Direction> getCapability() {
                         return Capabilities.RecipeHandler.BLOCK;
