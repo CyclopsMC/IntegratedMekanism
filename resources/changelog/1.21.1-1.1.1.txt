@@ -1,0 +1,5 @@
+As always, don't forget to backup your world before updating!
+Requires CyclopsCore version 1.27.0 or higher.
+
+Fixes:
+* Fix crash when other mods add factory tiers (#27), Closes #26

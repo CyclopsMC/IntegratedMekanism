@@ -1,8 +1,15 @@
 # Changelog for Minecraft 1.21.1
 All notable changes to this project will be documented in this file.
 
+<a name="1.21.1-1.1.1"></a>
+## [1.21.1-1.1.1](https://github.com/CyclopsMC/IntegratedMekanism/compare/1.21.1-1.1.0...1.21.1-1.1.1) - 2026-09-05 13:15:06
+
+
+### Fixed
+* Fix crash when other mods add factory tiers (#27), Closes #26
+
 <a name="1.21.1-1.1.0"></a>
-## [1.21.1-1.1.0](https://github.com/CyclopsMC/IntegratedMekanism/compare/1.21.1-1.0.4...1.21.1-1.1.0) - 2026-08-24 21:29:25
+## [1.21.1-1.1.0](https://github.com/CyclopsMC/IntegratedMekanism/compare/1.21.1-1.0.4...1.21.1-1.1.0) - 2026-08-24 21:29:25 +0200
 
 
 ### Added
