@@ -1,6 +1,7 @@
 package org.cyclops.integratedmekanism.modcompat.integratedterminals;
 
 import com.google.common.collect.Lists;
+import com.mojang.datafixers.util.Either;
 import mekanism.api.Action;
 import mekanism.api.MekanismAPI;
 import mekanism.api.chemical.Chemical;
@@ -14,6 +15,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.entity.player.Inventory;
@@ -77,7 +79,7 @@ public class IngredientComponentTerminalStorageHandlerChemicalStack implements I
     public void drawInstance(GuiGraphics guiGraphics, ChemicalStack instance, long maxQuantity, @javax.annotation.Nullable String label, AbstractContainerScreen gui,
                              ContainerScreenTerminalStorage.DrawLayer layer, float partialTick, int x, int y,
                              int mouseX, int mouseY, @javax.annotation.Nullable List<Component> additionalTooltipLines,
-                             @javax.annotation.Nullable TooltipComponent additionalTooltipComponent) {
+                             @javax.annotation.Nullable List<Either<FormattedText, TooltipComponent>> additionalTooltipElements) {
         if (instance != null) {
             if (layer == ContainerScreenTerminalStorage.DrawLayer.BACKGROUND) {
                 // Draw chemical
@@ -100,7 +102,7 @@ public class IngredientComponentTerminalStorageHandlerChemicalStack implements I
                         lines.addAll(additionalTooltipLines);
                     }
                     return lines;
-                }, additionalTooltipComponent);
+                }, additionalTooltipElements);
             }
         }
     }
