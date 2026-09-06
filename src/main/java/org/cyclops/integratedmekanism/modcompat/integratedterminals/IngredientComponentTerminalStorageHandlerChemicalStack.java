@@ -20,6 +20,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -41,6 +42,7 @@ import org.cyclops.integratedmekanism.modcompat.integratedterminals.sorter.Chemi
 import org.cyclops.integratedterminals.api.ingredient.IIngredientComponentTerminalStorageHandler;
 import org.cyclops.integratedterminals.api.ingredient.IIngredientInstanceSorter;
 import org.cyclops.integratedterminals.client.gui.container.ContainerScreenTerminalStorage;
+import org.cyclops.integratedterminals.client.gui.tooltip.TooltipRenderHelpers;
 import org.cyclops.integratedterminals.core.terminalstorage.query.SearchMode;
 import org.jetbrains.annotations.Nullable;
 
@@ -74,7 +76,8 @@ public class IngredientComponentTerminalStorageHandlerChemicalStack implements I
     @OnlyIn(Dist.CLIENT)
     public void drawInstance(GuiGraphics guiGraphics, ChemicalStack instance, long maxQuantity, @javax.annotation.Nullable String label, AbstractContainerScreen gui,
                              ContainerScreenTerminalStorage.DrawLayer layer, float partialTick, int x, int y,
-                             int mouseX, int mouseY, @javax.annotation.Nullable List<Component> additionalTooltipLines) {
+                             int mouseX, int mouseY, @javax.annotation.Nullable List<Component> additionalTooltipLines,
+                             @javax.annotation.Nullable TooltipComponent additionalTooltipComponent) {
         if (instance != null) {
             if (layer == ContainerScreenTerminalStorage.DrawLayer.BACKGROUND) {
                 // Draw chemical
@@ -87,7 +90,7 @@ public class IngredientComponentTerminalStorageHandlerChemicalStack implements I
                 GuiGraphicsExtended renderItem = new GuiGraphicsExtended(guiGraphics);
                 renderItem.drawSlotText(Minecraft.getInstance().font, label != null ? label : GuiHelpers.quantityToScaledString(instance.getAmount()), x, y);
             } else {
-                GuiHelpers.renderTooltip(gui, guiGraphics.pose(), x, y, GuiHelpers.SLOT_SIZE_INNER, GuiHelpers.SLOT_SIZE_INNER, mouseX, mouseY, () -> {
+                TooltipRenderHelpers.renderTooltip(gui, guiGraphics, x, y, GuiHelpers.SLOT_SIZE_INNER, GuiHelpers.SLOT_SIZE_INNER, mouseX, mouseY, () -> {
                     List<Component> lines = Lists.newArrayList();
                     lines.add(((MutableComponent) instance.getTextComponent())
                             .withStyle(Style.EMPTY.withColor(instance.getChemicalColorRepresentation())));
@@ -97,7 +100,7 @@ public class IngredientComponentTerminalStorageHandlerChemicalStack implements I
                         lines.addAll(additionalTooltipLines);
                     }
                     return lines;
-                });
+                }, additionalTooltipComponent);
             }
         }
     }
