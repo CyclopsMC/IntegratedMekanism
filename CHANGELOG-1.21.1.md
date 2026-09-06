@@ -1,8 +1,16 @@
 # Changelog for Minecraft 1.21.1
 All notable changes to this project will be documented in this file.
 
+<a name="1.21.1-1.1.2"></a>
+## [1.21.1-1.1.2](https://github.com/CyclopsMC/IntegratedMekanism/compare/1.21.1-1.1.1...1.21.1-1.1.2) - 2026-09-06 16:41:34
+
+
+### Fixed
+* Implement the tooltip component parameter of the storage terminal handler (#28)
+  This fixes compatibility with Integrated Terminals 1.9.0.
+
 <a name="1.21.1-1.1.1"></a>
-## [1.21.1-1.1.1](https://github.com/CyclopsMC/IntegratedMekanism/compare/1.21.1-1.1.0...1.21.1-1.1.1) - 2026-09-05 13:15:06
+## [1.21.1-1.1.1](https://github.com/CyclopsMC/IntegratedMekanism/compare/1.21.1-1.1.0...1.21.1-1.1.1) - 2026-09-05 13:15:06 +0200
 
 
 ### Fixed
