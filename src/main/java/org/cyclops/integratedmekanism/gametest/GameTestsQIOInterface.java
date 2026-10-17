@@ -32,6 +32,7 @@ import org.cyclops.commoncapabilities.api.ingredient.IngredientComponent;
 import org.cyclops.commoncapabilities.api.ingredient.storage.IIngredientComponentStorage;
 import org.cyclops.integrateddynamics.RegistryEntries;
 import org.cyclops.integrateddynamics.api.evaluate.variable.ValueDeseralizationContext;
+import org.cyclops.integrateddynamics.api.network.IPositionedAddonsNetwork;
 import org.cyclops.integrateddynamics.api.part.PartPos;
 import org.cyclops.integrateddynamics.api.part.PartTarget;
 import org.cyclops.integrateddynamics.core.block.IgnoredBlockStatus;
@@ -310,24 +311,36 @@ public class GameTestsQIOInterface {
         frequency.massInsert(new ItemStack(Items.DIAMOND), 5, Action.EXECUTE);
         PartPos posA = placeInterface(helper, POS, Direction.UP);
         PartPos posB = placeInterface(helper, POS, Direction.DOWN);
+        PartPos posC = placeInterface(helper, POS, Direction.NORTH);
+        PartPos posD = placeInterface(helper, POS, Direction.SOUTH);
         getState(posB).setChannelInterface(3);
+        getState(posD).setChannelInterface(IPositionedAddonsNetwork.WILDCARD_CHANNEL);
         link(posA, frequency, owner);
         link(posB, frequency, owner);
+        link(posC, frequency, owner);
+        link(posD, frequency, owner);
 
-        // The second link is refused, even on another channel
+        // The same frequency can be linked on another channel
         assertStatus(helper, posA, QIOLinkStatus.LINKED);
-        assertStatus(helper, posB, QIOLinkStatus.DUPLICATE);
+        assertStatus(helper, posB, QIOLinkStatus.LINKED);
+        // But not twice on the same channel, also not via the wildcard channel
+        assertStatus(helper, posC, QIOLinkStatus.DUPLICATE);
+        assertStatus(helper, posD, QIOLinkStatus.DUPLICATE);
 
         helper.startSequence()
-                .thenWaitUntil(() -> helper.assertValueEqual(countInChannel(posA, 0, ItemStack.EMPTY), 5L, "Items are not exposed once"))
+                .thenWaitUntil(() -> {
+                    helper.assertValueEqual(countInChannel(posA, 0, ItemStack.EMPTY), 5L, "Items are not exposed once on channel 0");
+                    helper.assertValueEqual(countInChannel(posA, 3, ItemStack.EMPTY), 5L, "Items are not exposed once on channel 3");
+                })
                 .thenExecute(() -> {
-                    helper.assertValueEqual(countInChannel(posA, 3, ItemStack.EMPTY), 0L, "Duplicate link exposes items");
-                    // Once the first interface is removed, the second one takes over
+                    // Once the first interface is removed, the other one on the same channel takes over
                     PartHelpers.removePart(helper.getLevel(), posA.getPos().getBlockPos(), posA.getSide(), null, false, false, false);
                 })
                 .thenWaitUntil(() -> {
-                    assertStatus(helper, posB, QIOLinkStatus.LINKED);
-                    helper.assertValueEqual(countInChannel(posB, 3, ItemStack.EMPTY), 5L, "Second interface did not take over");
+                    assertStatus(helper, posC, QIOLinkStatus.LINKED);
+                    assertStatus(helper, posD, QIOLinkStatus.DUPLICATE);
+                    helper.assertValueEqual(countInChannel(posB, 0, ItemStack.EMPTY), 5L, "Other interface did not take over");
+                    helper.assertValueEqual(countInChannel(posB, 3, ItemStack.EMPTY), 5L, "Items are not exposed once on channel 3");
                 })
                 .thenSucceed();
     }

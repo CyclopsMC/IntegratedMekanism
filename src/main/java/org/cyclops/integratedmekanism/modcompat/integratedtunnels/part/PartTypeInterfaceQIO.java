@@ -34,6 +34,7 @@ import org.cyclops.cyclopscore.init.ModBase;
 import org.cyclops.integrateddynamics.api.evaluate.variable.ValueDeseralizationContext;
 import org.cyclops.integrateddynamics.api.network.INetwork;
 import org.cyclops.integrateddynamics.api.network.IPartNetwork;
+import org.cyclops.integrateddynamics.api.network.IPositionedAddonsNetwork;
 import org.cyclops.integrateddynamics.api.network.NetworkCapability;
 import org.cyclops.integrateddynamics.api.part.IPartContainer;
 import org.cyclops.integrateddynamics.api.part.PartCapability;
@@ -210,24 +211,26 @@ public class PartTypeInterfaceQIO extends PartTypeInterfacePositionedAddon<IItem
         if (!link.isAuthorized()) {
             return new LinkResult(QIOLinkStatus.NO_ACCESS, null);
         }
-        if (network != null && isLinkedElsewhere(network, target.getCenter(), frequency)) {
+        if (network != null && isLinkedElsewhere(network, target.getCenter(), state.getChannelInterface(), frequency)) {
             return new LinkResult(QIOLinkStatus.DUPLICATE, null);
         }
         return new LinkResult(QIOLinkStatus.LINKED, frequency);
     }
 
     /**
-     * Linking the same frequency multiple times would count its items multiple times,
-     * also across channels, so only the first link is kept active.
+     * Linking the same frequency multiple times on a channel would count its items multiple times,
+     * so only the first link per channel is kept active.
+     * Interfaces on the wildcard channel overlap with all channels.
      */
-    protected boolean isLinkedElsewhere(INetwork network, PartPos pos, QIOFrequency frequency) {
+    protected boolean isLinkedElsewhere(INetwork network, PartPos pos, int channel, QIOFrequency frequency) {
         return network.getCapability(getNetworkCapability())
                 .map(itemNetwork -> {
                     for (PartPos otherPos : itemNetwork.getPositions()) {
                         if (!otherPos.equals(pos) && otherPos.getPos().isLoaded()) {
                             PartHelpers.PartStateHolder<?, ?> holder = PartHelpers.getPart(otherPos);
                             if (holder != null && holder.getState() instanceof State otherState
-                                    && otherState.getActiveFrequency() == frequency) {
+                                    && otherState.getActiveFrequency() == frequency
+                                    && IPositionedAddonsNetwork.channelsMatch(channel, otherState.getChannelInterface())) {
                                 return true;
                             }
                         }
