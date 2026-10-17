@@ -281,6 +281,10 @@
     "info_book.integratedmekanism.manual.tunnels.text2": "&lWARNING:&r The &lChemical Tanks&r from &lMekanism&r do not allow chemical interaction from all sides by default. So you may have to explicitly allow &lInput/Output&r for the connected side within the &lChemical Tank&r GUI.",
     "info_book.integratedmekanism.manual.tunnels.text3": "The &lChemical Interface&r exposes chemical tanks to the network, and the &lChemical Importer&r and &lChemical Exporter&r respectively import from and export to them. For more advanced scenarios, you can use the &lWorld Chemical Importer&r, &lWorld Chemical Exporter&r, and &lFiltering Chemical Interface&r.",
 
+    "info_book.integratedmekanism.manual.qio": "QIO Storage",
+    "info_book.integratedmekanism.manual.qio.text1": "The contents of a &lQIO&r frequency can be accessed through its &lQIO Drive Array&r or &lQIO Dashboard&r. For example, placing an &lItem Interface&r against a &lQIO Drive Array&r makes all items in its frequency available to your network, and &lItem Importers&r and &lItem Exporters&r can directly target these blocks as well.",
+    "info_book.integratedmekanism.manual.qio.text2": "&lWARNING:&r Only connect one block per &lQIO&r frequency to the same network, otherwise its items will be counted multiple times.",
+
     "info_book.integratedmekanism.manual.terminals": "Chemical Terminals",
     "info_book.integratedmekanism.manual.terminals.text1": "When at least one valid &lChemical Interface&r is attached to your network, the &lStorage Terminal&r will allow you to interact with all chemicals in your network, in the same way you are used to interacting with items, fluids, and energy.",
 

@@ -1,6 +1,7 @@
 package org.cyclops.integratedmekanism.capability.recipehandler;
 
 import mekanism.api.chemical.IChemicalHandler;
+import mekanism.api.inventory.qio.IQIOComponent;
 import mekanism.common.content.blocktype.FactoryType;
 import mekanism.common.recipe.IMekanismRecipeTypeProvider;
 import mekanism.common.recipe.MekanismRecipeType;
@@ -26,11 +27,13 @@ import org.cyclops.commoncapabilities.api.capability.Capabilities;
 import org.cyclops.commoncapabilities.api.capability.recipehandler.IRecipeHandler;
 import org.cyclops.commoncapabilities.api.capability.temperature.ITemperature;
 import org.cyclops.commoncapabilities.api.capability.work.IWorker;
+import org.cyclops.commoncapabilities.api.ingredient.storage.IIngredientComponentStorageHandler;
 import org.cyclops.cyclopscore.modcompat.capabilities.CapabilityConstructorRegistry;
 import org.cyclops.cyclopscore.modcompat.capabilities.ICapabilityConstructor;
 import org.cyclops.integratedmekanism.IntegratedMekanism;
 import org.cyclops.integratedmekanism.capability.chemicalhandler.VanillaEntityItemChemicalHandler;
 import org.cyclops.integratedmekanism.capability.chemicalhandler.VanillaEntityItemFrameChemicalHandler;
+import org.cyclops.integratedmekanism.capability.ingredient.IngredientComponentStorageHandlerQIO;
 import org.cyclops.integratedmekanism.capability.temperature.FissionReactorTemperature;
 import org.cyclops.integratedmekanism.capability.worker.FissionReactorWorker;
 
@@ -73,6 +76,10 @@ public class MekanismCapabilityLoader {
                         return (blockEntity, side) -> new FissionReactorTemperature(blockEntity);
                     }
                 });
+
+        // QIO item storage
+        addQIOStorage(registry, MekanismTileEntityTypes.QIO_DRIVE_ARRAY);
+        addQIOStorage(registry, MekanismTileEntityTypes.QIO_DASHBOARD);
 
         // RecipeHandlers
         NeoForge.EVENT_BUS.addListener((ServerStoppedEvent event) -> MekanismRecipeHandler.CACHED_RECIPES.clear());
@@ -157,6 +164,20 @@ public class MekanismCapabilityLoader {
                         };
                     }
                 });
+    }
+
+    protected static <T extends BlockEntity & IQIOComponent> void addQIOStorage(CapabilityConstructorRegistry registry, Supplier<BlockEntityType<T>> blockEntityType) {
+        registry.registerBlockEntity(blockEntityType, new ICapabilityConstructor<T, Direction, IIngredientComponentStorageHandler, BlockEntityType<T>>() {
+            @Override
+            public BaseCapability<IIngredientComponentStorageHandler, Direction> getCapability() {
+                return Capabilities.IngredientComponentStorageHandler.BLOCK;
+            }
+
+            @Override
+            public ICapabilityProvider<T, Direction, IIngredientComponentStorageHandler> createProvider(BlockEntityType<T> tBlockEntityType) {
+                return (blockEntity, side) -> new IngredientComponentStorageHandlerQIO(blockEntity);
+            }
+        });
     }
 
     protected static <T extends BlockEntity> void addRecipeHandler(CapabilityConstructorRegistry registry, Supplier<BlockEntityType<T>> blockEntityType, IMekanismRecipeTypeProvider<?, ?, ?> recipeType, @Nullable FactoryType factoryType, Function<Supplier<Level>, IRecipeHandler> recipeHandlerConstructor) {
