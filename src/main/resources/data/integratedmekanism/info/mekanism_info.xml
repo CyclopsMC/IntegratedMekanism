@@ -60,6 +60,15 @@
         <appendix_list factory="integrateddynamics:part_aspects">integratedmekanism:interface_filter_chemical</appendix_list>
     </section>
 
+    <section name="info_book.integratedmekanism.manual.qio">
+        <tag type="mod">integratedtunnels</tag>
+        <tag>integratedmekanism:part_interface_qio</tag>
+        <paragraph>info_book.integratedmekanism.manual.qio.text1</paragraph>
+        <paragraph>info_book.integratedmekanism.manual.qio.text2</paragraph>
+        <paragraph>info_book.integratedmekanism.manual.qio.text3</paragraph>
+        <appendix type="minecraft:crafting">integratedmekanism:crafting/part_interface_qio</appendix>
+    </section>
+
     <section name="info_book.integratedmekanism.manual.terminals">
         <tag type="mod">integratedterminals</tag>
         <paragraph>info_book.integratedmekanism.manual.terminals.text1</paragraph>

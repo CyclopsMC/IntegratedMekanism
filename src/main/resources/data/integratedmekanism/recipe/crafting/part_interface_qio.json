@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CIC",
+    "CDC"
+  ],
+  "key": {
+    "C": {
+      "item": "integrateddynamics:crystalized_menril_chunk"
+    },
+    "I": {
+      "item": "integratedtunnels:part_interface_item"
+    },
+    "D": {
+      "item": "mekanism:qio_dashboard"
+    }
+  },
+  "result": {
+    "id": "integratedmekanism:part_interface_qio",
+    "count": 1
+  }
+}

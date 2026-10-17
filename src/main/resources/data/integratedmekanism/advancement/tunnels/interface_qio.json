@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "integratedmekanism:part_interface_qio"
+    },
+    "title": {
+      "translate": "advancement.integratedmekanism.tunnels.interface_qio"
+    },
+    "description": {
+      "translate": "advancement.integratedmekanism.tunnels.interface_qio.desc"
+    }
+  },
+  "parent": "integratedmekanism:root",
+  "criteria": {
+    "criteria_0": {
+      "trigger": "cyclopscore:item_crafted",
+      "conditions": {
+        "item": {
+          "items": [
+            "integratedmekanism:part_interface_qio"
+          ]
+        }
+      }
+    }
+  }
+}

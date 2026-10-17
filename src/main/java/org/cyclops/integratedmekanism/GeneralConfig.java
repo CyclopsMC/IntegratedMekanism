@@ -19,6 +19,8 @@ public class GeneralConfig extends DummyConfig {
     public static long chemicalRateLimit = Long.MAX_VALUE;
     @ConfigurablePropertyCommon(category = "general", comment = "The base energy usage for the chemical interface.", minimalValue = 0, configLocation = ModConfigLocation.SERVER)
     public static int interfaceChemicalBaseConsumption = 0;
+    @ConfigurablePropertyCommon(category = "general", comment = "The base energy usage for the QIO interface.", minimalValue = 0, configLocation = ModConfigLocation.SERVER)
+    public static int interfaceQIOBaseConsumption = 32;
     @ConfigurablePropertyCommon(category = "general", comment = "The base energy usage for the chemical exporter.", minimalValue = 0, configLocation = ModConfigLocation.SERVER)
     public static int exporterChemicalBaseConsumption = 1;
     @ConfigurablePropertyCommon(category = "general", comment = "The base energy usage for the chemical importer.", minimalValue = 0, configLocation = ModConfigLocation.SERVER)

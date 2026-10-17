@@ -273,6 +273,25 @@ public class GameTestsAdvancements {
         helper.succeed();
     }
 
+    @GameTest(template = TEMPLATE_EMPTY, timeoutTicks = TIMEOUT)
+    public void testAdvancementInterfaceQIO(GameTestHelper helper) {
+        ServerPlayer player = createMockPlayer(helper);
+        ItemStack crafted = new ItemStack(PartTypesMekanismTunnels.INTERFACE_QIO.getItem());
+        EventHooks.firePlayerCraftingEvent(player, crafted, new SimpleContainer(0));
+        assertAdvancement(helper, player, Reference.MOD_ID, "tunnels/interface_qio");
+        helper.succeed();
+    }
+
+    @GameTest(template = TEMPLATE_EMPTY, timeoutTicks = TIMEOUT)
+    public void testAdvancementInterfaceQIONegative(GameTestHelper helper) {
+        ServerPlayer player = createMockPlayer(helper);
+        // Craft interface_chemical instead of interface_qio - should NOT trigger the advancement
+        ItemStack crafted = new ItemStack(PartTypesMekanismTunnels.INTERFACE_CHEMICAL.getItem());
+        EventHooks.firePlayerCraftingEvent(player, crafted, new SimpleContainer(0));
+        assertAdvancementNotDone(helper, player, Reference.MOD_ID, "tunnels/interface_qio");
+        helper.succeed();
+    }
+
     // ===== integrateddynamics:part_variable_driven advancements =====
 
     @GameTest(template = TEMPLATE_EMPTY, timeoutTicks = TIMEOUT)
