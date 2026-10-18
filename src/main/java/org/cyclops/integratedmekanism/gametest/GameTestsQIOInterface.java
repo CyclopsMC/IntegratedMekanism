@@ -1,5 +1,6 @@
 package org.cyclops.integratedmekanism.gametest;
 
+import com.mojang.authlib.GameProfile;
 import mekanism.api.Action;
 import mekanism.api.security.SecurityMode;
 import mekanism.common.content.qio.QIOFrequency;
@@ -12,24 +13,32 @@ import mekanism.common.tile.qio.TileEntityQIOComponent;
 import mekanism.common.tile.qio.TileEntityQIODriveArray;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerListener;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
+import org.cyclops.commoncapabilities.api.capability.itemhandler.ItemMatch;
 import org.cyclops.commoncapabilities.api.ingredient.IngredientComponent;
 import org.cyclops.commoncapabilities.api.ingredient.storage.IIngredientComponentStorage;
+import org.cyclops.cyclopscore.helper.ValueNotifierHelpers;
 import org.cyclops.integrateddynamics.RegistryEntries;
 import org.cyclops.integrateddynamics.api.evaluate.variable.ValueDeseralizationContext;
 import org.cyclops.integrateddynamics.api.part.PartPos;
@@ -41,12 +50,14 @@ import org.cyclops.integratedmekanism.Reference;
 import org.cyclops.integratedmekanism.modcompat.integratedtunnels.part.PartTypeInterfaceQIO;
 import org.cyclops.integratedmekanism.modcompat.integratedtunnels.part.PartTypesMekanismTunnels;
 import org.cyclops.integratedmekanism.modcompat.integratedtunnels.qio.ContainerPartInterfaceQIO;
+import org.cyclops.integratedmekanism.modcompat.integratedtunnels.qio.IngredientComponentStorageQIO;
 import org.cyclops.integratedmekanism.modcompat.integratedtunnels.qio.QIOFrequencyLink;
 import org.cyclops.integratedmekanism.modcompat.integratedtunnels.qio.QIOLinkStatus;
 import org.cyclops.integratedtunnels.api.network.IItemNetwork;
 import org.cyclops.integratedtunnels.part.PartTypes;
 import org.cyclops.integratedtunnels.part.aspect.TunnelAspects;
 
+import java.util.Iterator;
 import java.util.UUID;
 
 import static org.cyclops.integrateddynamics.gametest.GameTestHelpersIntegratedDynamics.placeVariableInWriter;
@@ -249,6 +260,35 @@ public class GameTestsQIOInterface {
         });
     }
 
+    @GameTest(template = TEMPLATE_EMPTY, timeoutTicks = TIMEOUT)
+    public void testQIOInterfaceStorageMatching(GameTestHelper helper) {
+        ServerPlayer owner = helper.makeMockServerPlayerInLevel();
+        QIOFrequency frequency = createFrequency(helper, POS.west(3), owner);
+        ItemStack namedDiamond = new ItemStack(Items.DIAMOND);
+        namedDiamond.set(DataComponents.CUSTOM_NAME, Component.literal("Named"));
+        frequency.massInsert(new ItemStack(Items.DIAMOND), 30, Action.EXECUTE);
+        frequency.massInsert(namedDiamond, 15, Action.EXECUTE);
+        IngredientComponentStorageQIO storage = new IngredientComponentStorageQIO(() -> frequency);
+
+        helper.assertValueEqual(storage.getMaxQuantity(), frequency.getTotalItemCountCapacity(), "Max quantity is incorrect");
+        helper.assertValueEqual(count(storage.iterator(new ItemStack(Items.DIAMOND), ItemMatch.ITEM)), 45L, "Matching on item is incorrect");
+        helper.assertValueEqual(count(storage.iterator(new ItemStack(Items.DIAMOND), ItemMatch.ITEM | ItemMatch.DATA)), 30L, "Matching on item and data is incorrect");
+
+        // Without STACKSIZE, the prototype count is the maximum to extract
+        helper.assertValueEqual(storage.extract(new ItemStack(Items.DIAMOND, 64), ItemMatch.ITEM | ItemMatch.DATA, true).getCount(), 30, "Extracting up to a maximum is incorrect");
+        helper.assertTrue(storage.extract(new ItemStack(Items.DIAMOND, 64), ItemMatch.EXACT, true).isEmpty(), "Extracted an exact amount that is not available");
+        ItemStack extracted = storage.extract(namedDiamond.copyWithCount(4), ItemMatch.DATA, false);
+        helper.assertTrue(ItemStack.isSameItemSameComponents(extracted, namedDiamond) && extracted.getCount() == 4, "Extracting on data only is incorrect");
+        helper.assertValueEqual(frequency.getStored(namedDiamond), 11L, "Named diamonds were not extracted");
+        helper.assertValueEqual(storage.extract(10, true).getCount(), 10, "Extracting any item is incorrect");
+
+        // A storage without active frequency is empty
+        IngredientComponentStorageQIO storageEmpty = new IngredientComponentStorageQIO(() -> null);
+        helper.assertValueEqual(storageEmpty.getMaxQuantity(), 0L, "Storage without frequency has a capacity");
+        helper.assertTrue(storageEmpty.extract(10, false).isEmpty(), "Storage without frequency can be extracted from");
+        helper.succeed();
+    }
+
     // ===== Errors =====
 
     @GameTest(template = TEMPLATE_EMPTY, timeoutTicks = TIMEOUT)
@@ -353,6 +393,32 @@ public class GameTestsQIOInterface {
     }
 
     @GameTest(template = TEMPLATE_EMPTY, timeoutTicks = TIMEOUT)
+    public void testQIOInterfaceStatePersistence(GameTestHelper helper) {
+        ServerPlayer owner = helper.makeMockServerPlayerInLevel();
+        QIOFrequency frequency = createFrequency(helper, POS.west(3), owner, uniqueFrequency(), SecurityMode.PRIVATE);
+        PartPos pos = placeInterface(helper, POS, Direction.UP);
+        link(pos, frequency, owner);
+        ValueDeseralizationContext context = ValueDeseralizationContext.of(helper.getLevel());
+
+        // Unlike the item, the saved part keeps who authorized the link
+        CompoundTag tag = new CompoundTag();
+        getState(pos).writeToNBT(context, tag);
+        PartTypeInterfaceQIO.State loaded = new PartTypeInterfaceQIO.State();
+        loaded.readFromNBT(context, tag);
+        helper.assertValueEqual(loaded.getLink(), getState(pos).getLink(), "Link was not saved");
+        helper.assertValueEqual(loaded.getLink().authorizer(), owner.getUUID(), "Authorizer was not saved");
+        helper.assertValueEqual(loaded.getLinkStatus(), QIOLinkStatus.LINKED, "Status was not saved");
+
+        CompoundTag tagUnlinked = new CompoundTag();
+        new PartTypeInterfaceQIO.State().writeToNBT(context, tagUnlinked);
+        PartTypeInterfaceQIO.State loadedUnlinked = new PartTypeInterfaceQIO.State();
+        loadedUnlinked.readFromNBT(context, tagUnlinked);
+        helper.assertTrue(loadedUnlinked.getLink() == null, "Unlinked state has a link after loading");
+        helper.assertValueEqual(loadedUnlinked.getLinkStatus(), QIOLinkStatus.UNLINKED, "Unlinked status was not saved");
+        helper.succeed();
+    }
+
+    @GameTest(template = TEMPLATE_EMPTY, timeoutTicks = TIMEOUT)
     public void testQIOInterfaceConfigurationCard(GameTestHelper helper) {
         ServerPlayer owner = helper.makeMockServerPlayerInLevel();
         QIOFrequency frequency = createFrequency(helper, POS.west(3), owner);
@@ -378,6 +444,38 @@ public class GameTestsQIOInterface {
     }
 
     @GameTest(template = TEMPLATE_EMPTY, timeoutTicks = TIMEOUT)
+    public void testQIOInterfaceContainer(GameTestHelper helper) {
+        ServerPlayer owner = helper.makeMockServerPlayerInLevel();
+        ServerPlayer other = helper.makeMockServerPlayerInLevel();
+        QIOFrequency frequency = createFrequency(helper, POS.west(3), owner, uniqueFrequency(), SecurityMode.PRIVATE);
+        frequency.massInsert(new ItemStack(Items.DIAMOND), 5, Action.EXECUTE);
+        PartPos pos = placeInterface(helper, POS, Direction.UP);
+        ContainerPartInterfaceQIO containerOwner = openContainer(helper, pos, owner);
+        ContainerPartInterfaceQIO containerOther = openContainer(helper, pos, other);
+        Tag selection = ContainerPartInterfaceQIO.createFrequencyList(owner.getUUID()).stream()
+                .filter(tag -> ((CompoundTag) tag).getString("name").equals(frequency.getName()))
+                .findFirst().orElseThrow();
+
+        // Selections from the client are validated by the server
+        containerOther.onUpdate(containerOther.getSelectValueId(), valueTag(selection));
+        assertStatus(helper, pos, QIOLinkStatus.UNLINKED);
+        containerOwner.onUpdate(containerOwner.getSelectValueId(), valueTag(selection));
+        assertStatus(helper, pos, QIOLinkStatus.LINKED);
+        helper.assertValueEqual(ValueNotifierHelpers.getValueInt(containerOwner, containerOwner.getStatusValueId()), QIOLinkStatus.LINKED.ordinal(), "Status was not sent to the client");
+
+        containerOwner.onUpdate(containerOwner.getChannelValueId(), valueTag(IntTag.valueOf(2)));
+        helper.assertValueEqual(getState(pos).getChannelInterface(), 2, "Channel was not changed");
+
+        helper.startSequence()
+                .thenWaitUntil(() -> helper.assertValueEqual(countInChannel(pos, 2, ItemStack.EMPTY), 5L, "Items are not exposed on the new channel"))
+                .thenExecute(() -> {
+                    containerOwner.onButtonClick(ContainerPartInterfaceQIO.BUTTON_UNLINK);
+                    assertStatus(helper, pos, QIOLinkStatus.UNLINKED);
+                })
+                .thenSucceed();
+    }
+
+    @GameTest(template = TEMPLATE_EMPTY, timeoutTicks = TIMEOUT)
     public void testQIOInterfaceFrequencyList(GameTestHelper helper) {
         ServerPlayer owner = helper.makeMockServerPlayerInLevel();
         ServerPlayer other = helper.makeMockServerPlayerInLevel();
@@ -391,6 +489,37 @@ public class GameTestsQIOInterface {
         helper.assertTrue(listContains(ContainerPartInterfaceQIO.createFrequencyList(other.getUUID()), publicName), "Other player does not see public frequency");
         helper.assertFalse(listContains(ContainerPartInterfaceQIO.createFrequencyList(other.getUUID()), privateName), "Other player sees private frequency");
         helper.succeed();
+    }
+
+    private static ContainerPartInterfaceQIO openContainer(GameTestHelper helper, PartPos pos, ServerPlayer player) {
+        // Mock players can not receive modded packets, so use a fake player with the same id
+        ServerPlayer fakePlayer = FakePlayerFactory.get(helper.getLevel(), new GameProfile(player.getUUID(), "fake-" + player.getUUID()));
+        ContainerPartInterfaceQIO container = (ContainerPartInterfaceQIO) PartTypesMekanismTunnels.INTERFACE_QIO.getContainerProvider(pos).orElseThrow()
+                .createMenu(0, fakePlayer.getInventory(), fakePlayer);
+        container.addSlotListener(new ContainerListener() {
+            @Override
+            public void slotChanged(AbstractContainerMenu menu, int slot, ItemStack stack) {
+            }
+
+            @Override
+            public void dataChanged(AbstractContainerMenu menu, int id, int value) {
+            }
+        });
+        return container;
+    }
+
+    private static CompoundTag valueTag(Tag value) {
+        CompoundTag tag = new CompoundTag();
+        tag.put(ValueNotifierHelpers.KEY, value);
+        return tag;
+    }
+
+    private static long count(Iterator<ItemStack> it) {
+        long count = 0;
+        while (it.hasNext()) {
+            count += it.next().getCount();
+        }
+        return count;
     }
 
     private static boolean listContains(ListTag list, String name) {
