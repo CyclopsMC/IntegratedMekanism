@@ -22,6 +22,8 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
@@ -48,6 +50,7 @@ import org.cyclops.integratedtunnels.api.network.IItemNetwork;
 import org.cyclops.integratedtunnels.part.PartTypes;
 import org.cyclops.integratedtunnels.part.aspect.TunnelAspects;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.cyclops.integrateddynamics.gametest.GameTestHelpersIntegratedDynamics.placeVariableInWriter;
@@ -416,6 +419,21 @@ public class GameTestsQIOInterface {
         helper.assertTrue(listContains(ContainerPartInterfaceQIO.createFrequencyList(owner.getUUID()), privateName), "Owner does not see private frequency");
         helper.assertTrue(listContains(ContainerPartInterfaceQIO.createFrequencyList(other.getUUID()), publicName), "Other player does not see public frequency");
         helper.assertFalse(listContains(ContainerPartInterfaceQIO.createFrequencyList(other.getUUID()), privateName), "Other player sees private frequency");
+        helper.succeed();
+    }
+
+    @GameTest(template = TEMPLATE_EMPTY, timeoutTicks = TIMEOUT)
+    public void testQIOInterfaceRecipe(GameTestHelper helper) {
+        ItemStack menril = new ItemStack(RegistryEntries.ITEM_CRYSTALIZED_MENRIL_CHUNK);
+        CraftingInput input = CraftingInput.of(3, 3, List.of(
+                ItemStack.EMPTY, new ItemStack(MekanismItems.TELEPORTATION_CORE.get()), ItemStack.EMPTY,
+                menril.copy(), new ItemStack(PartTypes.INTERFACE_ITEM.getItem()), menril.copy(),
+                ItemStack.EMPTY, new ItemStack(MekanismItems.ULTIMATE_CONTROL_CIRCUIT.get()), ItemStack.EMPTY
+        ));
+        ItemStack result = helper.getLevel().getRecipeManager().getRecipeFor(RecipeType.CRAFTING, input, helper.getLevel())
+                .map(recipe -> recipe.value().assemble(input, helper.getLevel().registryAccess()))
+                .orElse(ItemStack.EMPTY);
+        helper.assertValueEqual(result.getItem(), PartTypesMekanismTunnels.INTERFACE_QIO.getItem(), "Recipe does not craft the QIO interface");
         helper.succeed();
     }
 
