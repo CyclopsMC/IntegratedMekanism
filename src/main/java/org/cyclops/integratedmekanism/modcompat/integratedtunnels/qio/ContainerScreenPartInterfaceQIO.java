@@ -88,8 +88,8 @@ public class ContainerScreenPartInterfaceQIO extends ContainerScreenExtended<Con
     public void init() {
         super.init();
 
-        fieldSearch = new WidgetTextFieldExtended(font, leftPos + LIST_X + 1, topPos + 33, LIST_WIDTH + 14, 11,
-                Component.translatable("gui.cyclopscore.search"), true);
+        fieldSearch = new WidgetTextFieldExtended(font, leftPos + LIST_X - 1, topPos + 33, LIST_WIDTH + 16, 11,
+                Component.translatable("gui.cyclopscore.search"));
         fieldSearch.setMaxLength(64);
         fieldSearch.setTextColor(0xFFFFFF);
         fieldSearch.setHint(Component.translatable("gui.integratedmekanism.interface_qio.search").withStyle(ChatFormatting.DARK_GRAY));
