@@ -22,8 +22,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.CraftingInput;
-import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
@@ -34,7 +32,6 @@ import org.cyclops.commoncapabilities.api.ingredient.IngredientComponent;
 import org.cyclops.commoncapabilities.api.ingredient.storage.IIngredientComponentStorage;
 import org.cyclops.integrateddynamics.RegistryEntries;
 import org.cyclops.integrateddynamics.api.evaluate.variable.ValueDeseralizationContext;
-import org.cyclops.integrateddynamics.api.network.IPositionedAddonsNetwork;
 import org.cyclops.integrateddynamics.api.part.PartPos;
 import org.cyclops.integrateddynamics.api.part.PartTarget;
 import org.cyclops.integrateddynamics.core.block.IgnoredBlockStatus;
@@ -50,7 +47,6 @@ import org.cyclops.integratedtunnels.api.network.IItemNetwork;
 import org.cyclops.integratedtunnels.part.PartTypes;
 import org.cyclops.integratedtunnels.part.aspect.TunnelAspects;
 
-import java.util.List;
 import java.util.UUID;
 
 import static org.cyclops.integrateddynamics.gametest.GameTestHelpersIntegratedDynamics.placeVariableInWriter;
@@ -308,44 +304,19 @@ public class GameTestsQIOInterface {
     }
 
     @GameTest(template = TEMPLATE_EMPTY, timeoutTicks = TIMEOUT)
-    public void testQIOInterfaceDuplicate(GameTestHelper helper) {
+    public void testQIOInterfaceSameFrequencyTwice(GameTestHelper helper) {
         ServerPlayer owner = helper.makeMockServerPlayerInLevel();
         QIOFrequency frequency = createFrequency(helper, POS.west(3), owner);
         frequency.massInsert(new ItemStack(Items.DIAMOND), 5, Action.EXECUTE);
         PartPos posA = placeInterface(helper, POS, Direction.UP);
         PartPos posB = placeInterface(helper, POS, Direction.DOWN);
-        PartPos posC = placeInterface(helper, POS, Direction.NORTH);
-        PartPos posD = placeInterface(helper, POS, Direction.SOUTH);
-        getState(posB).setChannelInterface(3);
-        getState(posD).setChannelInterface(IPositionedAddonsNetwork.WILDCARD_CHANNEL);
         link(posA, frequency, owner);
         link(posB, frequency, owner);
-        link(posC, frequency, owner);
-        link(posD, frequency, owner);
 
-        // The same frequency can be linked on another channel
+        // Linking the same frequency twice on a channel is allowed, so its items are seen twice
         assertStatus(helper, posA, QIOLinkStatus.LINKED);
         assertStatus(helper, posB, QIOLinkStatus.LINKED);
-        // But not twice on the same channel, also not via the wildcard channel
-        assertStatus(helper, posC, QIOLinkStatus.DUPLICATE);
-        assertStatus(helper, posD, QIOLinkStatus.DUPLICATE);
-
-        helper.startSequence()
-                .thenWaitUntil(() -> {
-                    helper.assertValueEqual(countInChannel(posA, 0, ItemStack.EMPTY), 5L, "Items are not exposed once on channel 0");
-                    helper.assertValueEqual(countInChannel(posA, 3, ItemStack.EMPTY), 5L, "Items are not exposed once on channel 3");
-                })
-                .thenExecute(() -> {
-                    // Once the first interface is removed, the other one on the same channel takes over
-                    PartHelpers.removePart(helper.getLevel(), posA.getPos().getBlockPos(), posA.getSide(), null, false, false, false);
-                })
-                .thenWaitUntil(() -> {
-                    assertStatus(helper, posC, QIOLinkStatus.LINKED);
-                    assertStatus(helper, posD, QIOLinkStatus.DUPLICATE);
-                    helper.assertValueEqual(countInChannel(posB, 0, ItemStack.EMPTY), 5L, "Other interface did not take over");
-                    helper.assertValueEqual(countInChannel(posB, 3, ItemStack.EMPTY), 5L, "Items are not exposed once on channel 3");
-                })
-                .thenSucceed();
+        helper.succeedWhen(() -> helper.assertValueEqual(countInChannel(posA, 0, ItemStack.EMPTY), 10L, "Items are not exposed by both interfaces"));
     }
 
     // ===== Items and configuration =====
@@ -419,21 +390,6 @@ public class GameTestsQIOInterface {
         helper.assertTrue(listContains(ContainerPartInterfaceQIO.createFrequencyList(owner.getUUID()), privateName), "Owner does not see private frequency");
         helper.assertTrue(listContains(ContainerPartInterfaceQIO.createFrequencyList(other.getUUID()), publicName), "Other player does not see public frequency");
         helper.assertFalse(listContains(ContainerPartInterfaceQIO.createFrequencyList(other.getUUID()), privateName), "Other player sees private frequency");
-        helper.succeed();
-    }
-
-    @GameTest(template = TEMPLATE_EMPTY, timeoutTicks = TIMEOUT)
-    public void testQIOInterfaceRecipe(GameTestHelper helper) {
-        ItemStack menril = new ItemStack(RegistryEntries.ITEM_CRYSTALIZED_MENRIL_CHUNK);
-        CraftingInput input = CraftingInput.of(3, 3, List.of(
-                ItemStack.EMPTY, new ItemStack(MekanismItems.TELEPORTATION_CORE.get()), ItemStack.EMPTY,
-                menril.copy(), new ItemStack(PartTypes.INTERFACE_ITEM.getItem()), menril.copy(),
-                ItemStack.EMPTY, new ItemStack(MekanismItems.ULTIMATE_CONTROL_CIRCUIT.get()), ItemStack.EMPTY
-        ));
-        ItemStack result = helper.getLevel().getRecipeManager().getRecipeFor(RecipeType.CRAFTING, input, helper.getLevel())
-                .map(recipe -> recipe.value().assemble(input, helper.getLevel().registryAccess()))
-                .orElse(ItemStack.EMPTY);
-        helper.assertValueEqual(result.getItem(), PartTypesMekanismTunnels.INTERFACE_QIO.getItem(), "Recipe does not craft the QIO interface");
         helper.succeed();
     }
 

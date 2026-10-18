@@ -16,7 +16,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.cyclops.cyclopscore.helper.ValueNotifierHelpers;
 import org.cyclops.cyclopscore.inventory.container.ContainerExtended;
-import org.cyclops.integrateddynamics.api.network.INetwork;
 import org.cyclops.integrateddynamics.api.part.IPartContainer;
 import org.cyclops.integrateddynamics.api.part.PartTarget;
 import org.cyclops.integrateddynamics.core.helper.NetworkHelpers;
@@ -196,15 +195,10 @@ public class ContainerPartInterfaceQIO extends ContainerExtended {
             return;
         }
         state.setChannelInterface(channel);
-        INetwork network = NetworkHelpers.getNetwork(target.getCenter()).orElse(null);
-        if (network != null) {
-            network.setPriorityAndChannel(new PartNetworkElement<>(partType, target.getCenter()), priority, state.getChannel());
-        } else {
-            state.setPriority(priority);
-        }
-        // The new channel may resolve or cause a duplicate link
-        partType.updateLink(network, target, state);
-        refreshLinkValues();
+        NetworkHelpers.getNetwork(target.getCenter()).ifPresentOrElse(
+                network -> network.setPriorityAndChannel(new PartNetworkElement<>(partType, target.getCenter()), priority, state.getChannel()),
+                () -> state.setPriority(priority)
+        );
     }
 
     @Nullable

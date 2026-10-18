@@ -10,6 +10,8 @@ import org.cyclops.integrateddynamics.core.part.aspect.AspectRegistry;
 import org.cyclops.integratedmekanism.modcompat.integratedtunnels.aspect.MekanismTunnelsAspects;
 import org.cyclops.integratedmekanism.modcompat.integratedtunnels.aspect.listproxy.MekanismTunnelsValueTypeListProxyFactories;
 import org.cyclops.integratedmekanism.modcompat.integratedtunnels.part.PartTypesMekanismTunnels;
+import org.cyclops.integratedmekanism.modcompat.integratedtunnels.qio.ContainerPartInterfaceQIOConfig;
+import org.cyclops.integratedmekanism.modcompat.integratedtunnels.qio.DataComponentQIOFrequencyLinkConfig;
 
 /**
  * @author rubensworks
@@ -22,6 +24,10 @@ public class ModCompatInitializerIntegratedTunnels implements ICompatInitializer
 
     @Override
     public void initialize(IModBase mod) {
+        // These configs only register during RegisterEvent, so adding them after config loading is fine
+        ((ModBase<?>) mod).getConfigHandler().addConfigurable(new DataComponentQIOFrequencyLinkConfig());
+        ((ModBase<?>) mod).getConfigHandler().addConfigurable(new ContainerPartInterfaceQIOConfig());
+
         ((ModBase<?>) mod).getModEventBus().addListener(this::onRegistriesCreate);
         ((ModBase<?>) mod).getModEventBus().addListener(this::onSetup);
     }

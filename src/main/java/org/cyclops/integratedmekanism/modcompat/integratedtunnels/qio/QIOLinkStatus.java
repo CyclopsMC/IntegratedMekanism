@@ -16,8 +16,7 @@ public enum QIOLinkStatus {
     UNLINKED(IgnoredBlockStatus.Status.INACTIVE, "unlinked", ChatFormatting.DARK_GRAY),
     LINKED(IgnoredBlockStatus.Status.ACTIVE, "linked", ChatFormatting.DARK_GREEN),
     NOT_FOUND(IgnoredBlockStatus.Status.ERROR, "not_found", ChatFormatting.DARK_RED),
-    NO_ACCESS(IgnoredBlockStatus.Status.ERROR, "no_access", ChatFormatting.DARK_RED),
-    DUPLICATE(IgnoredBlockStatus.Status.ERROR, "duplicate", ChatFormatting.DARK_RED);
+    NO_ACCESS(IgnoredBlockStatus.Status.ERROR, "no_access", ChatFormatting.DARK_RED);
 
     private final IgnoredBlockStatus.Status blockStatus;
     private final String key;

@@ -7,7 +7,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
@@ -156,10 +155,6 @@ public class IntegratedMekanism extends ModBaseVersionable<IntegratedMekanism> {
         super.onConfigsRegister(configHandler);
 
         configHandler.addConfigurable(new GeneralConfig());
-
-        if (ModList.get().isLoaded(Reference.MOD_INTEGRATEDTUNNELS)) {
-            ModCompatIntegratedTunnels.registerConfigs(configHandler);
-        }
     }
 
     @Override

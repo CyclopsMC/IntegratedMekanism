@@ -18,13 +18,12 @@
     "parttype.integratedmekanism.interface_filter_chemical": "Filtering Chemical Interface",
     "parttype.integratedmekanism.interface_filter_chemical.info": "Attaches a chemical tank to the network and filters it",
     "parttype.integratedmekanism.interface_qio": "QIO Interface",
-    "parttype.integratedmekanism.interface_qio.info": "Links the network to a QIO frequency, without needing a physical connection",
+    "parttype.integratedmekanism.interface_qio.info": "Links the item network to a QIO frequency",
 
     "gui.integratedmekanism.interface_qio.status.unlinked": "Not linked to a QIO frequency",
     "gui.integratedmekanism.interface_qio.status.linked": "Linked to %s",
     "gui.integratedmekanism.interface_qio.status.not_found": "Frequency %s does not exist",
     "gui.integratedmekanism.interface_qio.status.no_access": "No access to %s",
-    "gui.integratedmekanism.interface_qio.status.duplicate": "Already linked on this channel",
     "gui.integratedmekanism.interface_qio.search": "Search frequencies...",
     "gui.integratedmekanism.interface_qio.unlink": "Unlink",
     "gui.integratedmekanism.interface_qio.none": "No QIO frequencies available",
@@ -306,7 +305,7 @@
     "info_book.integratedmekanism.manual.qio": "QIO Interface",
     "info_book.integratedmekanism.manual.qio.text1": "The &lQIO Interface&r links your network to a &lQIO&r frequency, without needing a cable to any &lQIO&r block. All items in the frequency become available to the network, so they can be accessed using the &lStorage Terminal&r, moved by &lItem Importers&r and &lItem Exporters&r, and used for autocrafting. Items inserted into the network can also end up in the frequency, depending on its priority.",
     "info_book.integratedmekanism.manual.qio.text2": "Right-click the interface to select one of the frequencies you have access to, and to set its priority and channel. Alternatively, copy the frequency of a &lQIO&r block onto a &lConfiguration Card&r by sneak-right-clicking that block, and right-click the interface with the card.",
-    "info_book.integratedmekanism.manual.qio.text3": "Each interface links to one frequency, so place multiple interfaces to link multiple frequencies. A frequency can only be linked once per channel, to avoid its items being counted multiple times. It can be linked on multiple channels, but views over all channels will then count its items once per channel. Items are only available while the &lQIO Drive Arrays&r of the frequency are loaded. When a broken interface is placed again, private and trusted frequencies have to be selected again.",
+    "info_book.integratedmekanism.manual.qio.text3": "Each interface links to one frequency, so place multiple interfaces to link multiple frequencies. Items are only available while the &lQIO Drive Arrays&r of the frequency are loaded.",
 
     "info_book.integratedmekanism.manual.terminals": "Chemical Terminals",
     "info_book.integratedmekanism.manual.terminals.text1": "When at least one valid &lChemical Interface&r is attached to your network, the &lStorage Terminal&r will allow you to interact with all chemicals in your network, in the same way you are used to interacting with items, fluids, and energy.",

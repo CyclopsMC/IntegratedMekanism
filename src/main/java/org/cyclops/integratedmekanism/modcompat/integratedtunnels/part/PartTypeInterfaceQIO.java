@@ -34,7 +34,6 @@ import org.cyclops.cyclopscore.init.ModBase;
 import org.cyclops.integrateddynamics.api.evaluate.variable.ValueDeseralizationContext;
 import org.cyclops.integrateddynamics.api.network.INetwork;
 import org.cyclops.integrateddynamics.api.network.IPartNetwork;
-import org.cyclops.integrateddynamics.api.network.IPositionedAddonsNetwork;
 import org.cyclops.integrateddynamics.api.network.NetworkCapability;
 import org.cyclops.integrateddynamics.api.part.IPartContainer;
 import org.cyclops.integrateddynamics.api.part.PartCapability;
@@ -156,13 +155,13 @@ public class PartTypeInterfaceQIO extends PartTypeInterfacePositionedAddon<IItem
 
     @Override
     public void onNetworkAddition(INetwork network, IPartNetwork partNetwork, PartTarget target, State state) {
-        state.setLinkResult(resolveLink(network, target, state));
+        state.setLinkResult(resolveLink(state));
         super.onNetworkAddition(network, partNetwork, target, state);
     }
 
     @Override
     public void afterNetworkReAlive(INetwork network, IPartNetwork partNetwork, PartTarget target, State state) {
-        state.setLinkResult(resolveLink(network, target, state));
+        state.setLinkResult(resolveLink(state));
         super.afterNetworkReAlive(network, partNetwork, target, state);
     }
 
@@ -184,7 +183,7 @@ public class PartTypeInterfaceQIO extends PartTypeInterfacePositionedAddon<IItem
      * @param state The part state.
      */
     public void updateLink(@Nullable INetwork network, PartTarget target, State state) {
-        LinkResult result = resolveLink(network, target, state);
+        LinkResult result = resolveLink(state);
         if (result.status() != state.getLinkStatus() || result.frequency() != state.getActiveFrequency()) {
             if (network != null) {
                 scheduleNetworkObservation(target, state);
@@ -199,7 +198,7 @@ public class PartTypeInterfaceQIO extends PartTypeInterfacePositionedAddon<IItem
         }
     }
 
-    protected LinkResult resolveLink(@Nullable INetwork network, PartTarget target, State state) {
+    protected LinkResult resolveLink(State state) {
         QIOFrequencyLink link = state.getLink();
         if (link == null) {
             return new LinkResult(QIOLinkStatus.UNLINKED, null);
@@ -211,33 +210,7 @@ public class PartTypeInterfaceQIO extends PartTypeInterfacePositionedAddon<IItem
         if (!link.isAuthorized()) {
             return new LinkResult(QIOLinkStatus.NO_ACCESS, null);
         }
-        if (network != null && isLinkedElsewhere(network, target.getCenter(), state.getChannelInterface(), frequency)) {
-            return new LinkResult(QIOLinkStatus.DUPLICATE, null);
-        }
         return new LinkResult(QIOLinkStatus.LINKED, frequency);
-    }
-
-    /**
-     * Linking the same frequency multiple times on a channel would count its items multiple times,
-     * so only the first link per channel is kept active.
-     * Interfaces on the wildcard channel overlap with all channels.
-     */
-    protected boolean isLinkedElsewhere(INetwork network, PartPos pos, int channel, QIOFrequency frequency) {
-        return network.getCapability(getNetworkCapability())
-                .map(itemNetwork -> {
-                    for (PartPos otherPos : itemNetwork.getPositions()) {
-                        if (!otherPos.equals(pos) && otherPos.getPos().isLoaded()) {
-                            PartHelpers.PartStateHolder<?, ?> holder = PartHelpers.getPart(otherPos);
-                            if (holder != null && holder.getState() instanceof State otherState
-                                    && otherState.getActiveFrequency() == frequency
-                                    && IPositionedAddonsNetwork.channelsMatch(channel, otherState.getChannelInterface())) {
-                                return true;
-                            }
-                        }
-                    }
-                    return false;
-                })
-                .orElse(false);
     }
 
     @Override
