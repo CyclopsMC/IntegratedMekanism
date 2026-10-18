@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " T ",
+    "CIC",
+    " U "
+  ],
+  "key": {
+    "C": {
+      "item": "integrateddynamics:crystalized_menril_chunk"
+    },
+    "I": {
+      "item": "integratedtunnels:part_interface_item"
+    },
+    "T": {
+      "item": "mekanism:teleportation_core"
+    },
+    "U": {
+      "tag": "c:circuits/ultimate"
+    }
+  },
+  "result": {
+    "id": "integratedmekanism:part_interface_qio",
+    "count": 1
+  }
+}

@@ -2,6 +2,7 @@ package org.cyclops.integratedmekanism;
 
 import mekanism.api.chemical.IChemicalHandler;
 import net.minecraft.resources.ResourceLocation;
+import org.cyclops.commoncapabilities.api.ingredient.storage.IIngredientComponentStorageHandler;
 import org.cyclops.integrateddynamics.api.network.NetworkCapability;
 import org.cyclops.integrateddynamics.api.part.PartCapability;
 import org.cyclops.integrateddynamics.core.part.event.RegisterPartCapabilitiesEvent;
@@ -20,9 +21,13 @@ public class Capabilities {
         public static final NetworkCapability<IChemicalHandler> NETWORK = NetworkCapability.create(ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "chemical_handler"), IChemicalHandler.class);
         public static final PartCapability<IChemicalHandler> PART = PartCapability.create(ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "chemical_handler"), IChemicalHandler.class);
     }
+    public static final class IngredientComponentStorageHandler {
+        public static final PartCapability<IIngredientComponentStorageHandler> PART = PartCapability.create(ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "ingredient_component_storage_handler"), IIngredientComponentStorageHandler.class);
+    }
 
     public static void registerPartCapabilities(RegisterPartCapabilitiesEvent event) {
         event.register(mekanism.common.capabilities.Capabilities.CHEMICAL.block(), Capabilities.ChemicalHandler.PART);
+        event.register(org.cyclops.commoncapabilities.api.capability.Capabilities.IngredientComponentStorageHandler.BLOCK, Capabilities.IngredientComponentStorageHandler.PART);
 
         MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK.setStorageWrapperHandler(Capabilities.ChemicalHandler.PART, new IngredientComponentStorageWrapperHandlerChemicalStack<>(MekanismIngredientComponents.INGREDIENT_CHEMICALSTACK, Capabilities.ChemicalHandler.PART));
     }

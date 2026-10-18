@@ -18,5 +18,6 @@ public class PartTypesMekanismTunnels {
     public static final PartTypeExporterChemical EXPORTER_CHEMICAL = REGISTRY.register(new PartTypeExporterChemical("exporter_chemical"));
     public static final PartTypeImporterWorldChemical IMPORTER_WORLD_CHEMICAL = REGISTRY.register(new PartTypeImporterWorldChemical("importer_world_chemical"));
     public static final PartTypeExporterWorldChemical EXPORTER_WORLD_CHEMICAL = REGISTRY.register(new PartTypeExporterWorldChemical("exporter_world_chemical"));
+    public static final PartTypeInterfaceQIO INTERFACE_QIO = REGISTRY.register(new PartTypeInterfaceQIO("interface_qio"));
 
 }

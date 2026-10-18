@@ -44,5 +44,8 @@
   { "type": "minecraft:single", "resource": "integratedmekanism:aspects/read/double/chemical/fillratio" },
   { "type": "minecraft:single", "resource": "integratedmekanism:aspects/read/integer/chemicalnetwork/interfaces" },
   { "type": "minecraft:single", "resource": "integratedmekanism:aspects/read/integer/chemical/tanks" },
-  { "type": "minecraft:single", "resource": "integratedmekanism:aspects/read/operator/chemicalnetwork/countbychemical" }
+  { "type": "minecraft:single", "resource": "integratedmekanism:aspects/read/operator/chemicalnetwork/countbychemical" },
+  { "type": "minecraft:single", "resource": "integratedmekanism:part/interface_qio_active" },
+  { "type": "minecraft:single", "resource": "integratedmekanism:part/interface_qio_inactive" },
+  { "type": "minecraft:single", "resource": "integratedmekanism:part/interface_qio_error" }
 ]}
