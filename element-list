@@ -22,6 +22,7 @@ org.cyclops.integratedmekanism.modcompat.integratedtunnels.aspect
 org.cyclops.integratedmekanism.modcompat.integratedtunnels.aspect.listproxy
 org.cyclops.integratedmekanism.modcompat.integratedtunnels.aspect.operator
 org.cyclops.integratedmekanism.modcompat.integratedtunnels.part
+org.cyclops.integratedmekanism.modcompat.integratedtunnels.qio
 org.cyclops.integratedmekanism.modcompat.jei
 org.cyclops.integratedmekanism.network
 org.cyclops.integratedmekanism.network.packet
