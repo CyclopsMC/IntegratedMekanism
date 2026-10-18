@@ -1,0 +1,6 @@
+As always, don't forget to backup your world before updating!
+Requires CyclopsCore version 1.30.0 or higher.
+
+Additions:
+* Add QIO Interface for linking item networks to QIO frequencies (#31)
+  This makes mods such as Integrated Terminals and Tunnels usable with QIO frequencies.

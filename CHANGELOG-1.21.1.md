@@ -1,8 +1,16 @@
 # Changelog for Minecraft 1.21.1
 All notable changes to this project will be documented in this file.
 
+<a name="1.21.1-1.2.0"></a>
+## [1.21.1-1.2.0](https://github.com/CyclopsMC/IntegratedMekanism/compare/1.21.1-1.1.3...1.21.1-1.2.0) - 2026-10-18 14:29:34
+
+
+### Added
+* Add QIO Interface for linking item networks to QIO frequencies (#31)
+  This makes mods such as Integrated Terminals and Tunnels usable with QIO frequencies.
+
 <a name="1.21.1-1.1.3"></a>
-## [1.21.1-1.1.3](https://github.com/CyclopsMC/IntegratedMekanism/compare/1.21.1-1.1.2...1.21.1-1.1.3) - 2026-09-12 10:03:39
+## [1.21.1-1.1.3](https://github.com/CyclopsMC/IntegratedMekanism/compare/1.21.1-1.1.2...1.21.1-1.1.3) - 2026-09-12 10:03:39 +0200
 
 
 ### Changed
